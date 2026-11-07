@@ -1,0 +1,7 @@
+{
+  "name": "MW Carry Forward - Weapon Categories",
+  "author": "MasterRDF",
+  "version": "1.0.0",
+  "type": "mode",
+  "description": "Groups the weapon select lists by game (Black Ops 7, Black Ops 6, Modern Warfare III, Modern Warfare II) instead of Seasonal / Progression."
+}
