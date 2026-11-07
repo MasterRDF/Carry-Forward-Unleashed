@@ -746,7 +746,7 @@ function mwcf_box_verify_inventory()
 function mwcf_box_report(status)
 {
     nengine_store_set("mwcf_box", "status", status);
-    nengine_store_set("mwcf_box", "build", "box-17-backup-stream");
+    nengine_store_set("mwcf_box", "build", "box-18-mw3");
     nengine_store_set("mwcf_box", "pool_size", level.mwcf_box_v1.loaded.size);
     nengine_store_set("mwcf_box", "failed_weapon_count", level.mwcf_box_v1.failed_list.size);
     level.mwcf_box_v1.s_report_failed_index = 0;
@@ -921,7 +921,68 @@ function mwcf_box_seed()
         "iw9_me_sword01_mp",
         "iw9_me_tonfa_mp",
         "iw9_me_pickaxe_mp",
-        "iw9_me_kamas_mp"
+        "iw9_me_kamas_mp",
+        "jup_cp06_ar_falpha_mp",
+        "jup_cp08_br_xmike5_mp",
+        "jup_jp01_ar_golf36_mp",
+        "jup_jp02_ar_bromeo805_mp",
+        "jup_jp02_br_bromeo2_mp",
+        "jup_jp03_br_aromeo200_mp",
+        "jup_jp05_ar_foxtrot2000_mp",
+        "jup_jp08_ar_qbravo97_mp",
+        "jup_jp19_ar_acharlie_mp",
+        "jup_jp19_br_acharlie450_mp",
+        "jup_jp25_ar_talpha95_mp",
+        "jup_jp34_ar_balpha27_mp",
+        "jup_jp36_ar_anov94_mp",
+        "jup_jp40_br_hcharlie36_mp",
+        "jup_jp44_ar_stango44_mp",
+        "jup_jp01_dm_slima8_mp",
+        "jup_jp02_dm_bromeop_mp",
+        "jup_jp10_sn_cdelta50_mp",
+        "jup_jp13_dm_svictork_mp",
+        "jup_jp13_sn_svictor_mp",
+        "jup_jp17_sn_hsierra_mp",
+        "jup_jp19_dm_acharlied_mp",
+        "jup_jp31_dm_compound_mp",
+        "jup_jp35_sn_moscar_mp",
+        "jup_jp36_sn_boscar_mp",
+        "jup_jp37_dm_kappa98_mp",
+        "jup_cp01_sh_aromeo410_mp",
+        "jup_cp05_lm_halpha_mp",
+        "jup_cp15_lm_mkilo3_mp",
+        "jup_jp01_lm_mgolf36_mp",
+        "jup_jp06_lm_pkilop_mp",
+        "jup_jp08_lm_qbravo95lsw_mp",
+        "jup_jp09_sh_oromeo12_mp",
+        "jup_jp16_sh_recho870_mp",
+        "jup_jp20_lm_evictor_mp",
+        "jup_jp28_lm_rpapa20_mp",
+        "jup_jp38_sh_spapa12_mp",
+        "jup_jp23_me_kalpha_mp",
+        "jup_jp23_me_pdango_mp",
+        "jup_jp23_me_shotel_mp",
+        "jup_jp23_me_spear_mp",
+        "jup_jp23_me_swhiskey_mp",
+        "jup_me_glassshiv_mp",
+        "jup_cp24_pi_glima21_mp",
+        "jup_jp07_pi_uzulum_mp",
+        "jup_jp12_pi_mike93_mp",
+        "jup_jp14_pi_rsierra12_mp",
+        "jup_jp22_la_dromeo_mp",
+        "jup_jp32_pi_mpapa9_mp",
+        "jup_la_plasmagun_mp",
+        "jup_pi_raygun_mp",
+        "jup_cp01_sm_coscar635_mp",
+        "jup_cp01_sm_pcharlie9_mp",
+        "jup_jp02_sm_scharlie3_mp",
+        "jup_jp03_sm_pmike_mp",
+        "jup_jp04_sm_lwhiskey_mp",
+        "jup_jp04_sm_umike_mp",
+        "jup_jp07_sm_uzulu_mp",
+        "jup_jp07_sm_uzulup_mp",
+        "jup_jp25_sm_talpham_mp",
+        "jup_jp41_sm_kpappa50_mp"
     ];
     level.mwcf_box_v1.refs["iw9_ar_mike4_mp"] = "iw9_ar_mike4";
     level.mwcf_box_v1.groups["iw9_ar_mike4_mp"] = "weapon_assault";
@@ -1231,4 +1292,248 @@ function mwcf_box_seed()
     level.mwcf_box_v1.groups["iw9_me_kamas_mp"] = "weapon_melee";
     level.mwcf_box_v1.likes["iw9_me_kamas_mp"] = "sat_me_knife";
     level.mwcf_box_v1.parts["iw9_me_kamas_mp"] = ["rec_kamas", "zm_me_kamas"];
+    level.mwcf_box_v1.refs["jup_cp06_ar_falpha_mp"] = "jup_cp06_ar_falpha";
+    level.mwcf_box_v1.groups["jup_cp06_ar_falpha_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_cp06_ar_falpha_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_cp06_ar_falpha_mp"] = ["jup_falpha_rec", "jup_cp06_ar_falpha_bar", "jup_cp06_ar_falpha_stock_heavy", "jup_cp06_ar_falpha_mag", "jup_cp06_ar_falpha_comb", "jup_cp06_ar_falpha_pgrip", "jup_falpha_ironsdefault", "jup_selectburst_single", "ammo_556n", "rail_ar_large_p06", "zm_ar_falpha"];
+    level.mwcf_box_v1.refs["jup_cp08_br_xmike5_mp"] = "jup_cp08_br_xmike5";
+    level.mwcf_box_v1.groups["jup_cp08_br_xmike5_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_cp08_br_xmike5_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_cp08_br_xmike5_mp"] = ["jup_xmike5_rec", "jup_cp08_br_xmike5_bar", "jup_cp08_br_xmike5_stock", "jup_cp08_br_xmike5_mag_20_277f", "jup_cp08_br_xmike5_pgrip", "jup_xmike5_ironsdefault", "jup_xmike5_selectsemi", "jup_ammo_277f", "zm_br_xmike5"];
+    level.mwcf_box_v1.refs["jup_jp01_ar_golf36_mp"] = "jup_jp01_ar_golf36";
+    level.mwcf_box_v1.groups["jup_jp01_ar_golf36_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp01_ar_golf36_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp01_ar_golf36_mp"] = ["jup_golf36_rec", "jup_jp01_ar_golf36_bar", "jup_jp01_ar_golf36_stock_tac", "jup_jp01_ar_golf36_mag_30_556n", "jup_jp01_ar_golf36_pgrip", "jup_golf36_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_ar_golf36"];
+    level.mwcf_box_v1.refs["jup_jp02_ar_bromeo805_mp"] = "jup_jp02_ar_bromeo805";
+    level.mwcf_box_v1.groups["jup_jp02_ar_bromeo805_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp02_ar_bromeo805_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp02_ar_bromeo805_mp"] = ["jup_bromeo805_rec", "jup_jp02_ar_bromeo805_bar", "jup_jp02_ar_bromeo805_stock_folding", "jup_jp02_ar_bromeo805_mag_30_556n", "jup_jp02_ar_bromeo805_pgrip", "jup_bromeo805_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_ar_bromeo805"];
+    level.mwcf_box_v1.refs["jup_jp02_br_bromeo2_mp"] = "jup_jp02_br_bromeo2";
+    level.mwcf_box_v1.groups["jup_jp02_br_bromeo2_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp02_br_bromeo2_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp02_br_bromeo2_mp"] = ["jup_bromeo2_rec", "jup_jp02_br_bromeo2_bar_heavy_xlong", "jup_jp02_br_bromeo2_stock_heavy", "jup_jp02_br_bromeo2_mag_20_762n", "jup_jp02_br_bromeo2_pgrip_ass", "jup_bromeo2_ironsdefault", "jup_bromeo2_selectauto", "ammo_762n", "zm_br_bromeo2"];
+    level.mwcf_box_v1.refs["jup_jp03_br_aromeo200_mp"] = "jup_jp03_br_aromeo200";
+    level.mwcf_box_v1.groups["jup_jp03_br_aromeo200_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp03_br_aromeo200_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp03_br_aromeo200_mp"] = ["jup_aromeo200_rec", "jup_jp03_br_aromeo200_bar", "jup_jp03_br_aromeo200_stock", "jup_jp03_br_aromeo200_mag_20_762n", "jup_jp03_pgrip", "jup_aromeo200_ironsdefault", "jup_aromeo200_selectsemi", "ammo_762n", "zm_br_aromeo200"];
+    level.mwcf_box_v1.refs["jup_jp05_ar_foxtrot2000_mp"] = "jup_jp05_ar_foxtrot2000";
+    level.mwcf_box_v1.groups["jup_jp05_ar_foxtrot2000_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp05_ar_foxtrot2000_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp05_ar_foxtrot2000_mp"] = ["jup_foxtrot2000_rec", "jup_jp05_ar_foxtrot2000_bar", "jup_jp05_ar_foxtrot2000_stock", "jup_jp05_ar_foxtrot2000_mag_30_556n", "jup_jp05_ar_foxtrot2000_pgrip", "jup_foxtrot2000_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_ar_f2000"];
+    level.mwcf_box_v1.refs["jup_jp08_ar_qbravo97_mp"] = "jup_jp08_ar_qbravo97";
+    level.mwcf_box_v1.groups["jup_jp08_ar_qbravo97_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp08_ar_qbravo97_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp08_ar_qbravo97_mp"] = ["jup_qbravo97_rec", "jup_jp08_ar_qbravo97_bar", "jup_jp08_ar_qbravo97_stock", "jup_jp08_ar_qbravo97_mag_30_556n", "jup_jp08_ar_qbravo97_pgrip", "jup_qbravo97_ironsdefault", "jup_selectburst_single", "jup_ammo_556n", "zm_ar_qbravo97"];
+    level.mwcf_box_v1.refs["jup_jp19_ar_acharlie_mp"] = "jup_jp19_ar_acharlie";
+    level.mwcf_box_v1.groups["jup_jp19_ar_acharlie_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp19_ar_acharlie_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp19_ar_acharlie_mp"] = ["jup_acharlie_rec", "jup_jp19_ar_acharlie_bar", "jup_jp19_ar_acharlie_stock_assault", "jup_jp19_ar_acharlie_mag_30_556n", "jup_jp19_ar_acharlie_pgrip", "jup_acharlie_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_ar_acharlie"];
+    level.mwcf_box_v1.refs["jup_jp19_br_acharlie450_mp"] = "jup_jp19_br_acharlie450";
+    level.mwcf_box_v1.groups["jup_jp19_br_acharlie450_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp19_br_acharlie450_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp19_br_acharlie450_mp"] = ["jup_acharlie450_rec", "jup_jp19_br_acharlie450_bar_hvylong2", "jup_jp19_br_acharlie450_stock_assault", "jup_jp19_br_acharlie450_mag_20_450b", "jup_jp19_br_acharlie450_pgrip_ass", "jup_acharlie450_ironsdefault", "jup_acharlie450_selectauto", "jup_ammo_450b", "zm_br_acharlie450"];
+    level.mwcf_box_v1.refs["jup_jp25_ar_talpha95_mp"] = "jup_jp25_ar_talpha95";
+    level.mwcf_box_v1.groups["jup_jp25_ar_talpha95_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp25_ar_talpha95_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp25_ar_talpha95_mp"] = ["jup_talpha95_rec", "jup_jp25_ar_talpha95_bar", "jup_jp25_ar_talpha95_stock", "jup_jp25_ar_talpha95_mag_30_556n", "jup_jp25_pgrip", "jup_talpha95_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_ar_talpha95"];
+    level.mwcf_box_v1.refs["jup_jp34_ar_balpha27_mp"] = "jup_jp34_ar_balpha27";
+    level.mwcf_box_v1.groups["jup_jp34_ar_balpha27_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp34_ar_balpha27_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp34_ar_balpha27_mp"] = ["jup_balpha27_rec", "jup_jp34_ar_balpha27_bar", "jup_jp34_ar_balpha27_stock", "jup_jp25_ar_balpha27_mag", "jup_jp34_pgrip", "jup_balpha27_ironsdefault", "ammo_5x28", "zm_ar_balpha27"];
+    level.mwcf_box_v1.refs["jup_jp36_ar_anov94_mp"] = "jup_jp36_ar_anov94";
+    level.mwcf_box_v1.groups["jup_jp36_ar_anov94_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp36_ar_anov94_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp36_ar_anov94_mp"] = ["jup_anov94_rec", "jup_jp36_ar_anov94_bar_heavy", "jup_jp36_ar_anov94_stock_comptac", "jup_jp36_ar_anov94_mag_30_545", "jup_jp36_ar_anov94_pgrip", "jup_anov94_ironsdefault", "iw9_selectsemi", "ammo_545s", "zm_ar_anov94"];
+    level.mwcf_box_v1.refs["jup_jp40_br_hcharlie36_mp"] = "jup_jp40_br_hcharlie36";
+    level.mwcf_box_v1.groups["jup_jp40_br_hcharlie36_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp40_br_hcharlie36_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp40_br_hcharlie36_mp"] = ["jup_hcharlie36_rec", "jup_jp40_br_hcharlie36_bar", "jup_jp40_br_hcharlie36_stock", "jup_jp40_br_hcharlie36_mag_20_36s", "jup_jp40_br_hcharlie36_pgrip", "jup_hcharlie36_ironsdefault", "iw9_selectsemi", "jup_ammo_30_06"];
+    level.mwcf_box_v1.refs["jup_jp44_ar_stango44_mp"] = "jup_jp44_ar_stango44";
+    level.mwcf_box_v1.groups["jup_jp44_ar_stango44_mp"] = "weapon_assault";
+    level.mwcf_box_v1.likes["jup_jp44_ar_stango44_mp"] = "sat_ar_kiwi";
+    level.mwcf_box_v1.parts["jup_jp44_ar_stango44_mp"] = ["jup_stango44_rec", "jup_jp44_ar_stango44_bar", "jup_jp44_ar_stango44_stock", "jup_jp44_ar_stango44_mag_30", "jup_jp44_ar_stango44_pgrip", "jup_stango44_ironsdefault", "iw9_selectsemi", "jup_ammo_792"];
+    level.mwcf_box_v1.refs["jup_jp01_dm_slima8_mp"] = "jup_jp01_dm_slima8";
+    level.mwcf_box_v1.groups["jup_jp01_dm_slima8_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp01_dm_slima8_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp01_dm_slima8_mp"] = ["jup_slima8_rec", "jup_jp01_dm_slima8_bar_heavy_long", "jup_jp01_dm_slima8_stock_marksman_padded", "jup_jp01_dm_slima8_mag_20_556n", "jup_jp01_dm_slima8_comb_default", "jup_slima8_ironsdefault", "ammo_556n", "zm_dm_slima8"];
+    level.mwcf_box_v1.refs["jup_jp02_dm_bromeop_mp"] = "jup_jp02_dm_bromeop";
+    level.mwcf_box_v1.groups["jup_jp02_dm_bromeop_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp02_dm_bromeop_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp02_dm_bromeop_mp"] = ["jup_bromeop_rec", "jup_jp02_dm_bromeop_bar_precision", "jup_jp02_dm_bromeop_stock_precision", "jup_jp02_dm_bromeop_mag_10_762n", "jup_jp02_dm_bromeop_pgrip_aim", "jup_bromeop_ironsdefault", "ammo_762n", "zm_dm_bromeop"];
+    level.mwcf_box_v1.refs["jup_jp10_sn_cdelta50_mp"] = "jup_jp10_sn_cdelta50";
+    level.mwcf_box_v1.groups["jup_jp10_sn_cdelta50_mp"] = "weapon_sniper";
+    level.mwcf_box_v1.likes["jup_jp10_sn_cdelta50_mp"] = "sat_sn_aden";
+    level.mwcf_box_v1.parts["jup_jp10_sn_cdelta50_mp"] = ["jup_cdelta50_rec", "jup_jp10_sn_cdelta50_bar_hvylong", "jup_jp10_sn_cdelta50_stock_skel", "jup_jp10_sn_cdelta50_mag_5_50b", "jup_jp10_sn_cdelta50_guard", "jup_jp10_sn_cdelta50_pgrip_ass", "jup_jp10_sn_cdelta50_bolt", "jup_cdelta50_scope", "ammo_50b", "zm_sn_cdelta50"];
+    level.mwcf_box_v1.refs["jup_jp13_dm_svictork_mp"] = "jup_jp13_dm_svictork";
+    level.mwcf_box_v1.groups["jup_jp13_dm_svictork_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp13_dm_svictork_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp13_dm_svictork_mp"] = ["jup_svictork_rec", "jup_jp13_dm_svictork_bar", "jup_jp13_dm_svictork_stock_tac", "jup_jp13_dm_svictork_mag_10_762r", "jup_jp13_dm_svictork_pgrip", "jup_svictork_ironsdefault", "jup_ammo_762r", "zm_dm_svictork"];
+    level.mwcf_box_v1.refs["jup_jp13_sn_svictor_mp"] = "jup_jp13_sn_svictor";
+    level.mwcf_box_v1.groups["jup_jp13_sn_svictor_mp"] = "weapon_sniper";
+    level.mwcf_box_v1.likes["jup_jp13_sn_svictor_mp"] = "sat_sn_aden";
+    level.mwcf_box_v1.parts["jup_jp13_sn_svictor_mp"] = ["jup_svictor_rec", "jup_jp13_sn_svictor_bar", "jup_jp13_sn_svictor_stock_mm", "jup_jp13_sn_svictor_mag_10_338lmp", "jup_jp13_sn_svictor_pgrip", "jup_svictor_scope", "jup_ammo_338lp", "zm_sn_svictor"];
+    level.mwcf_box_v1.refs["jup_jp17_sn_hsierra_mp"] = "jup_jp17_sn_hsierra";
+    level.mwcf_box_v1.groups["jup_jp17_sn_hsierra_mp"] = "weapon_sniper";
+    level.mwcf_box_v1.likes["jup_jp17_sn_hsierra_mp"] = "sat_sn_aden";
+    level.mwcf_box_v1.parts["jup_jp17_sn_hsierra_mp"] = ["jup_hsierra_rec", "jup_jp17_sn_hsierra_bar", "jup_jp17_sn_hsierra_stock", "jup_jp17_sn_hsierra_mag_5_50b", "jup_jp17_sn_hsierra_bolt", "jup_jp17_sn_hsierra_pgrip", "jup_hsierra_scope", "jup_hsierra_bipod", "ammo_50b", "zm_sn_hsierra"];
+    level.mwcf_box_v1.refs["jup_jp19_dm_acharlied_mp"] = "jup_jp19_dm_acharlied";
+    level.mwcf_box_v1.groups["jup_jp19_dm_acharlied_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp19_dm_acharlied_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp19_dm_acharlied_mp"] = ["jup_acharlied_rec", "jup_jp19_dm_acharlied_bar_hvymarksman", "jup_jp19_dm_acharlied_stock_heavy", "jup_jp19_dm_acharlied_mag_10_68r", "jup_jp19_dm_acharlied_pgrip_snp", "jup_acharlied_ironsdefault", "jup_ammo_68r", "zm_dm_acharlied"];
+    level.mwcf_box_v1.refs["jup_jp31_dm_compound_mp"] = "jup_jp31_dm_compound";
+    level.mwcf_box_v1.groups["jup_jp31_dm_compound_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp31_dm_compound_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp31_dm_compound_mp"] = ["jup_compound_rec", "jup_reflex_compound", "jup_ammo_arrow_std"];
+    level.mwcf_box_v1.refs["jup_jp35_sn_moscar_mp"] = "jup_jp35_sn_moscar";
+    level.mwcf_box_v1.groups["jup_jp35_sn_moscar_mp"] = "weapon_sniper";
+    level.mwcf_box_v1.likes["jup_jp35_sn_moscar_mp"] = "sat_sn_aden";
+    level.mwcf_box_v1.parts["jup_jp35_sn_moscar_mp"] = ["jup_moscar_rec", "jup_jp35_sn_moscar_bar", "jup_jp35_sn_moscar_stock", "jup_jp35_sn_moscar_bolt", "jup_jp35_sn_moscar_pgrip", "jup_moscar_bipod", "jup_moscar_scope", "jup_ammo_rail_std", "zm_sn_moscar"];
+    level.mwcf_box_v1.refs["jup_jp36_sn_boscar_mp"] = "jup_jp36_sn_boscar";
+    level.mwcf_box_v1.groups["jup_jp36_sn_boscar_mp"] = "weapon_sniper";
+    level.mwcf_box_v1.likes["jup_jp36_sn_boscar_mp"] = "sat_sn_aden";
+    level.mwcf_box_v1.parts["jup_jp36_sn_boscar_mp"] = ["jup_rec_boscar", "jup_jp36_sn_boscar_bar", "jup_jp36_sn_boscar_stock_ass", "jup_jp36_sn_boscar_mag_30_762s", "jup_jp36_sn_boscar_bolt", "jup_jp36_sn_boscar_pgrip", "jup_boscar_scope", "ammo_762s", "zm_sn_boscar"];
+    level.mwcf_box_v1.refs["jup_jp37_dm_kappa98_mp"] = "jup_jp37_dm_kappa98";
+    level.mwcf_box_v1.groups["jup_jp37_dm_kappa98_mp"] = "weapon_dmr";
+    level.mwcf_box_v1.likes["jup_jp37_dm_kappa98_mp"] = "sat_dm_kara";
+    level.mwcf_box_v1.parts["jup_jp37_dm_kappa98_mp"] = ["jup_kappa98_rec", "jup_jp37_dm_kappa98_bar", "jup_jp37_dm_kappa98_stock", "jup_jp37_dm_kappa98_mag_stripper", "jup_jp37_dm_kappa98_irons", "jup_ammo_8mm", "zm_dm_kappa98"];
+    level.mwcf_box_v1.refs["jup_cp01_sh_aromeo410_mp"] = "jup_cp01_sh_aromeo410";
+    level.mwcf_box_v1.groups["jup_cp01_sh_aromeo410_mp"] = "weapon_shotgun";
+    level.mwcf_box_v1.likes["jup_cp01_sh_aromeo410_mp"] = "sat_sh_akita";
+    level.mwcf_box_v1.parts["jup_cp01_sh_aromeo410_mp"] = ["jup_aromeo410_rec", "jup_cp01_sh_aromeo410_bar", "jup_cp01_sh_aromeo410_stock", "jup_cp01_sh_aromeo410_mag_16_410g", "jup_cp01_sh_aromeo410_pgrip", "jup_aromeo410_ironsdefault", "jup_ammo_410g", "zm_sh_aromeo410"];
+    level.mwcf_box_v1.refs["jup_cp05_lm_halpha_mp"] = "jup_cp05_lm_halpha";
+    level.mwcf_box_v1.groups["jup_cp05_lm_halpha_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_cp05_lm_halpha_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_cp05_lm_halpha_mp"] = ["jup_rec_halpha", "jup_cp05_lm_halpha_bar", "jup_cp05_lm_halpha_stock", "jup_cp05_lm_halpha_drum_75_762n", "jup_cp05_lm_halpha_pgrip", "ironsdefault_schotel", "selectsemi_schotel", "ammo_762n", "zm_lm_halpha"];
+    level.mwcf_box_v1.refs["jup_cp15_lm_mkilo3_mp"] = "jup_cp15_lm_mkilo3";
+    level.mwcf_box_v1.groups["jup_cp15_lm_mkilo3_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_cp15_lm_mkilo3_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_cp15_lm_mkilo3_mp"] = ["jup_mkilo3_rec", "jup_cp15_lm_mkilo3_bar_sm", "jup_cp15_lm_mkilo3_stock_heavy", "jup_cp15_lm_mkilo3_belt", "jup_cp15_lm_mkilo3_pgrip", "jup_mkilo3_ironsdefault", "ammo_556n", "zm_lm_mkilo3"];
+    level.mwcf_box_v1.refs["jup_jp01_lm_mgolf36_mp"] = "jup_jp01_lm_mgolf36";
+    level.mwcf_box_v1.groups["jup_jp01_lm_mgolf36_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_jp01_lm_mgolf36_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_jp01_lm_mgolf36_mp"] = ["jup_mgolf36_rec", "jup_jp01_lm_mgolf36_bar_short_heavy", "jup_jp01_lm_mgolf36_stock_tacheavy", "jup_jp01_lm_mgolf36_drum_50_556n", "jup_jp01_lm_mgolf36_pgrip", "jup_mgolf36_ironsdefault", "iw9_selectsemi", "ammo_556n", "zm_lm_mgolf36"];
+    level.mwcf_box_v1.refs["jup_jp06_lm_pkilop_mp"] = "jup_jp06_lm_pkilop";
+    level.mwcf_box_v1.groups["jup_jp06_lm_pkilop_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_jp06_lm_pkilop_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_jp06_lm_pkilop_mp"] = ["jup_pkilop_rec", "jup_jp06_lm_pkilop_bar", "jup_jp06_lm_pkilop_stock_heavy", "jup_jp06_lm_pkilop_belt_100_762n", "jup_jp06_lm_pkilop_pgrip", "jup_pkilop_ironsdefault", "jup_ammo_762r", "zm_lm_pkilop"];
+    level.mwcf_box_v1.refs["jup_jp08_lm_qbravo95lsw_mp"] = "jup_jp08_lm_qbravo95lsw";
+    level.mwcf_box_v1.groups["jup_jp08_lm_qbravo95lsw_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_jp08_lm_qbravo95lsw_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_jp08_lm_qbravo95lsw_mp"] = ["jup_qbravo95lsw_rec", "jup_jp08_lm_qbravo95lsw_bar", "jup_jp08_lm_qbravo95lsw_stock_padded", "jup_jp08_lm_qbravo95lsw_drum_60_58h", "jup_jp08_lm_qbravo95lsw_pgrip", "jup_qbravo95lsw_ironsdefault", "iw9_selectsemi", "jup_ammo_58h", "zm_lm_qbravo95lsw"];
+    level.mwcf_box_v1.refs["jup_jp09_sh_oromeo12_mp"] = "jup_jp09_sh_oromeo12";
+    level.mwcf_box_v1.groups["jup_jp09_sh_oromeo12_mp"] = "weapon_shotgun";
+    level.mwcf_box_v1.likes["jup_jp09_sh_oromeo12_mp"] = "sat_sh_akita";
+    level.mwcf_box_v1.parts["jup_jp09_sh_oromeo12_mp"] = ["jup_oromeo12_rec", "jup_jp09_sh_oromeo12_bar", "jup_jp09_sh_oromeo12_stock", "jup_jp09_sh_oromeo12_mag_8_12g", "jup_jp09_sh_oromeo12_pgrip", "jup_oromeo12_ironsdefault", "ammo_12g", "zm_sh_oromeo12"];
+    level.mwcf_box_v1.refs["jup_jp16_sh_recho870_mp"] = "jup_jp16_sh_recho870";
+    level.mwcf_box_v1.groups["jup_jp16_sh_recho870_mp"] = "weapon_shotgun";
+    level.mwcf_box_v1.likes["jup_jp16_sh_recho870_mp"] = "sat_sh_akita";
+    level.mwcf_box_v1.parts["jup_jp16_sh_recho870_mp"] = ["jup_recho870_rec", "jup_jp16_sh_recho870_bartube", "jup_jp16_sh_recho870_stock", "jup_jp16_sh_recho870_tube_6_12g", "jup_jp16_sh_recho870_guard", "jup_recho870_ironsdefault", "jup_jp16_sh_recho870_bolt", "ammo_12g", "zm_sh_recho870"];
+    level.mwcf_box_v1.refs["jup_jp20_lm_evictor_mp"] = "jup_jp20_lm_evictor";
+    level.mwcf_box_v1.groups["jup_jp20_lm_evictor_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_jp20_lm_evictor_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_jp20_lm_evictor_mp"] = ["jup_evictor_rec", "jup_jp20_lm_evictor_bar_short", "jup_jp20_lm_evictor_stock", "jup_jp20_lm_evictor_belt_100_762n", "jup_jp20_lm_evictor_pgrip", "jup_evictor_ironsdefault", "jup_selectsemi", "ammo_762n", "zm_lm_evictor"];
+    level.mwcf_box_v1.refs["jup_jp28_lm_rpapa20_mp"] = "jup_jp28_lm_rpapa20";
+    level.mwcf_box_v1.groups["jup_jp28_lm_rpapa20_mp"] = "weapon_lmg";
+    level.mwcf_box_v1.likes["jup_jp28_lm_rpapa20_mp"] = "sat_lm_hades";
+    level.mwcf_box_v1.parts["jup_jp28_lm_rpapa20_mp"] = ["jup_rec_rpapa20", "jup_jp28_lm_rpapa20_bar", "jup_jp28_lm_rpapa20_stock", "jup_jp28_lm_rpapa20_belt_100_545", "jup_jp28_lm_rpapa20_pgrip", "jup_rpapa20_ironsdefault", "ammo_545s"];
+    level.mwcf_box_v1.refs["jup_jp38_sh_spapa12_mp"] = "jup_jp38_sh_spapa12";
+    level.mwcf_box_v1.groups["jup_jp38_sh_spapa12_mp"] = "weapon_shotgun";
+    level.mwcf_box_v1.likes["jup_jp38_sh_spapa12_mp"] = "sat_sh_akita";
+    level.mwcf_box_v1.parts["jup_jp38_sh_spapa12_mp"] = ["jup_spapa12_rec", "jup_jp38_sh_spapa12_bar", "jup_jp38_sh_spapa12_stock", "jup_jp38_sh_spapa12_tube_std_12g", "jup_jp38_sh_spapa12_pgrip", "jup_jp38_sh_spapa12_irons", "jup_spapa12_selectsemi", "ammo_12g", "zm_sh_spapa12"];
+    level.mwcf_box_v1.refs["jup_jp23_me_kalpha_mp"] = "jup_jp23_me_kalpha";
+    level.mwcf_box_v1.groups["jup_jp23_me_kalpha_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_jp23_me_kalpha_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_jp23_me_kalpha_mp"] = ["jup_me_kalpha", "zm_me_kalpha"];
+    level.mwcf_box_v1.refs["jup_jp23_me_pdango_mp"] = "jup_jp23_me_pdango";
+    level.mwcf_box_v1.groups["jup_jp23_me_pdango_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_jp23_me_pdango_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_jp23_me_pdango_mp"] = ["jup_me_pdango", "zm_me_pdango"];
+    level.mwcf_box_v1.refs["jup_jp23_me_shotel_mp"] = "jup_jp23_me_shotel";
+    level.mwcf_box_v1.groups["jup_jp23_me_shotel_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_jp23_me_shotel_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_jp23_me_shotel_mp"] = ["jup_me_shotel", "zm_me_shotel"];
+    level.mwcf_box_v1.refs["jup_jp23_me_spear_mp"] = "jup_jp23_me_spear";
+    level.mwcf_box_v1.groups["jup_jp23_me_spear_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_jp23_me_spear_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_jp23_me_spear_mp"] = ["jup_me_spear", "jup_axefist"];
+    level.mwcf_box_v1.refs["jup_jp23_me_swhiskey_mp"] = "jup_jp23_me_swhiskey";
+    level.mwcf_box_v1.groups["jup_jp23_me_swhiskey_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_jp23_me_swhiskey_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_jp23_me_swhiskey_mp"] = ["jup_jp23_me_swhiskey_rec", "zm_me_jup_swhiskey"];
+    level.mwcf_box_v1.refs["jup_me_glassshiv_mp"] = "jup_me_glassshiv";
+    level.mwcf_box_v1.groups["jup_me_glassshiv_mp"] = "weapon_melee";
+    level.mwcf_box_v1.likes["jup_me_glassshiv_mp"] = "sat_me_knife";
+    level.mwcf_box_v1.parts["jup_me_glassshiv_mp"] = ["zm_me_glass_shiv"];
+    level.mwcf_box_v1.refs["jup_cp24_pi_glima21_mp"] = "jup_cp24_pi_glima21";
+    level.mwcf_box_v1.groups["jup_cp24_pi_glima21_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_cp24_pi_glima21_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_cp24_pi_glima21_mp"] = ["jup_glima21_rec", "jup_cp24_pi_glima21_bar", "jup_cp24_pi_glima21_mag_13_45acp", "jup_cp24_pi_glima21_trigger", "jup_glima21_ironsdefault", "ammo_45acp", "zm_pi_glima21"];
+    level.mwcf_box_v1.refs["jup_jp07_pi_uzulum_mp"] = "jup_jp07_pi_uzulum";
+    level.mwcf_box_v1.groups["jup_jp07_pi_uzulum_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_jp07_pi_uzulum_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_jp07_pi_uzulum_mp"] = ["jup_uzulum_rec", "jup_jp07_pi_uzulum_bar_short", "jup_jp07_pi_uzulum_stockno", "jup_jp07_pi_uzulum_mag_20_9mm", "jup_jp07_pi_uzulum_pgrip", "jup_uzulum_ironsdefault", "ammo_9p", "zm_pi_uzulum"];
+    level.mwcf_box_v1.refs["jup_jp12_pi_mike93_mp"] = "jup_jp12_pi_mike93";
+    level.mwcf_box_v1.groups["jup_jp12_pi_mike93_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_jp12_pi_mike93_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_jp12_pi_mike93_mp"] = ["jup_mike93_rec", "jup_jp12_pi_mike93_bar", "jup_jp12_pi_mike93_stockno", "jup_jp12_pi_mike93_mag_15_9mm", "jup_jp12_pi_mike93_pgrip", "jup_jp12_pi_mike93_trigger", "jup_mike93_ironsdefault", "ammo_9p", "zm_pi_mike93"];
+    level.mwcf_box_v1.refs["jup_jp14_pi_rsierra12_mp"] = "jup_jp14_pi_rsierra12";
+    level.mwcf_box_v1.groups["jup_jp14_pi_rsierra12_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_jp14_pi_rsierra12_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_jp14_pi_rsierra12_mp"] = ["jup_rsierra12_rec", "jup_jp14_pi_rsierra12_bar", "jup_jp14_pi_rsierra12_cylinder_5_12", "jup_jp14_pi_rsierra12_pgrip", "jup_jp14_pi_rsierra12_trigger", "jup_rsierra12_ironsdefault", "jup_ammo_127", "zm_pi_rsierra12"];
+    level.mwcf_box_v1.refs["jup_jp22_la_dromeo_mp"] = "jup_jp22_la_dromeo";
+    level.mwcf_box_v1.groups["jup_jp22_la_dromeo_mp"] = "weapon_projectile";
+    level.mwcf_box_v1.likes["jup_jp22_la_dromeo_mp"] = "sat_la_fang";
+    level.mwcf_box_v1.parts["jup_jp22_la_dromeo_mp"] = ["jup_dromeo_rec", "jup_reflex_dromeo", "dynamic_null_rpapa7", "zm_la_dromeo"];
+    level.mwcf_box_v1.refs["jup_jp32_pi_mpapa9_mp"] = "jup_jp32_pi_mpapa9";
+    level.mwcf_box_v1.groups["jup_jp32_pi_mpapa9_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_jp32_pi_mpapa9_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_jp32_pi_mpapa9_mp"] = ["jup_mpapa9_rec", "jup_jp32_pi_mpapa9_bar", "jup_jp32_pi_mpapa9_stock_skel", "jup_jp32_pi_mpapa9_mag", "jup_jp32_pgrip", "jup_mpapa9_ironsdefault", "ammo_9p", "zm_pi_mpapa9"];
+    level.mwcf_box_v1.refs["jup_la_plasmagun_mp"] = "jup_la_plasmagun";
+    level.mwcf_box_v1.groups["jup_la_plasmagun_mp"] = "weapon_projectile";
+    level.mwcf_box_v1.likes["jup_la_plasmagun_mp"] = "sat_la_fang";
+    level.mwcf_box_v1.parts["jup_la_plasmagun_mp"] = ["zm_la_ub_plasmagun", "zm_la_plasmagun"];
+    level.mwcf_box_v1.refs["jup_pi_raygun_mp"] = "jup_pi_raygun";
+    level.mwcf_box_v1.groups["jup_pi_raygun_mp"] = "weapon_pistol";
+    level.mwcf_box_v1.likes["jup_pi_raygun_mp"] = "sat_pi_alcor";
+    level.mwcf_box_v1.parts["jup_pi_raygun_mp"] = ["rec_raygun", "bar_raygun", "mag_raygun", "zm_pi_raygun"];
+    level.mwcf_box_v1.refs["jup_cp01_sm_coscar635_mp"] = "jup_cp01_sm_coscar635";
+    level.mwcf_box_v1.groups["jup_cp01_sm_coscar635_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_cp01_sm_coscar635_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_cp01_sm_coscar635_mp"] = ["jup_coscar635_rec", "jup_cp01_sm_coscar635_bar_shorthvy2", "jup_cp01_sm_coscar635_stock_assault", "jup_cp01_sm_coscar635_mag_30_9mm", "jup_cp01_sm_coscar635_pgrip", "jup_coscar635_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_coscar635"];
+    level.mwcf_box_v1.refs["jup_cp01_sm_pcharlie9_mp"] = "jup_cp01_sm_pcharlie9";
+    level.mwcf_box_v1.groups["jup_cp01_sm_pcharlie9_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_cp01_sm_pcharlie9_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_cp01_sm_pcharlie9_mp"] = ["jup_pcharlie9_rec", "jup_cp01_sm_pcharlie9_bar", "jup_cp01_sm_pcharlie9_stock", "jup_cp01_sm_pcharlie9_mag_30_4x30", "jup_cp01_sm_pcharlie9_pgrip", "jup_pcharlie9_ironsdefault", "iw9_selectsemi", "ammo_4x30", "zm_sm_pcharlie9"];
+    level.mwcf_box_v1.refs["jup_jp02_sm_scharlie3_mp"] = "jup_jp02_sm_scharlie3";
+    level.mwcf_box_v1.groups["jup_jp02_sm_scharlie3_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp02_sm_scharlie3_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp02_sm_scharlie3_mp"] = ["jup_scharlie3_rec", "jup_jp02_sm_scharlie3_bar_light", "jup_jp02_sm_scharlie3_stock_skeltac", "jup_jp02_sm_scharlie3_mag_30_9mm", "jup_jp02_sm_scharlie3_pgrip_smg", "jup_scharlie3_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_scharlie3"];
+    level.mwcf_box_v1.refs["jup_jp03_sm_pmike_mp"] = "jup_jp03_sm_pmike";
+    level.mwcf_box_v1.groups["jup_jp03_sm_pmike_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp03_sm_pmike_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp03_sm_pmike_mp"] = ["jup_pmike_rec", "jup_jp03_sm_pmike_bar", "jup_jp03_sm_pmike_stock", "jup_jp03_sm_pmike_mag_30_9mm", "jup_jp03_sm_pmike_pgrip", "jup_pmike_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_pmike"];
+    level.mwcf_box_v1.refs["jup_jp04_sm_lwhiskey_mp"] = "jup_jp04_sm_lwhiskey";
+    level.mwcf_box_v1.groups["jup_jp04_sm_lwhiskey_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp04_sm_lwhiskey_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp04_sm_lwhiskey_mp"] = ["jup_lwhiskey_rec", "jup_jp04_sm_lwhiskey_bar", "jup_jp04_sm_lwhiskey_stock_hvyskel", "jup_jp04_sm_lwhiskey_mag_30_9mm", "jup_jp04_sm_lwhiskey_pgrip", "jup_lwhiskey_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_lwhiskey"];
+    level.mwcf_box_v1.refs["jup_jp04_sm_umike_mp"] = "jup_jp04_sm_umike";
+    level.mwcf_box_v1.groups["jup_jp04_sm_umike_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp04_sm_umike_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp04_sm_umike_mp"] = ["jup_umike_rec", "jup_jp04_sm_umike_bar", "jup_jp04_sm_umike_stock_folding", "jup_jp04_sm_umike_mag_25_45acp", "jup_jp04_sm_umike_pgrip", "jup_umike_ironsdefault", "iw9_selectsemi", "ammo_45acp", "zm_sm_umike"];
+    level.mwcf_box_v1.refs["jup_jp07_sm_uzulu_mp"] = "jup_jp07_sm_uzulu";
+    level.mwcf_box_v1.groups["jup_jp07_sm_uzulu_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp07_sm_uzulu_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp07_sm_uzulu_mp"] = ["jup_uzulu_rec", "jup_jp07_sm_uzulu_bar_long", "jup_jp07_sm_uzulu_stock_light", "jup_jp07_sm_uzulu_mag_25_9mm", "jup_jp07_sm_uzulu_pgrip", "jup_uzulu_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_uzulu"];
+    level.mwcf_box_v1.refs["jup_jp07_sm_uzulup_mp"] = "jup_jp07_sm_uzulup";
+    level.mwcf_box_v1.groups["jup_jp07_sm_uzulup_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp07_sm_uzulup_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp07_sm_uzulup_mp"] = ["jup_uzulup_rec", "jup_jp07_sm_uzulup_bar", "jup_jp07_sm_uzulup_stock_skelbrace", "jup_jp07_sm_uzulup_mag_32_9mm", "jup_jp07_sm_uzulup_pgrip", "jup_uzulup_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_uzulup"];
+    level.mwcf_box_v1.refs["jup_jp25_sm_talpham_mp"] = "jup_jp25_sm_talpham";
+    level.mwcf_box_v1.groups["jup_jp25_sm_talpham_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp25_sm_talpham_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp25_sm_talpham_mp"] = ["jup_talpham_rec", "jup_jp25_sm_talpham_bar", "jup_jp25_sm_talpham_stock", "jup_jp25_sm_talpham_mag_9p", "jup_jp25_pgrip", "jup_talpham_ironsdefault", "iw9_selectsemi", "ammo_9p", "zm_sm_talpham"];
+    level.mwcf_box_v1.refs["jup_jp41_sm_kpappa50_mp"] = "jup_jp41_sm_kpappa50";
+    level.mwcf_box_v1.groups["jup_jp41_sm_kpappa50_mp"] = "weapon_smg";
+    level.mwcf_box_v1.likes["jup_jp41_sm_kpappa50_mp"] = "sat_sm_bear";
+    level.mwcf_box_v1.parts["jup_jp41_sm_kpappa50_mp"] = ["jup_kpappa50_rec", "jup_jp41_sm_kpappa50_bar", "jup_jp41_sm_kpappa50_stock", "jup_jp41_sm_kpappa50_mag_50", "jup_jp41_sm_kpappa50_pgrip", "jup_kpappa50_ironsdefault", "ammo_5x28"];
 }
