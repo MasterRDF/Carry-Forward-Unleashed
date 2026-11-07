@@ -1,0 +1,7 @@
+﻿{
+  "name": "MW Carry Forward - Pack-a-Punch",
+  "author": "MasterRDF",
+  "version": "1.0.0-candidate",
+  "type": "mode",
+  "description": "Registers 77 verified MW2 Zombies/PaP attachment pairs for the normal machine. Requires MW2 weapon assets to be available. DOOM Chainsaw is excluded. Gameplay validation pending."
+}

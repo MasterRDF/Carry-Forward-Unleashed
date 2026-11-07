@@ -1,0 +1,7 @@
+{
+  "name": "MW Carry Forward - Mystery Box",
+  "author": "MasterRDF",
+  "version": "1.3.3",
+  "type": "mode",
+  "description": "Adds an independent MW2 Mystery Box override directly beneath Mystery Box Weapons in Debug Options."
+}
