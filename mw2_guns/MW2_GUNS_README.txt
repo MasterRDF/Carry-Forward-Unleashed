@@ -1,6 +1,6 @@
 MW2 guns: Modern Warfare II weapons in Kronos's BO6 loadouts, gunsmith and Zombies builds
 For cod25-cod.exe sha256 starting b0b12b0e7ec25ce8, run with Kronos's own files (made against Kronos v1.41).
-mw2_guns.dll is build 21, hid.dll is loader 1, from 2026-11-07. Made from the MW-Carry-Forward-0.7.0-test package.
+mw2_guns.dll is build 28, hid.dll is loader 1, from 2026-11-08. Made from the MW-Carry-Forward-0.7.0-test package.
 
 78 weapons: 15 assault rifles, 12 SMGs, 6 LMGs, 8 pistols, 6 shotguns, 7 sniper rifles, 13 marksman rifles (the battle
 rifles and the crossbow are listed with them), 5 launchers and 6 melee weapons. Each keeps its own name, model, sounds,
@@ -300,3 +300,12 @@ BUILD 26 (release 1.3.1)
 BUILD 27 (release 1.4)
 - Zombie builds keep their camo: the served bo6_zombie_builds_post.lua now stores a custom gunsmith build's camo (and a blueprint's,
   when no camo was set on the gun) as <gun>@c, so Mystery Box and wall-buy guns come with it. Existing builds need to be set once more.
+
+BUILD 28
+- MW guns no longer vanish mid-session. Builds 6 to 27 turned the MW guns off two minutes into a launch when Kronos's menu
+  script had not reported in to poi_reg.log, and after two such launches kept them off for good (mw2_guns\cache\menus_failed.txt).
+  Kronos's Lua log drops lines (its L() keeps only the last 10 lines for Kronos to copy to the log), so on some PCs the check
+  failed even though the menus were fine: the guns left the loadouts after the next menu reload, the box and the starting weapon
+  stopped giving them, and loading in with an MW gun could crash. The check now only writes a note to mw2_guns.log, and a
+  menus_failed.txt left by an older build is deleted at start.
+- FastRead skips addresses below 64 KB, so the crash logger no longer writes caught faults as "CRASH ... mw2_guns.dll+138a6".
