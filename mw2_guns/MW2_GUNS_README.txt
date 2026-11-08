@@ -296,3 +296,7 @@ BUILD 25 (release 1.3)
 BUILD 26 (release 1.3.1)
 - Every memory read uses FastRead: the effects and Lockwood threads made hundreds of slow reads a second, some while holding the game lock (packet bursts, menu lag).
 - effects=off by default: the MW2 muzzle-flash swap never applies on this game version (every gun logs "packages differ").
+
+BUILD 27 (release 1.4)
+- Zombie builds keep their camo: the served bo6_zombie_builds_post.lua now stores a custom gunsmith build's camo (and a blueprint's,
+  when no camo was set on the gun) as <gun>@c, so Mystery Box and wall-buy guns come with it. Existing builds need to be set once more.

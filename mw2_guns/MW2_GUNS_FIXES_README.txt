@@ -85,3 +85,20 @@ animations it kept). The previous launch's is mw2_guns_fixes.prev.log.
 SOURCE
 mw2_guns.cpp built with /DMW2_GUNS_FIXES (build.bat), from the same source as mw2_guns build 21: section 5b and the end of
 the file. zips\mw2_guns_source_build21.zip has it.
+
+BUILD 22a: MUZZLE FLASHES (muzzleflash=on in mw2_guns_fixes.ini; off turns it off)
+MW2 guns use the firing effects (muzzle flash, smoke) of the closest BO6 gun, MW3 guns those of the closest BO7 gun; Pack-a-Punched guns too.
+The swap is undone before every zone unload and redone after, so no gun points at a freed BO7 gun.
+
+BUILD 22b: PACK-A-PUNCH MUZZLE FLASHES (papmuzzleflash=on in mw2_guns_fixes.ini; off turns it off)
+A Pack-a-Punched MW gun shows its donor's Pack-a-Punch flash (the pink one). BO6/BO7 guns get it from a VFX override entry keyed
+on their Pack-a-Punch attachment; each MW gun gets a copy of its override list with the donor's entry added. It goes after the
+gun's blueprint entries, where BO6/BO7 guns keep theirs, so a blueprint with its own flash keeps that flash.
+Before every zone unload the added entry is switched off, and the next pass switches it on again.
+
+BUILD 22c: PACK-A-PUNCH 4 EFFECTS (pap4effects=on in mw2_guns_fixes.ini; off turns it off; needs kronos\mods\mwcf_pap4)
+At PaP 4 the game gives a BO7 gun its _pack4 attachment: purple impacts, a new tracer and, on some guns, a PaP 4 muzzle flash.
+BO6, MW2 and MW3 guns have no _pack4. Each of 179 of them now gets <pack>4: a copy of its own _pack attachment (same stats) with
+the impacts, tracer and PaP 4 effect group of a similar BO7 gun (output\pack4-01\pack4_donors.json), plus that gun's PaP 4 flash.
+The mwcf_pap4 Kronos script swaps <pack>4 in at PaP 4, but only if a weapon built with it really has it.
+The donor's effects are taken out before every zone unload and put back after.
