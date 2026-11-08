@@ -292,3 +292,7 @@ BUILD 25 (release 1.3)
 - Balance pass reads memory with FastRead and takes the game lock per attachment (build 24 could stall a frame for ~0.9 s at zone loads).
 - The old BUILD WEAPON menu probes are removed (they filled poi_reg.log).
 - This DLL no longer runs its own sprint-fire code: mw2_guns_fixes.dll (loaded by hid.dll) does the sprint-fire fix.
+
+BUILD 26 (release 1.3.1)
+- Every memory read uses FastRead: the effects and Lockwood threads made hundreds of slow reads a second, some while holding the game lock (packet bursts, menu lag).
+- effects=off by default: the MW2 muzzle-flash swap never applies on this game version (every gun logs "packages differ").
