@@ -287,3 +287,8 @@ BUILD 24: ZOMBIES BALANCE (balance=on in mw2_guns.ini; balance=off turns it off)
   (about 25% for ARs, SMGs and shotguns, 19% for LMGs, 30-34% for pistols, about 60% for snipers; marksman rifles unchanged).
 - Lockwood 300 and Expedite 12: broken Pack-a-Punch range value fixed. BO6 guns: 4th Pack-a-Punch tier x10 -> x12.
 - Zombies only: multiplayer and Warzone stats are not changed. Wonder weapons are not changed.
+
+BUILD 25 (release 1.3)
+- Balance pass reads memory with FastRead and takes the game lock per attachment (build 24 could stall a frame for ~0.9 s at zone loads).
+- The old BUILD WEAPON menu probes are removed (they filled poi_reg.log).
+- This DLL no longer runs its own sprint-fire code: mw2_guns_fixes.dll (loaded by hid.dll) does the sprint-fire fix.

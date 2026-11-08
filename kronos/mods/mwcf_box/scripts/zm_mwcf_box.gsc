@@ -468,8 +468,11 @@ function mwcf_box_roll_ended(params)
         return;
     level.mwcf_box_v1.s_roll_ended_box = params.magicbox;
     if (istrue(level.mwcf_box_v1.s_roll_ended_box.var_402ae5c3e018c97f) || istrue(level.mwcf_box_v1.s_roll_ended_box.var_2e2b82eaf9ffc45f) ||
-        istrue(level.mwcf_box_v1.s_roll_ended_box.var_5875ea9ebe2e7c9d) || istrue(level.mwcf_box_v1.s_roll_ended_box.var_33270db3d4d4b6c3))
+        istrue(level.mwcf_box_v1.s_roll_ended_box.var_5875ea9ebe2e7c9d) || istrue(level.mwcf_box_v1.s_roll_ended_box.var_33270db3d4d4b6c3) ||
+        istrue(level.mwcf_box_v1.s_roll_ended_box.var_70598bcf767c22b6) || istrue(level.mwcf_box_v1.s_roll_ended_box.var_c472ba9c1811f8cf))
     {
+        // 1.4.1: wonder weapon (var_70598bcf767c22b6) and "ultra_red" (var_c472ba9c1811f8cf) results are kept like the other special
+        // results: they carry a special rarity, which an MW gun would otherwise inherit from the carrier item.
         mwcf_box_report("special_result_preserved");
         return;
     }
@@ -972,7 +975,6 @@ function mwcf_box_seed()
         "jup_jp22_la_dromeo_mp",
         "jup_jp32_pi_mpapa9_mp",
         "jup_la_plasmagun_mp",
-        "jup_pi_raygun_mp",
         "jup_cp01_sm_coscar635_mp",
         "jup_cp01_sm_pcharlie9_mp",
         "jup_jp02_sm_scharlie3_mp",
@@ -1492,10 +1494,6 @@ function mwcf_box_seed()
     level.mwcf_box_v1.groups["jup_la_plasmagun_mp"] = "weapon_projectile";
     level.mwcf_box_v1.likes["jup_la_plasmagun_mp"] = "sat_la_fang";
     level.mwcf_box_v1.parts["jup_la_plasmagun_mp"] = ["zm_la_ub_plasmagun", "zm_la_plasmagun"];
-    level.mwcf_box_v1.refs["jup_pi_raygun_mp"] = "jup_pi_raygun";
-    level.mwcf_box_v1.groups["jup_pi_raygun_mp"] = "weapon_pistol";
-    level.mwcf_box_v1.likes["jup_pi_raygun_mp"] = "sat_pi_alcor";
-    level.mwcf_box_v1.parts["jup_pi_raygun_mp"] = ["rec_raygun", "bar_raygun", "mag_raygun", "zm_pi_raygun"];
     level.mwcf_box_v1.refs["jup_cp01_sm_coscar635_mp"] = "jup_cp01_sm_coscar635";
     level.mwcf_box_v1.groups["jup_cp01_sm_coscar635_mp"] = "weapon_smg";
     level.mwcf_box_v1.likes["jup_cp01_sm_coscar635_mp"] = "sat_sm_bear";
