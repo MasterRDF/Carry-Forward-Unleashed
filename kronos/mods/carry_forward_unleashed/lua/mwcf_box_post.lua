@@ -78,6 +78,37 @@ do
     end
     S.pools_value = pools
     S.set_pools = setPools
+    -- 1.6.0 wall buys (test menu): one game for every weapon wall, dvar mwcf_wall_game = 1 BO7, 2 BO6, 3 MW3, 4 MW2. The compiled
+    -- script reads @"hash_908ab6945a7d6b37"; the launch settings carry that key and the one without the top bit.
+    local WALL_DV = "908ab6945a7d6b37"
+    local WALL_GAMES = { "BLACK OPS 7", "BLACK OPS 6", "MODERN WARFARE III", "MODERN WARFARE II" }
+    local function validWall(v) return type(v) == "number" and v == math.floor(v) and v >= 1 and v <= 4 end
+    local function wallGame()
+      if validWall(S.wall) then return S.wall end
+      local v = read(WALL_DV)
+      if validWall(v) then return v end
+      v = read(alt(WALL_DV))
+      if validWall(v) then return v end
+      return 1
+    end
+    local function setWall(v)
+      if not validWall(v) then return false end
+      S.wall = v
+      pcall(function() Dvar[H("1e3cb005036e0c0f")](H(WALL_DV, 1), tostring(v)) end)
+      exec("seta mwcf_wall_game " .. v)
+      log("wall buys now " .. v .. " (" .. WALL_GAMES[v] .. ")")
+      return true
+    end
+    local function cycleWall()
+      local v = wallGame() % 4 + 1
+      setWall(v)
+      return v
+    end
+    local function wallLabel() return "WALL BUYS: " .. WALL_GAMES[wallGame()] end
+    S.wall_value = wallGame
+    S.set_wall = setWall
+    S.cycle_wall = cycleWall
+    S.wall_label = wallLabel
     -- A checkbox press: flips one game; the last checked game stays on. Returns the pools after it.
     local function toggle(bit)
       local v = pools()
@@ -97,14 +128,19 @@ do
       local start = rawget(_G, "LUMEN_ZM_LOCAL_START")
       local req = type(start) == "table" and start.request
       if type(req) ~= "table" or type(req.record) ~= "table" then return end
-      local v, stock = pools(), stockMode()
-      if req.mwcfBoxPools == v and req.mwcfStockBoxMode == stock then return end
+      local v, stock, wall = pools(), stockMode(), wallGame()
+      if req.mwcfBoxPools == v and req.mwcfStockBoxMode == stock and req.mwcfWallGame == wall then return end
       local record, config = {}, {}
       for k, x in pairs(req.record) do record[k] = x end
+      local drop = { ["0x" .. POOLS_DV] = true, ["0x" .. BOX_DV] = true, ["0x" .. MODE_DV] = true, ["0x" .. WALL_DV] = true, ["0x" .. alt(WALL_DV)] = true }
       for _, entry in ipairs(req.record.configuration or {}) do
-        if type(entry) ~= "table" or (entry.key ~= "0x" .. POOLS_DV and entry.key ~= "0x" .. BOX_DV and entry.key ~= "0x" .. MODE_DV) then
+        if type(entry) ~= "table" or not drop[entry.key] then
           config[#config + 1] = entry
         end
+      end
+      for _, hex in ipairs({ WALL_DV, alt(WALL_DV) }) do
+        config[#config + 1] = { key = "0x" .. hex, console_key = "#x3" .. hex, kind = "string", value = tostring(wall),
+          consumer_default = "1", required = false }
       end
       config[#config + 1] = { key = "0x" .. POOLS_DV, console_key = "#x3" .. POOLS_DV, kind = "string", value = tostring(v),
         consumer_default = tostring(ALL), required = false }
@@ -114,6 +150,7 @@ do
       req.record = record
       req.mwcfBoxPools = v
       req.mwcfStockBoxMode = stock
+      req.mwcfWallGame = wall
     end
 
     -- The menu.
@@ -121,7 +158,7 @@ do
     local MAP_SELECTION = "0xb87e923e71d969f0"
     local BUTTON = "3246871af1e086b7"
     local TITLE = "MYSTERY BOX"
-    local DESC = "Choose which games' guns the Mystery Box can give. Every gun in the checked games is equally likely. At least one game stays checked."
+    local DESC = "Choose which games' guns the Mystery Box can give. Every gun in the checked games is equally likely. At least one game stays checked. WALL BUYS picks the game every weapon wall sells (press it to switch); prices stay the same."
     local function children(el)
       local out = {}
       local ok, c = pcall(function() return el:getFirstChild() end)
@@ -352,6 +389,44 @@ do
         end)
         if not okb then log("checkbox failed for " .. g.label .. ": " .. tostring(eb)) end
       end
+      -- 1.6.0 test control: WALL BUYS, one button under the games that cycles BO7 -> BO6 -> MW3 -> MW2 on each press.
+      local okw, ew = pcall(function()
+        local btn = MenuBuilder.BuildRegisteredType(H(BUTTON), { controllerIndex = c })
+        local y = 192 + #GAMES * 72 + 24
+        btn:SetAnchorsAndPosition(0, 1, 0, 1, 87, 511, y, y + 64)
+        local labels = {}
+        for _, k in ipairs({ "39f7fcec8fcb623d", "69f6cc5b1a5cbb83" }) do
+          local el = get(btn, H(k))
+          local set = el and get(el, "setText")
+          if type(set) == "function" then
+            labels[#labels + 1] = { el = el, set = set }
+            pcall(set, el, wallLabel())
+            pcall(function() el.setText = function() end end)
+          end
+        end
+        for _, m in ipairs({ "SetHandleMouse", "setHandleMouse", "SetHandleMouseButton", "setHandleMouseButton" }) do
+          local f = get(btn, m)
+          if type(f) == "function" then pcall(f, btn, true) end
+        end
+        local lastFire = -1
+        local function fire()
+          local clk = (type(os) == "table" and os.clock) and os.clock() or nil
+          if clk then if clk - lastFire < 0.4 then return end; lastFire = clk end
+          cycleWall()
+          for _, l in ipairs(labels) do pcall(l.set, l.el, wallLabel()) end
+        end
+        for _, how in ipairs({ "addEventHandler", "registerEventHandler" }) do
+          if hasMethod(btn, how) then pcall(btn[how], btn, H("e7eefe998522ec88"), function() fire() end) end
+        end
+        menu:addElement(btn)
+        if prev and link and dirs then
+          pcall(link, prev, btn, dirs[H("dc04126761bb7455")])
+          pcall(link, btn, prev, dirs[H("08c43a07b566d980")])
+        end
+        prev = btn
+        S.wallButtonFire = fire
+      end)
+      log("pools menu: wall buys button " .. (okw and ("added, " .. wallLabel()) or ("failed: " .. tostring(ew))))
       if first then pcall(function() menu:SetDefaultFocusToElement(first) end) end
       log("pools menu: " .. built .. " games, " .. checkboxes .. " game checkboxes, pools " .. pools())
       return built > 0
@@ -741,7 +816,7 @@ do
       end
     end
     install()
-    log("1.5.12 loaded, pools " .. pools())
+    log("1.6.0-wall-01 loaded, pools " .. pools() .. ", wall buys " .. wallGame())
     return true
   end
   -- Mod post scripts can run before ui/LUIFPSCounter creates KRONOS.H: keep a bootstrap until it exists.
