@@ -1,7 +1,0 @@
-{
-    "name": "MW loadout guns in Zombies",
-    "author": "mw2_guns",
-    "version": "2",
-    "type": "script",
-    "description": "Gives your MW2/MW3 loadout primary and secondary in Zombies when the game leaves them out (it builds them from your class or your gunsmith build). Log: kronos\\mw_zm_loadout\\status.json. Delete this folder to remove it."
-}

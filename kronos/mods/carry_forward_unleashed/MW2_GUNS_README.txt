@@ -1,6 +1,6 @@
 MW2 guns: Modern Warfare II weapons in Kronos's BO6 loadouts, gunsmith and Zombies builds
 For cod25-cod.exe sha256 starting b0b12b0e7ec25ce8, run with Kronos's own files (made against Kronos v1.41).
-mw2_guns.dll is build 28, hid.dll is loader 1, from 2026-11-08. Made from the MW-Carry-Forward-0.7.0-test package.
+mw2_guns.dll is build 29d, hid.dll is loader 1, from 2026-11-08. Made from the MW-Carry-Forward-0.7.0-test package.
 
 78 weapons: 15 assault rifles, 12 SMGs, 6 LMGs, 8 pistols, 6 shotguns, 7 sniper rifles, 13 marksman rifles (the battle
 rifles and the crossbow are listed with them), 5 launchers and 6 melee weapons. Each keeps its own name, model, sounds,
@@ -309,3 +309,33 @@ BUILD 28
   stopped giving them, and loading in with an MW gun could crash. The check now only writes a note to mw2_guns.log, and a
   menus_failed.txt left by an older build is deleted at start.
 - FastRead skips addresses below 64 KB, so the crash logger no longer writes caught faults as "CRASH ... mw2_guns.dll+138a6".
+
+BUILD 29
+- Zombies ammo (ammo=on in mw2_guns.ini; off leaves it). BO6/BO7 Zombies attachments point at an ammo block at +0x400 (max reserve,
+  start reserve, clip override). The MW3 Zombies attachments the MW guns use have none, so in Zombies they kept their multiplayer
+  reserve (a rifle 180 max / 90 at start) and Pack-a-Punch barely added any. 233 of them get a BO7-style block: the gun's magazine
+  (weapon tunables +0x5d48, x the Pack-a-Punch clip scale) times its class's BO7 reserve per magazine, kept inside the range BO7's
+  own guns of that class use (gen_ammo.py; e.g. M4 324/252, Pack-a-Punched 840/720; Lockwood 300 60/40; Kar98k 72/56).
+  The BO6 Olympia's base block was the melee template (100 max, 0 at start: no reserve); it starts with 40 of 40 now.
+  Each attachment is only changed while it still holds exactly what the export had. Launchers without tunables are left alone.
+- Menus: BO7's own PPSh (Bloodthirsty Papasha), MP40 (The Dreadful Dresden) and Olympia (Stormwrought Pantheon), hidden guns
+  Kronos added to the lists, are left out; the BO6 Olympia gets the Marine SP's menu class, so it is with the BO6 shotguns.
+
+
+BUILD 29b
+- Build 29's ammo blocks came out 2-3x too high on Pack-a-Punched MW guns (.50 GS 504, M4 2520): the game multiplies a block's
+  reserve by the attachment's own reserve scale (+0xb94; MW3 Zombies set x2 on 71 and x3 on 22 MW Pack-a-Punch attachments). Each
+  block now holds its target divided by that scale (0/unset counts as x1), so in game the .50 GS gets 252/210, the M4 840/720.
+
+BUILD 29c
+- Ammo closer to BO7's guns: each MW gun takes the in-game reserve (block x the attachment's reserve scale) of the BO7 guns of its
+  class with the nearest magazine (base and Pack-a-Punched separately), moved by the magazine difference but no more than 15% either
+  way; 29b scaled from one BO7 gun per class (pistols: the 1911) and overshot big magazines (the Renetti had 100+ more than the
+  Velox when Pack-a-Punched; now 130/91 base and 338/260 Pack-a-Punched against the Velox's 150/105 and 390/300). Pack-a-Punch never
+  lowers a reserve below the gun's base; _pap attachments (M1911, three more) count as Pack-a-Punch.
+
+BUILD 29d
+- MW guns no longer share reserves by Warzone ammo type (the Renetti emptied the Lachmann Sub's reserve; MTZ-556 and FR 5.56).
+  Of the weapon settings, only the byte at weapon def +0x19ce is on for every MW gun (164) and off for every BO6/BO7 gun, which do
+  not share; it is switched off (mw2_guns.ini sharedreserve=off, the default; on keeps Warzone's sharing). Inferred from the data,
+  not yet confirmed in game. It changes the guns in every mode, not only Zombies.

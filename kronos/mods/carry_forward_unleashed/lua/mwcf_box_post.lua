@@ -390,6 +390,178 @@ do
     end
     S.open = openPools
 
+    -- 1.5.9: the Zombies Confirm Loadout screen (ZMLoadoutConfirmation, before a match) gets a MYSTERY BOX LOADOUT button under
+    -- EDIT AUGMENTS that opens the same menu. Its buttons are found by their text once the screen is built; the new one copies
+    -- EDIT AUGMENTS's anchors and sits one row lower (the EDIT LOADOUT -> EDIT AUGMENTS step).
+    local CONFIRM, CONFIRM_HASH = "ZMLoadoutConfirmation", "51330ed90c8b545d"
+    local LABEL_KEYS = { "39f7fcec8fcb623d", "69f6cc5b1a5cbb83" }
+    S.confirmDone = S.confirmDone or setmetatable({}, { __mode = "k" })
+    local function textOf(el)
+      local gt = get(el, "getText")
+      if type(gt) ~= "function" then return nil end
+      local ok, t = pcall(gt, el)
+      if ok and type(t) == "string" then return t:gsub("%^.", ""):upper() end
+    end
+    local function findTexts(root, out, depth)
+      depth = depth or 1
+      if depth > 9 then return out end
+      for _, ch in ipairs(children(root)) do
+        local t = textOf(ch)
+        if t and #t > 0 then out[#out + 1] = { el = ch, text = t } end
+        findTexts(ch, out, depth + 1)
+      end
+      return out
+    end
+    -- The button that holds a text element: the nearest ancestor whose label field is that element, else its parent.
+    local function buttonOf(textEl)
+      local cur = textEl
+      for _ = 1, 5 do
+        local okP, p = pcall(function() return cur:getParent() end)
+        if not okP or p == nil then break end
+        for _, k in ipairs(LABEL_KEYS) do
+          if get(p, H(k)) == textEl or get(p, H(alt(k))) == textEl then return p end
+        end
+        cur = p
+      end
+      local okP, p = pcall(function() return textEl:getParent() end)
+      return okP and p or nil
+    end
+    -- An element's place in its parent as SetAnchorsAndPosition's eight values: from GetAnchorsAndPosition when it gives eight
+    -- numbers, else (1.5.12; the 1.5.11 game log: not found) from getLocalRect's left, top, right, bottom, anchored to the parent's
+    -- top left the way the pools menu places its rows (0, 1, 0, 1). what says what each call gave, for the log.
+    local function anchors(el, what)
+      local f = get(el, "GetAnchorsAndPosition")
+      if type(f) == "function" then
+        local r = pack(pcall(f, el))
+        local types = {}
+        for i = 2, math.min(r.n, 10) do types[#types + 1] = type(r[i]) == "number" and tostring(r[i]) or type(r[i]) end
+        if what then what[#what + 1] = "GetAnchorsAndPosition " .. tostring(r[1]) .. " (" .. table.concat(types, ",") .. ")" end
+        if r[1] and r.n >= 9 then
+          local v, ok = {}, true
+          for i = 2, 9 do if type(r[i]) ~= "number" then ok = false end; v[#v + 1] = r[i] end
+          if ok then return v end
+        end
+        if r[1] and type(r[2]) == "table" then
+          local t, v = r[2], {}
+          for i = 1, 8 do v[i] = t[i] end
+          if type(v[8]) == "number" then return v end
+        end
+      elseif what then
+        what[#what + 1] = "no GetAnchorsAndPosition"
+      end
+      local g = get(el, "getLocalRect")
+      if type(g) == "function" then
+        local r = pack(pcall(g, el))
+        if what then what[#what + 1] = "getLocalRect " .. tostring(r[1]) .. " (" .. tostring(r[2]) .. "," .. tostring(r[3]) .. "," .. tostring(r[4]) .. "," .. tostring(r[5]) .. ")" end
+        if r[1] and type(r[2]) == "number" and type(r[3]) == "number" and type(r[4]) == "number" and type(r[5]) == "number" then
+          return { 0, 1, 0, 1, r[2], r[4], r[3], r[5] }
+        end
+      elseif what then
+        what[#what + 1] = "no getLocalRect"
+      end
+      return nil
+    end
+    -- Position-related method names an element has (for the log when its position cannot be read).
+    local function placeMethods(el)
+      local out, seen = {}, {}
+      local okM, mt = pcall(getmetatable, el)
+      local depth = 0
+      while okM and type(mt) == "table" and depth < 6 do
+        local idx = rawget(mt, "__index")
+        if type(idx) ~= "table" then break end
+        for k, v in pairs(idx) do
+          if type(k) == "string" and type(v) == "function" and not seen[k] then
+            local l = k:lower()
+            if l:find("rect") or l:find("anchor") or l:find("pos") or l:find("top") or l:find("left") or l:find("height") or l:find("width") then
+              seen[k] = true; out[#out + 1] = k
+            end
+          end
+        end
+        okM, mt = pcall(getmetatable, idx)
+        depth = depth + 1
+      end
+      table.sort(out)
+      return table.concat(out, ",")
+    end
+    local function addConfirmButton(menu, data)
+      if menu == nil or S.confirmDone[menu] then return end
+      local texts = findTexts(menu, {})
+      local aug, load, ready
+      for _, t in ipairs(texts) do
+        if not aug and t.text:find("AUGMENT", 1, true) then aug = t end
+        if not load and t.text:find("EDIT LOADOUT", 1, true) then load = t end
+        if not ready and t.text:find("READY", 1, true) then ready = t end
+      end
+      if not aug then
+        -- 1.5.11: the texts may be filled in after the screen is built; later UI builds try again.
+        if S.confirmRetry ~= menu then
+          local seen = {}
+          for i = 1, math.min(#texts, 12) do seen[#seen + 1] = texts[i].text end
+          log("confirm loadout: no EDIT AUGMENTS text yet (" .. #texts .. " texts: " .. table.concat(seen, " | ") .. "); trying again on later UI builds")
+        end
+        S.confirmRetry = menu
+        S.confirmRetries = (S.confirmRetries or 0) + 1
+        return
+      end
+      S.confirmRetry = nil
+      S.confirmDone[menu] = true
+      local augBtn, loadBtn, readyBtn = buttonOf(aug.el), load and buttonOf(load.el), ready and buttonOf(ready.el)
+      local parent = augBtn and get(augBtn, "getParent") and augBtn:getParent()
+      local what = {}
+      local a, b = augBtn and anchors(augBtn, what), loadBtn and anchors(loadBtn)
+      if not (augBtn and parent and a) then
+        log("confirm loadout: EDIT AUGMENTS button or its position not found (button " .. tostring(augBtn ~= nil) .. ", parent " ..
+          tostring(parent ~= nil) .. "; " .. table.concat(what, "; ") .. "; methods: " .. (augBtn and placeMethods(augBtn) or "-") .. ")")
+        return
+      end
+      local step = (b and a[7] - b[7] ~= 0) and (a[7] - b[7]) or (a[8] - a[7]) + 8
+      local c = (type(data) == "table" and data.controllerIndex) or ctrl()
+      local req = rawget(_G, "requirexhash")
+      if type(req) == "function" then pcall(req, H(BUTTON)) end
+      local okB, btn = pcall(MenuBuilder.BuildRegisteredType, H(BUTTON), { controllerIndex = c })
+      if not okB or btn == nil then log("confirm loadout: button failed: " .. tostring(btn)); return end
+      pcall(function() btn:SetAnchorsAndPosition(a[1], a[2], a[3], a[4], a[5], a[6], a[7] + step, a[8] + step) end)
+      for _, k in ipairs(LABEL_KEYS) do
+        local el = get(btn, H(k))
+        local set = el and get(el, "setText")
+        if type(set) == "function" then
+          pcall(set, el, "MYSTERY BOX LOADOUT")
+          pcall(function() el.setText = function() end end)
+        end
+      end
+      for _, m in ipairs({ "SetHandleMouse", "setHandleMouse", "SetHandleMouseButton", "setHandleMouseButton" }) do
+        local fm = get(btn, m)
+        if type(fm) == "function" then pcall(fm, btn, true) end
+      end
+      local lastFire = -1
+      local function fire()
+        local clk = (type(os) == "table" and os.clock) and os.clock() or nil
+        if clk then if clk - lastFire < 0.4 then return end; lastFire = clk end
+        log("confirm loadout: MYSTERY BOX LOADOUT pressed")
+        openPools(c)
+      end
+      for _, how in ipairs({ "addEventHandler", "registerEventHandler" }) do
+        if hasMethod(btn, how) then pcall(btn[how], btn, H("e7eefe998522ec88"), function() fire() end) end
+      end
+      local okA, eA = pcall(function() parent:addElement(btn) end)
+      if not okA then log("confirm loadout: could not add the button: " .. tostring(eA)); return end
+      local EBU = rawget(_G, "ElementAndButtonUtils")
+      local link, dirs
+      pcall(function() link = EBU[H("042b31d442266478c")]; dirs = EBU[H("075992a095c731b0c")] end)
+      if link and dirs then
+        local down, up = dirs[H("dc04126761bb7455")], dirs[H("08c43a07b566d980")]
+        pcall(link, augBtn, btn, down)
+        pcall(link, btn, augBtn, up)
+        if readyBtn then
+          pcall(link, btn, readyBtn, down)
+          pcall(link, readyBtn, btn, up)
+        end
+      end
+      log(string.format("confirm loadout: MYSTERY BOX LOADOUT added under EDIT AUGMENTS (anchors %s, step %s, ready up %s)",
+        table.concat(a, ","), tostring(step), tostring(readyBtn ~= nil)))
+    end
+    S.addConfirmButton = addConfirmButton
+
     -- The Weapons row.
     local TAB_FN = "2e5272f250111d6e"
     local KEY = { mp = "08a94a07b5502cf8", weapons = "41cbd901b87fabb6", cac = "75e2f4190ce482de", tab = "0b4a26ecab469bf2",
@@ -507,7 +679,35 @@ do
             pcall(hookTab); pcall(patchLaunch)
             local r = pack(orig(name, ...))
             pcall(patchLaunch)
+            if r.n >= 1 and (same(name, X(CONFIRM)) or same(name, H(CONFIRM_HASH)) or same(name, H(alt(CONFIRM_HASH)))) then
+              if not S.confirmSeenBuild then S.confirmSeenBuild = true; log("confirm loadout: screen built through MenuBuilder.BuildRegisteredType") end
+              local okC, eC = pcall(addConfirmButton, r[1], (...))
+              if not okC then log("confirm loadout: " .. tostring(eC)) end
+            elseif S.confirmRetry ~= nil and (S.confirmRetries or 0) < 300 then
+              local okC, eC = pcall(addConfirmButton, S.confirmRetry, nil)
+              if not okC then S.confirmRetry = nil; log("confirm loadout: " .. tostring(eC)) end
+            end
             return unpack(r, 1, r.n)
+          end
+        end
+        -- 1.5.11: the screen's own builder, wrapped when the game registers it, in case the game builds the screen without going
+        -- through MenuBuilder.BuildRegisteredType.
+        if type(MB) == "table" and type(MB.registerType) == "function" and not hooked.registerType then
+          hooked.registerType = true
+          local origReg = MB.registerType
+          MB.registerType = function(name, fn, ...)
+            if type(fn) == "function" and (same(name, X(CONFIRM)) or same(name, H(CONFIRM_HASH)) or same(name, H(alt(CONFIRM_HASH)))) then
+              local inner = fn
+              fn = function(...)
+                local r = pack(inner(...))
+                if not S.confirmSeenType then S.confirmSeenType = true; log("confirm loadout: screen built through its registered builder") end
+                local okC, eC = pcall(addConfirmButton, r[1], (select(2, ...)))
+                if not okC then log("confirm loadout: " .. tostring(eC)) end
+                return unpack(r, 1, r.n)
+              end
+              log("confirm loadout: screen type registered; its builder is wrapped")
+            end
+            return origReg(name, fn, ...)
           end
         end
         local P = rawget(_G, "Playlist")
@@ -541,7 +741,7 @@ do
       end
     end
     install()
-    log("1.5.6 loaded, pools " .. pools())
+    log("1.5.12 loaded, pools " .. pools())
     return true
   end
   -- Mod post scripts can run before ui/LUIFPSCounter creates KRONOS.H: keep a bootstrap until it exists.
