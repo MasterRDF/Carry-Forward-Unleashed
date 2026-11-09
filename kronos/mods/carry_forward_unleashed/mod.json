@@ -1,7 +1,7 @@
 {
     "name": "Carry Forward Unleashed",
     "author": "MasterRDF",
-    "version": "1.5",
+    "version": "1.5.0.1",
     "type": "mode",
     "description": "Modern Warfare II and III guns in Black Ops 7 menus, loadouts and Zombies: the Mystery Box Loadout menu (choose which games the box gives), weapon lists grouped by game, Pack-a-Punch, BO7-style Zombies ammo and loadout guns in Zombies. Needs hid.dll (loader 3) in the cod25 folder, which loads this folder's mw2_guns.dll. Switching the mod on or off takes full effect after restarting the game. Logs: kronos\\Logs\\mw2_guns*.log."
 }
