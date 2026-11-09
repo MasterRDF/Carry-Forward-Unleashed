@@ -45,6 +45,8 @@ autoexec mwcf_box_init()
     level.mwcf_box_v1.loot_attempts = 0;
     level.mwcf_box_v1.collectible_parts_differ = 0;
     level.mwcf_box_v1.backup_used = 0;
+    level.mwcf_box_v1.melee_drops = 0;
+    level.mwcf_box_v1.ammo_restores = 0;
     level.mwcf_box_v1.not_ready_substituted = 0;
     level.mwcf_box_v1.purchase_parts_differ = 0;
     level.mwcf_box_v1.refs = [];
@@ -85,6 +87,11 @@ function mwcf_box_start()
     mwcf_box_save_mode();
     mwcf_box_hooks();
     mwcf_box_report("probe_ready");
+    if (!isdefined(level.mwcf_box_v1.ammo_started))
+    {
+        level.mwcf_box_v1.ammo_started = 1;
+        level thread mwcf_ammo_loop();
+    }
     for (;;)
     {
         wait 2;
@@ -437,7 +444,6 @@ function mwcf_box_pick_observer(player, arg1, arg2)
         mwcf_box_preparation_status("pool_empty", 1);
         return undefined;
     }
-    level.mwcf_box_v1.s_pick_observer_start = randomint(level.mwcf_box_v1.s_pick_observer_count);
     level.mwcf_box_v1.s_pick_observer_step = 0;
     level.mwcf_box_v1.s_pick_observer_tries = 0;
     level.mwcf_box_v1.s_pick_observer_backup = undefined;
@@ -445,7 +451,13 @@ function mwcf_box_pick_observer(player, arg1, arg2)
     // uses whichever is loaded (build 16 live: 1 in 5 spins kept stock when one model was late).
     while (level.mwcf_box_v1.s_pick_observer_step < level.mwcf_box_v1.s_pick_observer_count && level.mwcf_box_v1.s_pick_observer_tries < 6)
     {
-        level.mwcf_box_v1.s_pick_observer_name = level.mwcf_box_v1.loaded[(level.mwcf_box_v1.s_pick_observer_start + level.mwcf_box_v1.s_pick_observer_step) % level.mwcf_box_v1.s_pick_observer_count];
+        // 1.5.7: draw without replacement (a lazy shuffle of the roster) so every gun of the rolled game is equally likely. The old
+        // random start + walk landed in the other game's block about half the time and then always took the first gun after it
+        // (the FR 5.56 for MW3, the M4 for MW2); a skipped owned gun likewise doubled the next gun's chance.
+        level.mwcf_box_v1.s_pick_observer_swap = level.mwcf_box_v1.s_pick_observer_step + randomint(level.mwcf_box_v1.s_pick_observer_count - level.mwcf_box_v1.s_pick_observer_step);
+        level.mwcf_box_v1.s_pick_observer_name = level.mwcf_box_v1.loaded[level.mwcf_box_v1.s_pick_observer_swap];
+        level.mwcf_box_v1.loaded[level.mwcf_box_v1.s_pick_observer_swap] = level.mwcf_box_v1.loaded[level.mwcf_box_v1.s_pick_observer_step];
+        level.mwcf_box_v1.loaded[level.mwcf_box_v1.s_pick_observer_step] = level.mwcf_box_v1.s_pick_observer_name;
         level.mwcf_box_v1.s_pick_observer_step++;
         if (level.mwcf_box_v1.games[level.mwcf_box_v1.s_pick_observer_name] != self.mwcf_box_game)
             continue;
@@ -606,6 +618,7 @@ function mwcf_box_roll_ended(params)
         return;
     level.mwcf_box_v1.s_roll_ended_box.mwcf_box_source_name = level.mwcf_box_v1.s_roll_ended_bundle.var_9b52b5f3085ca117;
     level.mwcf_box_v1.s_roll_ended_box.mwcf_box_applied = 0;
+    level.mwcf_box_v1.s_roll_ended_box.mwcf_box_dropped = 0;
     level.mwcf_box_v1.s_roll_ended_box.mwcf_box_time = function_83bf4b34fbbe124b();
     level.mwcf_box_v1.s_roll_ended_box.mwcf_box_pending = 1;
     mwcf_box_queue(level.mwcf_box_v1.s_roll_ended_box);
@@ -618,6 +631,13 @@ function mwcf_box_before_item_spawn(params)
     level.mwcf_box_v1.item_calls++;
     if (!isdefined(params.var_2e6e9a693fc8e85d) || !isdefined(params.var_667bd6c04dd0ccb9))
         return;
+    // 1.5.7: a melee on the box drops its gun for a teammate. Stock spawns that copy from the carrier item with a dropped-item
+    // placement and no weapon yet; a player's own weapon drop sets the same flag but carries its weapon.
+    if (istrue(params.var_2e6e9a693fc8e85d.var_90cdc5dbcd319e5d) && !isdefined(params.var_2e6e9a693fc8e85d.weapon))
+    {
+        mwcf_box_melee_drop(params);
+        return;
+    }
     level.mwcf_box_v1.s_before_item_spawn_placement = params.var_2e6e9a693fc8e85d;
     level.mwcf_box_v1.s_before_item_spawn_mwcf_index_0 = 0;
     while (level.mwcf_box_v1.s_before_item_spawn_mwcf_index_0 < level.mwcf_box_v1.pending_boxes.size)
@@ -653,6 +673,43 @@ function mwcf_box_before_item_spawn(params)
         level.mwcf_box_v1.s_before_item_spawn_box.mwcf_box_applied = 1;
         level.mwcf_box_v1.s_before_item_spawn_box.mwcf_box_pending = 0;
         mwcf_box_report("probe_placement_applied");
+        return;
+    }
+}
+
+// 1.5.7: the melee drop (stock magicbox function_d6cb29bad3ee9a9) spawns the floor copy from the box's carrier item, so without
+// this the copy was the carrier's BO gun. The box that showed an MW gun from this carrier in the last 20 s gives its gun, once.
+function mwcf_box_melee_drop(params)
+{
+    level.mwcf_box_v1.s_melee_drop_bundle = params.var_667bd6c04dd0ccb9;
+    if (function_5bcadc7363faf452(level.mwcf_box_v1.s_melee_drop_bundle))
+        level.mwcf_box_v1.s_melee_drop_bundle = function_6071eb16b74b2e99(level.mwcf_box_v1.s_melee_drop_bundle);
+    if (!isdefined(level.mwcf_box_v1.s_melee_drop_bundle) || !isdefined(level.mwcf_box_v1.s_melee_drop_bundle.var_9b52b5f3085ca117))
+        return;
+    level.mwcf_box_v1.s_melee_drop_index = 0;
+    while (level.mwcf_box_v1.s_melee_drop_index < level.mwcf_box_v1.pending_boxes.size)
+    {
+        level.mwcf_box_v1.s_melee_drop_box = level.mwcf_box_v1.pending_boxes[level.mwcf_box_v1.s_melee_drop_index];
+        level.mwcf_box_v1.s_melee_drop_index++;
+        if (!isdefined(level.mwcf_box_v1.s_melee_drop_box) || !istrue(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_applied) || istrue(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_dropped))
+            continue;
+        if (!isdefined(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_game) || level.mwcf_box_v1.s_melee_drop_box.mwcf_box_game < 3 || !isdefined(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_weapon))
+            continue;
+        if (function_83bf4b34fbbe124b() - level.mwcf_box_v1.s_melee_drop_box.mwcf_box_time > 20000)
+            continue;
+        if (level.mwcf_box_v1.s_melee_drop_box.mwcf_box_source_name != level.mwcf_box_v1.s_melee_drop_bundle.var_9b52b5f3085ca117)
+            continue;
+        mwcf_box_register_loot(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_weapon, level.mwcf_box_v1.s_melee_drop_bundle, params.var_667bd6c04dd0ccb9);
+        params.var_2e6e9a693fc8e85d.weapon = level.mwcf_box_v1.s_melee_drop_box.mwcf_box_weapon;
+        level.mwcf_box_v1.s_melee_drop_box.mwcf_box_dropped = 1;
+        level.mwcf_box_v1.melee_drops++;
+        // Whoever picks the floor copy up gets the rarity the box showed (see mwcf_box_purchased).
+        if (isdefined(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_player) && isdefined(level.mwcf_box_v1.s_melee_drop_box.mwcf_box_player.mwcf_box_expected))
+        {
+            level.mwcf_box_v1.shared_expected = level.mwcf_box_v1.s_melee_drop_box.mwcf_box_player.mwcf_box_expected;
+            level.mwcf_box_v1.shared_expected.revealed_at = function_83bf4b34fbbe124b();
+        }
+        mwcf_box_report("melee_drop_applied");
         return;
     }
 }
@@ -780,6 +837,11 @@ function mwcf_box_revealed(params)
 
 function mwcf_box_purchased(params)
 {
+    if (!isdefined(self.mwcf_box_expected) && isdefined(level.mwcf_box_v1.shared_expected))
+    {
+        self.mwcf_box_expected = level.mwcf_box_v1.shared_expected;
+        level.mwcf_box_v1.shared_expected = undefined;
+    }
     if (!isdefined(self.mwcf_box_expected))
         return;
     if (function_83bf4b34fbbe124b() - self.mwcf_box_expected.revealed_at > 60000)
@@ -835,10 +897,135 @@ function mwcf_box_verify_inventory()
     }
 }
 
+// 1.5.10: each MW gun keeps its own reserve. In this game MW guns of one caliber share a single reserve (the Renetti, X12 and
+// BAS-P drained each other, Reid 2026-11-08), and nothing in the guns' own or caliber data changes that (mw2_guns 29d-29f). Only the
+// gun in hand can use ammo, so the reserve of the MW gun in hand is noted every 0.2 s and switching to an MW gun puts its own back.
+// A refill to full that shows on any carried MW gun (Max Ammo, an ammo crate, Pack-a-Punch) counts for all of them: a gun put away
+// before it comes back full. A gun no longer carried is forgotten, so one bought again starts with what the game gives it.
+function mwcf_ammo_loop()
+{
+    for (;;)
+    {
+        wait 0.2;
+        if (!isdefined(level.players))
+            continue;
+        level.mwcf_box_v1.s_ammo_i = 0;
+        while (level.mwcf_box_v1.s_ammo_i < level.players.size)
+        {
+            level.mwcf_box_v1.s_ammo_p = level.players[level.mwcf_box_v1.s_ammo_i];
+            level.mwcf_box_v1.s_ammo_i++;
+            if (isdefined(level.mwcf_box_v1.s_ammo_p) && isalive(level.mwcf_box_v1.s_ammo_p))
+                level.mwcf_box_v1.s_ammo_p mwcf_ammo_tick();
+        }
+    }
+}
+
+function mwcf_ammo_key(w)
+{
+    if (!isdefined(w))
+        return undefined;
+    if (isdefined(w.basename) && isdefined(level.mwcf_box_v1.games[w.basename]))
+        return w.basename;
+    if (isdefined(w.var_1b57e3034f84a054) && isdefined(level.mwcf_box_v1.games[w.var_1b57e3034f84a054]))
+        return w.var_1b57e3034f84a054;
+    return undefined;
+}
+
+function mwcf_ammo_tick()
+{
+    if (!isdefined(self.mwcf_ammo_stock))
+    {
+        self.mwcf_ammo_stock = [];
+        self.mwcf_ammo_from = [];
+        self.mwcf_ammo_seen = [];
+        self.mwcf_ammo_mark = [];
+        self.mwcf_ammo_keys = [];
+        self.mwcf_ammo_epoch = 0;
+        self.mwcf_ammo_tickid = 0;
+    }
+    self.mwcf_ammo_list = self getweaponslistprimaries();
+    if (!isdefined(self.mwcf_ammo_list))
+        return;
+    self.mwcf_ammo_tickid++;
+    self.mwcf_ammo_now = [];
+    self.mwcf_ammo_refilled = 0;
+    // Every carried MW gun: new ones are noted with what they have; a reserve that rose to full on its own is a refill.
+    self.mwcf_ammo_j = 0;
+    while (self.mwcf_ammo_j < self.mwcf_ammo_list.size)
+    {
+        self.mwcf_ammo_w = self.mwcf_ammo_list[self.mwcf_ammo_j];
+        self.mwcf_ammo_j++;
+        self.mwcf_ammo_k = mwcf_ammo_key(self.mwcf_ammo_w);
+        if (!isdefined(self.mwcf_ammo_k))
+            continue;
+        self.mwcf_ammo_now[self.mwcf_ammo_now.size] = self.mwcf_ammo_k;
+        self.mwcf_ammo_mark[self.mwcf_ammo_k] = self.mwcf_ammo_tickid;
+        self.mwcf_ammo_pool = self getweaponammostock(self.mwcf_ammo_w);
+        if (!isdefined(self.mwcf_ammo_stock[self.mwcf_ammo_k]))
+        {
+            self.mwcf_ammo_stock[self.mwcf_ammo_k] = self.mwcf_ammo_pool;
+            self.mwcf_ammo_from[self.mwcf_ammo_k] = self.mwcf_ammo_epoch;
+        }
+        else if (isdefined(self.mwcf_ammo_seen[self.mwcf_ammo_k]) && self.mwcf_ammo_pool > self.mwcf_ammo_seen[self.mwcf_ammo_k] &&
+            self.mwcf_ammo_pool >= weaponmaxammo(self.mwcf_ammo_w))
+            self.mwcf_ammo_refilled = 1;
+        self.mwcf_ammo_seen[self.mwcf_ammo_k] = self.mwcf_ammo_pool;
+    }
+    // Guns no longer carried are forgotten.
+    self.mwcf_ammo_j = 0;
+    while (self.mwcf_ammo_j < self.mwcf_ammo_keys.size)
+    {
+        self.mwcf_ammo_k = self.mwcf_ammo_keys[self.mwcf_ammo_j];
+        self.mwcf_ammo_j++;
+        if (self.mwcf_ammo_mark[self.mwcf_ammo_k] != self.mwcf_ammo_tickid)
+        {
+            self.mwcf_ammo_stock[self.mwcf_ammo_k] = undefined;
+            self.mwcf_ammo_from[self.mwcf_ammo_k] = undefined;
+            self.mwcf_ammo_seen[self.mwcf_ammo_k] = undefined;
+        }
+    }
+    self.mwcf_ammo_keys = self.mwcf_ammo_now;
+    if (self.mwcf_ammo_refilled)
+        self.mwcf_ammo_epoch++;
+    // The gun in hand.
+    self.mwcf_ammo_w = self getcurrentweapon();
+    self.mwcf_ammo_k = mwcf_ammo_key(self.mwcf_ammo_w);
+    if (!isdefined(self.mwcf_ammo_k) || !isdefined(self.mwcf_ammo_stock[self.mwcf_ammo_k]))
+    {
+        self.mwcf_ammo_cur = undefined;
+        return;
+    }
+    if (!isdefined(self.mwcf_ammo_cur) || self.mwcf_ammo_cur != self.mwcf_ammo_k)
+    {
+        if (self.mwcf_ammo_from[self.mwcf_ammo_k] < self.mwcf_ammo_epoch)
+            self.mwcf_ammo_val = weaponmaxammo(self.mwcf_ammo_w);
+        else
+            self.mwcf_ammo_val = self.mwcf_ammo_stock[self.mwcf_ammo_k];
+        if (self getweaponammostock(self.mwcf_ammo_w) != self.mwcf_ammo_val)
+        {
+            self setweaponammostock(self.mwcf_ammo_w, self.mwcf_ammo_val);
+            level.mwcf_box_v1.ammo_restores++;
+            // The guns sharing this reserve read the new value now: that is not a refill.
+            self.mwcf_ammo_j = 0;
+            while (self.mwcf_ammo_j < self.mwcf_ammo_list.size)
+            {
+                self.mwcf_ammo_w2 = self.mwcf_ammo_list[self.mwcf_ammo_j];
+                self.mwcf_ammo_j++;
+                self.mwcf_ammo_k2 = mwcf_ammo_key(self.mwcf_ammo_w2);
+                if (isdefined(self.mwcf_ammo_k2))
+                    self.mwcf_ammo_seen[self.mwcf_ammo_k2] = self getweaponammostock(self.mwcf_ammo_w2);
+            }
+        }
+        self.mwcf_ammo_cur = self.mwcf_ammo_k;
+    }
+    self.mwcf_ammo_stock[self.mwcf_ammo_k] = self getweaponammostock(self.mwcf_ammo_w);
+    self.mwcf_ammo_from[self.mwcf_ammo_k] = self.mwcf_ammo_epoch;
+}
+
 function mwcf_box_report(status)
 {
     nengine_store_set("mwcf_box", "status", status);
-    nengine_store_set("mwcf_box", "build", "box-19-pools");
+    nengine_store_set("mwcf_box", "build", "box-21-own-reserves");
     nengine_store_set("mwcf_box", "pool_size", level.mwcf_box_v1.loaded.size);
     nengine_store_set("mwcf_box", "failed_weapon_count", level.mwcf_box_v1.failed_list.size);
     level.mwcf_box_v1.s_report_failed_index = 0;
@@ -874,6 +1061,8 @@ function mwcf_box_report(status)
     nengine_store_set("mwcf_box", "loot_attempts", level.mwcf_box_v1.loot_attempts);
     nengine_store_set("mwcf_box", "collectible_parts_differ", level.mwcf_box_v1.collectible_parts_differ);
     nengine_store_set("mwcf_box", "backup_used", level.mwcf_box_v1.backup_used);
+    nengine_store_set("mwcf_box", "melee_drops", level.mwcf_box_v1.melee_drops);
+    nengine_store_set("mwcf_box", "ammo_restores", level.mwcf_box_v1.ammo_restores);
     nengine_store_set("mwcf_box", "not_ready_substituted", level.mwcf_box_v1.not_ready_substituted);
     nengine_store_set("mwcf_box", "purchase_parts_differ", level.mwcf_box_v1.purchase_parts_differ);
     if (isdefined(level.mwcf_box_v1.last_parts_expected))
@@ -1070,7 +1259,6 @@ function mwcf_box_seed()
         "jup_jp14_pi_rsierra12_mp",
         "jup_jp22_la_dromeo_mp",
         "jup_jp32_pi_mpapa9_mp",
-        "jup_la_plasmagun_mp",
         "jup_cp01_sm_coscar635_mp",
         "jup_cp01_sm_pcharlie9_mp",
         "jup_jp02_sm_scharlie3_mp",
@@ -1712,11 +1900,6 @@ function mwcf_box_seed()
     level.mwcf_box_v1.groups["jup_jp32_pi_mpapa9_mp"] = "weapon_pistol";
     level.mwcf_box_v1.likes["jup_jp32_pi_mpapa9_mp"] = "sat_pi_alcor";
     level.mwcf_box_v1.parts["jup_jp32_pi_mpapa9_mp"] = ["jup_mpapa9_rec", "jup_jp32_pi_mpapa9_bar", "jup_jp32_pi_mpapa9_stock_skel", "jup_jp32_pi_mpapa9_mag", "jup_jp32_pgrip", "jup_mpapa9_ironsdefault", "ammo_9p", "zm_pi_mpapa9"];
-    level.mwcf_box_v1.refs["jup_la_plasmagun_mp"] = "jup_la_plasmagun";
-    level.mwcf_box_v1.games["jup_la_plasmagun_mp"] = 3;
-    level.mwcf_box_v1.groups["jup_la_plasmagun_mp"] = "weapon_projectile";
-    level.mwcf_box_v1.likes["jup_la_plasmagun_mp"] = "sat_la_fang";
-    level.mwcf_box_v1.parts["jup_la_plasmagun_mp"] = ["zm_la_ub_plasmagun", "zm_la_plasmagun"];
     level.mwcf_box_v1.refs["jup_cp01_sm_coscar635_mp"] = "jup_cp01_sm_coscar635";
     level.mwcf_box_v1.games["jup_cp01_sm_coscar635_mp"] = 3;
     level.mwcf_box_v1.groups["jup_cp01_sm_coscar635_mp"] = "weapon_smg";

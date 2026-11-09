@@ -102,3 +102,32 @@ BO6, MW2 and MW3 guns have no _pack4. Each of 179 of them now gets <pack>4: a co
 the impacts, tracer and PaP 4 effect group of a similar BO7 gun (output\pack4-01\pack4_donors.json), plus that gun's PaP 4 flash.
 The mwcf_pap4 Kronos script swaps <pack>4 in at PaP 4, but only if a weapon built with it really has it.
 The donor's effects are taken out before every zone unload and put back after.
+
+BUILD 22d (2026-11-08): FINDING THE MOVEMENT-ONLY SWAP
+Sprint fire's allow-list keeps only some of a gun's own animations; every other state with a BO7 animation plays the BO7 one on the
+MW/BO6 gun. Reid saw arms and camera warp after firing, the magazine's rounds stack above the gun (FSS Hurricane, Static-HV), and
+bolt and pump guns fire too fast; sprintfire=off fixed all three. 22d changes nothing by default; it logs and adds test switches:
+- kronos\Logs\mw2_guns_fixes.log "sprint diag:" lines: per gun, the states whose own animation now plays the BO7 gun's; for the
+  sprintdiag guns each of those animations and the timers that differ (byte offset: own/BO7).
+- sprintdonorstates=  state ids/ranges (hex): only these, and states the gun has no animation for, take the BO7 gun's animation.
+- sprintdonortimers=  timer byte ranges (hex, end not included): the gun's own timers apart from these.
+- sprintview=off      no first-person values from the BO7 gun.
+- sprintdiag=         guns logged in detail (default iw9_ar_mike4_mp,jup_jp37_dm_kappa98_mp).
+
+BUILD 22e (2026-11-08): FIRST MOVEMENT-ONLY TEST
+From the 22d log (names found by hashing: vm_p01_ar_mike4_<action>, sat_vm_ar_kiwi_<action>; FNV-1a 64, basis 0x47F5817A5EF961BA):
+- Every changed gun replaces the same block of states 0x84-0x87, 0x96-0xa4, 0xf4-0xf8 (walk_loop, jog_loop, sprint_loop) and 0x118
+  (super_sprint_loop). Per-gun extras outside it: 0x561 fire_settle, 0x1ad ads_down_settle, 0x562-0x564 retracted in/idle/out,
+  0x52c/0x52e (next to mainToAlt/altToMain), 0x41, 0x1c3, 0x1fd, 0x207, 0x873-0x878, 0x1264 and others.
+- The Kar98k took the BO7 rifle's 0 for its round-by-round reload timers (0x4ac-0x4dc) and 0x53c (350 ms, the bolt).
+22e: a timer the BO7 gun leaves at 0 stays the gun's own (not in the sprint timers 0x4e0-0x53a).
+Test ini: sprintdonorstates=0x5d-0x11e (only the movement block takes the BO7 gun's animation).
+
+BUILD 22f (2026-11-08): MOVEMENT-ONLY SWAP BY DEFAULT
+Reid's 22e test: animations all fixed with sprintdonorstates=0x5d-0x11e, and Guns Up still works. Timers were still off: the MCW's
+inspect played slow and per-shell shotguns (Reclaimer 18, Marine SP showing a 26.1 s reload, Lockwood) reloaded slowly. Cause:
+blank timers (0xffff, "the animation's own length") were filled from the BO7 gun; the MCW's inspect timer at 0x54c became the BO7
+rifle's 6700 ms, and attachment packages, which are mostly blank, took the BO7 gun's reload timers (2816 changes on the Reclaimer).
+22f defaults: only states 0x5d-0x11e take the BO7 gun's animation, and only timer bytes 0x4e0-0x53a its timers; every other
+animation and timer stays the gun's own, blank ones too. sprintdonorstates / sprintdonortimers: empty = these defaults, "off" = 22c's
+allow-list rules, a list replaces them. sprintfire=strict ignores the lists. The "sprint diag" lines are only written for sprintdiag guns.
