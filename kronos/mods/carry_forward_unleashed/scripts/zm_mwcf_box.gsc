@@ -4,6 +4,10 @@
 #using script_3b3991e0b89ff57b;
 #using script_2b867a98ca762b0a;
 #using script_724b8f06df0c96b1;
+#using script_7df061afe12b8318;
+#using script_16ea1b94f0f381b3;
+#using script_3a9d7a7cfee99885;
+#using script_734dce84c468439b;
 #namespace mwcf_box_v1;
 
 // ACTS/BO7 local stores are incompatible in this setup (friend handoff, line 152).
@@ -56,7 +60,25 @@ autoexec mwcf_box_init()
     level.mwcf_box_v1.failed = [];
     level.mwcf_box_v1.failed_list = [];
     mwcf_box_seed();
+    // 1.6.0: wall buys (Weapons > Mystery Box menu, WALL BUYS button): 1 BO7, 2 BO6, 3 MW3, 4 MW2; dvar mwcf_wall_game.
+    level.mwcf_wall = function_5c418f65db2e25e8();
+    level.mwcf_wall.game = 1;
+    level.mwcf_wall.rows = [];
+    level.mwcf_wall.scans = 0;
+    level.mwcf_wall.swapped = 0;
+    level.mwcf_wall.bo6_walls = 0;
+    level.mwcf_wall.mw_walls = 0;
+    level.mwcf_wall.skipped = 0;
+    level.mwcf_wall.hooks = 0;
+    level.mwcf_wall.purchase_calls = 0;
+    level.mwcf_wall.bought = 0;
+    level.mwcf_wall.ammo_buys = 0;
+    level.mwcf_wall.fallbacks = 0;
+    level.mwcf_wall.rarity_applied = 0;
+    level.mwcf_wall.failed_list = [];
+    mwcf_wall_seed();
     nengine_store_clear("mwcf_box");
+    nengine_store_clear("mwcf_wall");
     level thread mwcf_box_start();
 }
 
@@ -84,9 +106,11 @@ function mwcf_box_start()
         setdvar(@"mwcf_box_pools", "" + level.mwcf_box_v1.pools);
     }
     mwcf_box_load();
+    mwcf_wall_game();
     mwcf_box_save_mode();
     mwcf_box_hooks();
     mwcf_box_report("probe_ready");
+    level thread mwcf_wall_start();
     if (!isdefined(level.mwcf_box_v1.ammo_started))
     {
         level.mwcf_box_v1.ammo_started = 1;
@@ -150,6 +174,7 @@ function mwcf_box_save_mode()
 {
     nengine_store_set("mwcf_boxcfg", "mode", level.mwcf_box_v1.mode);
     nengine_store_set("mwcf_boxcfg", "pools", level.mwcf_box_v1.pools);
+    nengine_store_set("mwcf_boxcfg", "wall_game", level.mwcf_wall.game);
     nengine_store_save("mwcf_boxcfg", "settings");
 }
 
@@ -1950,4 +1975,483 @@ function mwcf_box_seed()
     level.mwcf_box_v1.groups["jup_jp41_sm_kpappa50_mp"] = "weapon_smg";
     level.mwcf_box_v1.likes["jup_jp41_sm_kpappa50_mp"] = "sat_sm_bear";
     level.mwcf_box_v1.parts["jup_jp41_sm_kpappa50_mp"] = ["jup_kpappa50_rec", "jup_jp41_sm_kpappa50_bar", "jup_jp41_sm_kpappa50_stock", "jup_jp41_sm_kpappa50_mag_50", "jup_jp41_sm_kpappa50_pgrip", "jup_kpappa50_ironsdefault", "ammo_5x28"];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// 1.6.0 wall buys. The player picks one game (Weapons > Mystery Box menu, WALL BUYS button; dvar mwcf_wall_game: 1 BO7, 2 BO6,
+// 3 MW3, 4 MW2). Each BO7 weapon wall then sells that game's gun from the user's table (mwcf_wall_seed). Prices stay BO7's.
+// Stock wall buy (wallbuy, script_7df061afe12b8318): each wall is a usable with .cost, .rarity, .weapon, .var_2752c96850e281e8
+// (weapon name), .var_48329678622a96cf (item bundle base; "_<rarity>" is added when bought) and .icon; level.var_caf65b937e9cbfaf
+// lists the walls (usable in .var_f9b6c5834058f21c). Prompt, purchase and ammo all read those fields.
+// - BO6: BO6 guns still have their own wall data (weapon metadata bundle -> wall item bundles), so a BO6 wall just gets the BO6
+//   gun's fields and stock does the rest (prompt name and icon, saved builds, ammo, the gun shown on the wall).
+// - MW3/MW2: no wall data, so the wall gets the MW gun's name and keeps the BO7 item bundle as the carrier. The stock purchase
+//   override hook (#"wallbuy", #"hash_509a18feb365c405", called on the wall at the start of every use) sells the MW gun the way
+//   the Mystery Box gives one: the gun is built (saved build first), mapped to the carrier's loot ID, and handed out with the
+//   stock item give; its rarity is set afterwards (MW builds come out grey otherwise). Ammo buys are done here too, because the
+//   stock ammo buy looks the gun up from the item bundle (the BO7 gun).
+// ---------------------------------------------------------------------------------------------------------------------------
+
+function mwcf_wall_row(bo7, bo6, meta, mw3, mw2)
+{
+    level.mwcf_wall.s_row = function_5c418f65db2e25e8();
+    level.mwcf_wall.s_row.bo7 = bo7;
+    level.mwcf_wall.s_row.bo6 = bo6;
+    level.mwcf_wall.s_row.meta = meta;
+    level.mwcf_wall.s_row.mw3 = mw3;
+    level.mwcf_wall.s_row.mw2 = mw2;
+    level.mwcf_wall.rows[level.mwcf_wall.rows.size] = level.mwcf_wall.s_row;
+}
+
+// The game the walls sell: the menu's dvar if it is valid, else the last one used, else BO7.
+function mwcf_wall_game()
+{
+    level.mwcf_wall.game = getdvarint(@"mwcf_wall_game", -1);
+    if (level.mwcf_wall.game < 1 || level.mwcf_wall.game > 4)
+    {
+        level.mwcf_wall.game = undefined;
+        if (nengine_store_load("mwcf_boxcfg", "settings"))
+            level.mwcf_wall.game = nengine_store_get("mwcf_boxcfg", "wall_game");
+        if (!isdefined(level.mwcf_wall.game) || level.mwcf_wall.game < 1 || level.mwcf_wall.game > 4)
+            level.mwcf_wall.game = 1;
+        setdvar(@"mwcf_wall_game", "" + level.mwcf_wall.game);
+    }
+    return level.mwcf_wall.game;
+}
+
+function mwcf_wall_start()
+{
+    if (level.mwcf_wall.game == 1)
+    {
+        mwcf_wall_report("bo7_walls_kept");
+        return;
+    }
+    mwcf_wall_report("waiting_for_walls");
+    // Walls appear at map start; a mode can respawn one later (new rarity), so new walls keep being picked up.
+    for (;;)
+    {
+        mwcf_wall_apply();
+        if (level.mwcf_wall.mw_walls > 0)
+            mwcf_wall_hook();
+        level.mwcf_wall.scans++;
+        if (level.mwcf_wall.scans < 120)
+            wait 0.5;
+        else
+            wait 2;
+    }
+}
+
+function mwcf_wall_hook()
+{
+    level.mwcf_wall.s_hook_current = undefined;
+    if (utility::function_6af4632c5734e07e(#"wallbuy", #"hash_509a18feb365c405"))
+        level.mwcf_wall.s_hook_current = level.var_9e5c1a9e0a29d3ce[#"wallbuy"][#"hash_509a18feb365c405"];
+    if (isdefined(level.mwcf_wall.s_hook_current) && level.mwcf_wall.s_hook_current == &mwcf_wall_purchase)
+        return;
+    // A mode modifier can own this hook (zombie_mode_modifiers: wall buys refill owned guns); keep it for the other walls.
+    level.mwcf_wall.prev_purchase = level.mwcf_wall.s_hook_current;
+    utility::function_de57f49b8df192cc(#"wallbuy", #"hash_509a18feb365c405", &mwcf_wall_purchase);
+    level.mwcf_wall.hooks++;
+    mwcf_wall_report("purchase_hook_set");
+}
+
+function mwcf_wall_apply()
+{
+    if (!isdefined(level.var_caf65b937e9cbfaf))
+        return;
+    level.mwcf_wall.s_apply_index = 0;
+    level.mwcf_wall.s_apply_changed = 0;
+    while (level.mwcf_wall.s_apply_index < level.var_caf65b937e9cbfaf.size)
+    {
+        level.mwcf_wall.s_apply_spawn = level.var_caf65b937e9cbfaf[level.mwcf_wall.s_apply_index];
+        level.mwcf_wall.s_apply_index++;
+        if (!isdefined(level.mwcf_wall.s_apply_spawn) || !isdefined(level.mwcf_wall.s_apply_spawn.var_f9b6c5834058f21c))
+            continue;
+        level.mwcf_wall.s_apply_usable = level.mwcf_wall.s_apply_spawn.var_f9b6c5834058f21c;
+        if (isdefined(level.mwcf_wall.s_apply_usable.mwcf_wall_done))
+            continue;
+        level.mwcf_wall.s_apply_usable.mwcf_wall_done = 1;
+        // Armor walls have no weapon name.
+        if (!isdefined(level.mwcf_wall.s_apply_usable.var_2752c96850e281e8))
+            continue;
+        level.mwcf_wall.s_apply_row = mwcf_wall_find_row(level.mwcf_wall.s_apply_usable.var_2752c96850e281e8);
+        if (!isdefined(level.mwcf_wall.s_apply_row))
+        {
+            level.mwcf_wall.skipped++;
+            continue;
+        }
+        if (level.mwcf_wall.game == 2)
+            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_bo6(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row);
+        else if (level.mwcf_wall.game == 3)
+            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw3);
+        else
+            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw2);
+        if (level.mwcf_wall.s_apply_ok)
+        {
+            level.mwcf_wall.swapped++;
+            level.mwcf_wall.s_apply_changed = 1;
+        }
+    }
+    if (level.mwcf_wall.s_apply_changed)
+        mwcf_wall_report("walls_swapped");
+}
+
+function mwcf_wall_find_row(name)
+{
+    level.mwcf_wall.s_find_w = function_c95bf1a14134f45c(name);
+    if (!isdefined(level.mwcf_wall.s_find_w))
+        return undefined;
+    level.mwcf_wall.s_find_index = 0;
+    while (level.mwcf_wall.s_find_index < level.mwcf_wall.rows.size)
+    {
+        level.mwcf_wall.s_find_row = level.mwcf_wall.rows[level.mwcf_wall.s_find_index];
+        level.mwcf_wall.s_find_index++;
+        if (level.mwcf_wall.s_find_w.var_1b57e3034f84a054 == level.mwcf_wall.s_find_row.bo7)
+            return level.mwcf_wall.s_find_row;
+    }
+    return undefined;
+}
+
+// .weapon keeps the type stock gave it (a name or a weapon).
+function mwcf_wall_set_weapon(usable, name)
+{
+    if (function_4250476d9240b18e(usable.weapon))
+        usable.weapon = function_c95bf1a14134f45c(name);
+    else
+        usable.weapon = name;
+}
+
+function mwcf_wall_fail(name, why)
+{
+    level.mwcf_wall.failed_list[level.mwcf_wall.failed_list.size] = name + ":" + why;
+    return 0;
+}
+
+function mwcf_wall_swap_bo6(usable, row)
+{
+    level.mwcf_wall.s_bo6_meta = function_6071eb16b74b2e99(row.meta);
+    if (!isdefined(level.mwcf_wall.s_bo6_meta) || !isdefined(level.mwcf_wall.s_bo6_meta.var_48329678622a96cf))
+        return mwcf_wall_fail(row.bo6, "no_wall_data");
+    level.mwcf_wall.s_bo6_w = function_c95bf1a14134f45c(row.bo6);
+    if (!isdefined(level.mwcf_wall.s_bo6_w) || level.mwcf_wall.s_bo6_w.var_1b57e3034f84a054 != row.bo6)
+        return mwcf_wall_fail(row.bo6, "not_loaded");
+    usable.mwcf_wall_from = usable.var_2752c96850e281e8;
+    mwcf_wall_set_weapon(usable, row.bo6);
+    usable.var_2752c96850e281e8 = row.bo6;
+    usable.var_48329678622a96cf = level.mwcf_wall.s_bo6_meta.var_48329678622a96cf;
+    level.mwcf_wall.s_bo6_item = function_6071eb16b74b2e99(level.mwcf_wall.s_bo6_meta.var_48329678622a96cf);
+    if (isdefined(level.mwcf_wall.s_bo6_item) && isdefined(level.mwcf_wall.s_bo6_item.icon))
+        usable.icon = level.mwcf_wall.s_bo6_item.icon;
+    level.mwcf_wall.bo6_walls++;
+    level.mwcf_wall.last_swap = row.bo7 + ">" + row.bo6;
+    return 1;
+}
+
+function mwcf_wall_swap_mw(usable, name)
+{
+    level.mwcf_wall.s_mw_w = function_c95bf1a14134f45c(name);
+    if (!isdefined(level.mwcf_wall.s_mw_w) || level.mwcf_wall.s_mw_w.var_1b57e3034f84a054 != name)
+        return mwcf_wall_fail(name, "not_loaded");
+    usable.mwcf_wall_from = usable.var_2752c96850e281e8;
+    mwcf_wall_set_weapon(usable, name);
+    usable.var_2752c96850e281e8 = name;
+    usable.mwcf_wall_mw = name;
+    level.mwcf_wall.mw_walls++;
+    level.mwcf_wall.last_swap = name;
+    return 1;
+}
+
+// Stock calls this on the wall (self) before its own purchase; true means it is handled.
+function mwcf_wall_purchase(player, item_base)
+{
+    if (!isdefined(self.mwcf_wall_mw))
+    {
+        if (isdefined(level.mwcf_wall.prev_purchase))
+            return self [[ level.mwcf_wall.prev_purchase ]](player, item_base);
+        return 0;
+    }
+    level.mwcf_wall.purchase_calls++;
+    // Stock's order: the gun in hand, then any carried copy of it; at the wall's rarity or better it is an ammo buy.
+    level.mwcf_wall.s_purchase_need = wallbuy::function_bd5a94ee7552fcbd(self.rarity);
+    level.mwcf_wall.s_purchase_owned = undefined;
+    level.mwcf_wall.s_purchase_held = player function_e3b3cc459cc1f25b();
+    if (isdefined(level.mwcf_wall.s_purchase_held) && level.mwcf_wall.s_purchase_held.var_1b57e3034f84a054 == self.var_2752c96850e281e8 &&
+        player namespace_9d8e359c3b1041e5::function_862483ce90441c87(level.mwcf_wall.s_purchase_held) >= level.mwcf_wall.s_purchase_need)
+        level.mwcf_wall.s_purchase_owned = level.mwcf_wall.s_purchase_held;
+    if (!isdefined(level.mwcf_wall.s_purchase_owned))
+    {
+        level.mwcf_wall.s_purchase_copy = mwcf_wall_carried(player, self.mwcf_wall_mw);
+        if (isdefined(level.mwcf_wall.s_purchase_copy) &&
+            player namespace_9d8e359c3b1041e5::function_862483ce90441c87(level.mwcf_wall.s_purchase_copy) >= level.mwcf_wall.s_purchase_need)
+            level.mwcf_wall.s_purchase_owned = level.mwcf_wall.s_purchase_copy;
+    }
+    if (isdefined(level.mwcf_wall.s_purchase_owned))
+    {
+        self mwcf_wall_ammo(player, level.mwcf_wall.s_purchase_owned);
+        return 1;
+    }
+    return self mwcf_wall_buy(player);
+}
+
+// A carried weapon with the same root as the MW gun (attachments and camo differ), as stock matches walls.
+function mwcf_wall_carried(player, name)
+{
+    level.mwcf_wall.s_carried_root = function_c95bf1a14134f45c(name) function_2c3059f29ad78787();
+    level.mwcf_wall.s_carried_found = undefined;
+    level.mwcf_wall.s_carried_list = player function_764725998ad94fc3();
+    if (!isdefined(level.mwcf_wall.s_carried_list))
+        return undefined;
+    level.mwcf_wall.s_carried_index = 0;
+    while (level.mwcf_wall.s_carried_index < level.mwcf_wall.s_carried_list.size)
+    {
+        level.mwcf_wall.s_carried_w = level.mwcf_wall.s_carried_list[level.mwcf_wall.s_carried_index];
+        level.mwcf_wall.s_carried_index++;
+        if (isdefined(level.mwcf_wall.s_carried_w) && function_74cd4c80f26e31c(level.mwcf_wall.s_carried_root, level.mwcf_wall.s_carried_w function_2c3059f29ad78787()))
+            level.mwcf_wall.s_carried_found = level.mwcf_wall.s_carried_w;
+    }
+    return level.mwcf_wall.s_carried_found;
+}
+
+// Stock's wall ammo buy (wallbuy function_21da8105947ab024) for the carried MW gun.
+function mwcf_wall_ammo(player, weapon)
+{
+    if (player function_88adf3e8796383c())
+        return;
+    if (weapon.var_9a34f85c8b4726c6)
+        return;
+    if (!weapon::function_b903e7516cadc704(weapon))
+        return;
+    level.mwcf_wall.s_ammo_cost = wallbuy::function_a80df1a750486e6b(player, weapon);
+    level.mwcf_wall.s_ammo_cost = self wallbuy::function_60355d4a5847e024(player, level.mwcf_wall.s_ammo_cost);
+    if (mwcf_wall_full(player, weapon))
+    {
+        if (isdefined(level.currency[#"hash_305523fec8a0505d"].var_a8ffb51404bc4193))
+            player function_a4c8b0f6cf33e203(level.currency[#"hash_305523fec8a0505d"].var_a8ffb51404bc4193, player);
+        return;
+    }
+    function_da293e7032bf2f70(self.origin, #"hash_483f9acf2399f880");
+    if (level.mwcf_wall.s_ammo_cost == 0)
+    {
+        player utility::function_81557bcd4ddf6a05(#"ammo_cache", #"hash_bce776fc2c862b31", weapon);
+        level.mwcf_wall.ammo_buys++;
+        return;
+    }
+    if (player currency::function_d0b76708a627ce03(#"hash_305523fec8a0505d", level.mwcf_wall.s_ammo_cost, 1, 0, #"ammo_cache"))
+    {
+        player utility::function_81557bcd4ddf6a05(#"ammo_cache", #"hash_bce776fc2c862b31", weapon);
+        level.mwcf_wall.ammo_buys++;
+    }
+}
+
+// Stock's "ammo already full" test (wallbuy function_d8176f86ff361ba).
+function mwcf_wall_full(player, weapon)
+{
+    if (player function_f930fc7a157424fa(weapon) < function_55e3f2582ad44bc9(weapon))
+        return 0;
+    if (!function_fbb6adbc1a89658a(weapon) && player function_bb22cf581da23562(weapon) < utility::function_a4de202cfe48379(weapon))
+        return 0;
+    if (weapon.var_c674dcaaa4a071d7 && player function_f930fc7a157424fa(weapon, "left") < function_55e3f2582ad44bc9(weapon))
+        return 0;
+    return 1;
+}
+
+// Stock's purchase (wallbuy function_c8c8a561d596b8f, the branch without a saved build) with the MW gun in the item.
+function mwcf_wall_buy(player)
+{
+    level.mwcf_wall.s_buy_weapon = self mwcf_box_build_probe(player, self.mwcf_wall_mw);
+    level.mwcf_wall.s_buy_bundle_name = self.var_48329678622a96cf;
+    if (isdefined(self.rarity) && self.rarity != "white")
+        level.mwcf_wall.s_buy_bundle_name = function_99ee3cf75e2291a6(level.mwcf_wall.s_buy_bundle_name, "_", self.rarity);
+    level.mwcf_wall.s_buy_bundle = function_6071eb16b74b2e99(level.mwcf_wall.s_buy_bundle_name);
+    if (!isdefined(level.mwcf_wall.s_buy_weapon) || !isdefined(level.mwcf_wall.s_buy_bundle))
+    {
+        // Stock then sells the wall's own BO7 gun, so the player is never charged for nothing.
+        level.mwcf_wall.fallbacks++;
+        mwcf_wall_fail(self.mwcf_wall_mw, "build_or_carrier_missing");
+        mwcf_wall_report("fallback_to_stock");
+        return 0;
+    }
+    level.mwcf_wall.s_buy_cost = self.cost;
+    if (isdefined(player.var_bc0b9e201dc8d785))
+    {
+        level.mwcf_wall.s_buy_index = 0;
+        while (level.mwcf_wall.s_buy_index < player.var_bc0b9e201dc8d785.size)
+        {
+            level.mwcf_wall.s_buy_modifier = player.var_bc0b9e201dc8d785[level.mwcf_wall.s_buy_index];
+            level.mwcf_wall.s_buy_index++;
+            if (!isdefined(level.mwcf_wall.s_buy_modifier))
+                continue;
+            level.mwcf_wall.s_buy_changed = player [[ level.mwcf_wall.s_buy_modifier ]](self);
+            if (isdefined(level.mwcf_wall.s_buy_changed))
+                level.mwcf_wall.s_buy_cost = level.mwcf_wall.s_buy_changed;
+        }
+    }
+    if (!(player currency::function_d0b76708a627ce03(level.var_62f99ee1b2f61a35, level.mwcf_wall.s_buy_cost, undefined, undefined, #"wallbuy")))
+        return 1;
+    mwcf_box_register_loot(level.mwcf_wall.s_buy_weapon, level.mwcf_wall.s_buy_bundle, level.mwcf_wall.s_buy_bundle_name);
+    level.mwcf_wall.loot_stage = level.mwcf_box_v1.loot_stage;
+    level.mwcf_wall.s_buy_zmod = istrue(player utility::function_81557bcd4ddf6a05(#"zombie", #"hash_3930894d8d2f0ee6", "specialty_z_mod", #"hash_b9c78074fa73e5ae"));
+    level.mwcf_wall.s_buy_item = function_5c418f65db2e25e8();
+    level.mwcf_wall.s_buy_item.var_683845b1a62814eb = level.mwcf_wall.s_buy_weapon;
+    level.mwcf_wall.s_buy_clip = function_55e3f2582ad44bc9(level.mwcf_wall.s_buy_weapon);
+    level.mwcf_wall.s_buy_alt_clip = 0;
+    level.mwcf_wall.s_buy_alt = level.mwcf_wall.s_buy_weapon function_a68ab200e4b8a8c5();
+    if (level.mwcf_wall.s_buy_alt)
+        level.mwcf_wall.s_buy_alt_clip = function_55e3f2582ad44bc9(level.mwcf_wall.s_buy_alt);
+    if (level.mwcf_wall.s_buy_weapon.var_c674dcaaa4a071d7)
+        level.mwcf_wall.s_buy_item.count = namespace_49c55e3e8683c53f::function_598dd39282efb544(level.mwcf_wall.s_buy_clip, level.mwcf_wall.s_buy_clip);
+    else if (level.mwcf_wall.s_buy_weapon.var_ba9e31dda49589b8)
+        level.mwcf_wall.s_buy_item.count = namespace_49c55e3e8683c53f::function_598dd39282efb544(level.mwcf_wall.s_buy_clip, undefined, level.mwcf_wall.s_buy_alt_clip);
+    else
+        level.mwcf_wall.s_buy_item.count = namespace_49c55e3e8683c53f::function_598dd39282efb544(level.mwcf_wall.s_buy_clip);
+    level.mwcf_wall.s_buy_item.var_b030f25044ef016 = utility::function_a4de202cfe48379(level.mwcf_wall.s_buy_weapon, level.mwcf_wall.s_buy_zmod);
+    level.mwcf_wall.s_buy_flag = 0;
+    if (wallbuy::function_c2e50a32d8592f77(player))
+    {
+        level.mwcf_wall.s_buy_item.var_951c89546ec50477 = 1;
+        level.mwcf_wall.s_buy_item.var_768b3618cd111c7e = 1;
+        level.mwcf_wall.s_buy_item.var_8ec85d3827383d6a = #"wallbuy";
+        level.mwcf_wall.s_buy_flag = 1;
+    }
+    level.mwcf_wall.s_buy_item.var_987b3a4d5c15e9a = #"wallbuy";
+    player function_5ce8c8e4b2d4a34b([level.mwcf_wall.s_buy_weapon]);
+    level.mwcf_wall.s_buy_given = player namespace_49c55e3e8683c53f::function_3f39e7be347cf7e1(level.mwcf_wall.s_buy_bundle, level.mwcf_wall.s_buy_item, wallbuy::function_4d52f81f088365b9(player, self));
+    if (function_58736ce92359fa07(level.mwcf_wall.s_buy_given) && function_4250476d9240b18e(level.mwcf_wall.s_buy_given[1]))
+        level.mwcf_wall.s_buy_given = level.mwcf_wall.s_buy_given[1];
+    if (function_4250476d9240b18e(level.mwcf_wall.s_buy_given))
+        player utility::function_81557bcd4ddf6a05(#"ammo_cache", #"hash_bce776fc2c862b31", level.mwcf_wall.s_buy_given);
+    self mwcf_wall_model();
+    function_da293e7032bf2f70(self.origin, "evt_zm_core_wallbuy_purchase");
+    level.mwcf_wall.s_buy_note = function_5c418f65db2e25e8();
+    level.mwcf_wall.s_buy_note.var_b575eda3d8d8533b = level.mwcf_wall.s_buy_given;
+    level.mwcf_wall.s_buy_note.cost = level.mwcf_wall.s_buy_cost;
+    level.mwcf_wall.s_buy_note.rarity = self.rarity;
+    if (function_4250476d9240b18e(level.mwcf_wall.s_buy_given))
+        level.mwcf_wall.s_buy_note.lootID = weapon::function_57559cfce1d2812d(level.mwcf_wall.s_buy_given);
+    level.mwcf_wall.s_buy_note.currency = level.var_62f99ee1b2f61a35;
+    level.mwcf_wall.s_buy_note.var_6691fe43150a092f = level.mwcf_wall.s_buy_flag;
+    player namespace_42ffbe510c7bd5b1::function_42ffbe510c7bd5b1("wallbuy_purchase", level.mwcf_wall.s_buy_note);
+    // The wall's rarity: the carrier item's, as the box does after a pickup.
+    player.mwcf_wall_expected = function_5c418f65db2e25e8();
+    player.mwcf_wall_expected.name = level.mwcf_wall.s_buy_weapon.var_1b57e3034f84a054;
+    player.mwcf_wall_expected.rarity = level.mwcf_wall.s_buy_bundle.var_f6e1f2e6a08ade5d;
+    if (!isdefined(player.mwcf_wall_expected.rarity))
+        player.mwcf_wall_expected.rarity = wallbuy::function_bd5a94ee7552fcbd(self.rarity);
+    player.mwcf_wall_expected.deadline = function_83bf4b34fbbe124b() + 2000;
+    player thread mwcf_wall_rarity();
+    level.mwcf_wall.bought++;
+    level.mwcf_wall.last_bought = level.mwcf_wall.s_buy_weapon.var_1b57e3034f84a054;
+    mwcf_wall_report("mw_gun_sold");
+    return 1;
+}
+
+// The gun model stock slides out of the wall after the first purchase (now the MW gun's).
+function mwcf_wall_model()
+{
+    if (isdefined(self.var_5499b4433cb4a919))
+        return;
+    level.mwcf_wall.s_model_angles = (function_1ee3b6c488a6bdfb(360 - self.angles[0]), function_1ee3b6c488a6bdfb(self.angles[1] - 180), function_1ee3b6c488a6bdfb(360 - self.angles[2]));
+    level.mwcf_wall.s_model = function_2535619d314c1099(self.var_2752c96850e281e8, self.origin, level.mwcf_wall.s_model_angles);
+    if (!isdefined(level.mwcf_wall.s_model))
+        return;
+    level.mwcf_wall.s_model.angles = level.mwcf_wall.s_model.angles;
+    self.var_5499b4433cb4a919 = level.mwcf_wall.s_model;
+    level.mwcf_wall.s_model_out = level.mwcf_wall.s_model function_1f3678edab5fe4d6((0, -5, 0));
+    level.mwcf_wall.s_model function_47a7d42914cf3b4a();
+    level.mwcf_wall.s_model_in = level.mwcf_wall.s_model function_1f3678edab5fe4d6((0, 0.5, 0));
+    level.mwcf_wall.s_model.origin = level.mwcf_wall.s_model_out;
+    level.mwcf_wall.s_model function_76f2d24725300b2a(level.mwcf_wall.s_model_in, 1);
+}
+
+function mwcf_wall_rarity()
+{
+    self endon(#"disconnect");
+    while (isdefined(self.mwcf_wall_expected))
+    {
+        if (mwcf_box_owns(self, self.mwcf_wall_expected.name))
+        {
+            self.mwcf_wall_rarity_weapon = level.mwcf_box_v1.s_owns_w;
+            if (self.mwcf_wall_expected.rarity > 0)
+            {
+                self namespace_91497aa03504c5ba::function_40e1cbd0e1f47d1a(self.mwcf_wall_rarity_weapon, self.mwcf_wall_expected.rarity);
+                level.mwcf_wall.rarity_applied++;
+            }
+            self.mwcf_wall_rarity_weapon = undefined;
+            self.mwcf_wall_expected = undefined;
+            mwcf_wall_report("rarity_applied");
+            return;
+        }
+        if (function_83bf4b34fbbe124b() >= self.mwcf_wall_expected.deadline)
+        {
+            self.mwcf_wall_expected = undefined;
+            mwcf_wall_report("sold_gun_not_in_inventory");
+            return;
+        }
+        wait 0.1;
+    }
+}
+
+function mwcf_wall_report(status)
+{
+    nengine_store_set("mwcf_wall", "status", status);
+    nengine_store_set("mwcf_wall", "build", "wall-01");
+    nengine_store_set("mwcf_wall", "game", level.mwcf_wall.game);
+    nengine_store_set("mwcf_wall", "walls_listed", isdefined(level.var_caf65b937e9cbfaf));
+    if (isdefined(level.var_caf65b937e9cbfaf))
+        nengine_store_set("mwcf_wall", "wall_count", level.var_caf65b937e9cbfaf.size);
+    nengine_store_set("mwcf_wall", "swapped", level.mwcf_wall.swapped);
+    nengine_store_set("mwcf_wall", "bo6_walls", level.mwcf_wall.bo6_walls);
+    nengine_store_set("mwcf_wall", "mw_walls", level.mwcf_wall.mw_walls);
+    nengine_store_set("mwcf_wall", "not_in_table", level.mwcf_wall.skipped);
+    nengine_store_set("mwcf_wall", "hooks", level.mwcf_wall.hooks);
+    nengine_store_set("mwcf_wall", "had_other_hook", isdefined(level.mwcf_wall.prev_purchase));
+    nengine_store_set("mwcf_wall", "purchase_calls", level.mwcf_wall.purchase_calls);
+    nengine_store_set("mwcf_wall", "mw_sold", level.mwcf_wall.bought);
+    nengine_store_set("mwcf_wall", "ammo_buys", level.mwcf_wall.ammo_buys);
+    nengine_store_set("mwcf_wall", "fallbacks", level.mwcf_wall.fallbacks);
+    nengine_store_set("mwcf_wall", "rarity_applied", level.mwcf_wall.rarity_applied);
+    if (isdefined(level.mwcf_wall.last_swap))
+        nengine_store_set("mwcf_wall", "last_swap", level.mwcf_wall.last_swap);
+    if (isdefined(level.mwcf_wall.last_bought))
+        nengine_store_set("mwcf_wall", "last_sold", level.mwcf_wall.last_bought);
+    if (isdefined(level.mwcf_wall.loot_stage))
+        nengine_store_set("mwcf_wall", "loot_stage", level.mwcf_wall.loot_stage);
+    nengine_store_set("mwcf_wall", "failed_count", level.mwcf_wall.failed_list.size);
+    level.mwcf_wall.s_report_index = 0;
+    while (level.mwcf_wall.s_report_index < level.mwcf_wall.failed_list.size && level.mwcf_wall.s_report_index < 30)
+    {
+        nengine_store_set("mwcf_wall", "failed_" + level.mwcf_wall.s_report_index, level.mwcf_wall.failed_list[level.mwcf_wall.s_report_index]);
+        level.mwcf_wall.s_report_index++;
+    }
+    nengine_store_save("mwcf_wall", "status");
+}
+
+function mwcf_wall_seed()
+{
+    mwcf_wall_row("sat_ar_kite_mp", "t10_ar_p02_aking74_mp", %"hash_f21899151d35ef1", "jup_jp36_ar_anov94_mp", "iw9_ar_akilo_mp");
+    mwcf_wall_row("sat_ar_vulture_mp", "t10_ar_p54_aspen_mp", %"hash_675311d2fbe3378e", "jup_jp05_ar_foxtrot2000_mp", "iw9_ar_malima_mp");
+    mwcf_wall_row("sat_ar_eagle_mp", "t10_ar_p22_able18_mp", %"hash_555a679f48c6292d", "jup_jp01_ar_golf36_mp", "iw9_ar_scharlie_mp");
+    mwcf_wall_row("sat_ar_hawk_mp", "t10_ar_p01_coslo723_mp", %"hash_577b4040419a8c95", "jup_jp19_ar_acharlie_mp", "iw9_ar_mike4_mp");
+    mwcf_wall_row("sat_ar_condor_mp", "t10_ar_p06_asvalor_mp", %"hash_70733e71720f8548", "jup_jp34_ar_balpha27_mp", "iw9_ar_kilo53_mp");
+    mwcf_wall_row("sat_ar_falcon_mp", "t10_ar_p56_milan_mp", %"hash_665822d0d7db0ad2", "jup_jp08_ar_qbravo97_mp", "iw9_ar_mike16_mp");
+    mwcf_wall_row("sat_sm_puma_mp", "t10_sm_p52_lisbon_mp", %"hash_6193b83b5e30bf3b", "jup_jp41_sm_kpappa50_mp", "iw9_sm_alpha57_mp");
+    mwcf_wall_row("sat_sm_zebra_mp", "t10_sm_p21_pparis90_mp", %"hash_2a19159c6e4fcb34", "jup_jp04_sm_lwhiskey_mp", "iw9_sm_beta_mp");
+    mwcf_wall_row("sat_sm_cobra_mp", "t10_sm_p02_geasy9_mp", %"hash_1ad7c06e226ac271", "jup_jp07_sm_uzulu_mp", "iw9_sm_mpapa7_mp");
+    mwcf_wall_row("sat_sm_otter_mp", "t10_sm_p12_roger31_mp", %"hash_5e3658f740a995d7", "jup_jp02_sm_scharlie3_mp", "iw9_sm_acharlie9_mp");
+    mwcf_wall_row("sat_sm_komodo_mp", "t10_sm_p06_sroger3_mp", %"hash_2f7395db6cc88684", "jup_jp25_sm_talpham_mp", "iw9_sm_apapa_mp");
+    mwcf_wall_row("sat_sm_orca_mp", "t10_sm_p04_chuck9_mp", %"hash_58d1b50c6e00dba6", "jup_jp04_sm_umike_mp", "iw9_sm_mpapax_mp");
+    mwcf_wall_row("sat_sh_akita_mp", "t10_sh_p27_jhavana_mp", %"hash_178b529dbaf6fcc6", "jup_cp01_sh_aromeo410_mp", "iw9_sh_vecho_mp");
+    mwcf_wall_row("sat_sh_husky_mp", "t10_sh_p25_uncle12_mp", %"hash_35084c03056b87a9", "jup_jp38_sh_spapa12_mp", "iw9_sh_tsierra12_mp");
+    mwcf_wall_row("sat_sh_corso_mp", "t10_sh_p10_moslo500_mp", %"hash_26e3ea86f78c1448", "jup_jp16_sh_recho870_mp", "iw9_sh_mbravo_mp");
+    mwcf_wall_row("sat_lm_hades_mp", "t10_lm_p01_aroger10_mp", %"hash_2a971f52e3cfed02", "jup_jp08_lm_qbravo95lsw_mp", "iw9_lm_ngolf7_mp");
+    mwcf_wall_row("sat_lm_zeus_mp", "t10_lm_p53_mesa_mp", %"hash_208f48f9244207b2", "jup_cp15_lm_mkilo3_mp", "iw9_lm_kilo21_mp");
+    mwcf_wall_row("sat_dm_kara_mp", "t10_dm_p03_sgeorge550_mp", %"hash_24d67be09c6eaf7d", "jup_jp03_br_aromeo200_mp", "iw9_dm_mike14_mp");
+    mwcf_wall_row("sat_dm_oman_mp", "t10_dm_p50_erie_mp", %"hash_6fa69514afff117e", "jup_jp01_dm_slima8_mp", "iw9_dm_sbeta_mp");
+    mwcf_wall_row("sat_dm_scotia_mp", "t10_dm_p02_aeasy_mp", %"hash_4abafb8762015a73", "jup_jp40_br_hcharlie36_mp", "iw9_ar_schotel_mp");
+    mwcf_wall_row("sat_sn_caspian_mp", "t10_sn_p09_droger_mp", %"hash_797d579f5509211c", "jup_jp13_sn_svictor_mp", "iw9_sn_mromeo_mp");
+    mwcf_wall_row("sat_sn_drake_mp", "t10_sn_p08_ultiger_mp", %"hash_3f073921159a8936", "jup_jp17_sn_hsierra_mp", "iw9_sn_india_mp");
+    mwcf_wall_row("sat_sn_baltic_mp", "t10_sn_p26_mary82_mp", %"hash_61d9329d2e868e4b", "jup_jp10_sn_cdelta50_mp", "iw9_sn_alpha50_mp");
+    mwcf_wall_row("sat_pi_atlas_mp", "t10_pi_p14_stiger_mp", %"hash_734eaafed1558093", "jup_jp07_pi_uzulum_mp", "iw9_pi_tango9_mp");
+    mwcf_wall_row("sat_pi_timir_mp", "t10_pi_p13_usugar9_mp", %"hash_7b6dd6d4e4ced3be", "jup_cp24_pi_glima21_mp", "iw9_pi_papa220_mp");
+    mwcf_wall_row("sat_pi_orion_mp", "t10_pi_p12_paris30_mp", %"hash_34133fe395e273bb", "jup_jp12_pi_mike93_mp", "iw9_pi_golf18_mp");
 }
