@@ -131,3 +131,13 @@ rifle's 6700 ms, and attachment packages, which are mostly blank, took the BO7 g
 22f defaults: only states 0x5d-0x11e take the BO7 gun's animation, and only timer bytes 0x4e0-0x53a its timers; every other
 animation and timer stays the gun's own, blank ones too. sprintdonorstates / sprintdonortimers: empty = these defaults, "off" = 22c's
 allow-list rules, a list replaces them. sprintfire=strict ignores the lists. The "sprint diag" lines are only written for sprintdiag guns.
+
+BUILD 22g (2026-11-09): SPEED COLA ONLY SPEEDS UP THE MW GUNS' RELOADS
+With Speed Cola an MW gun played its fast-magazine reload animation on top of the perk's speed-up; BO7 and BO6 guns only speed up.
+The game asks exe +0x46ae5d0 whether a reload state should play its fast twin: yes when the gun's animation table has the twin and
+a perk (specialty_fastreload = Speed Cola, specialty_fastreload_empty and three others) or something about the gun or the player
+says so. BO7 guns' tables have no fast twins without a fast magazine; the MW guns' have them. 22g hooks that check: for an MW gun
+the perks no longer count, so the twin is used only when the gun or an attachment asks for it. Every other gun is left to the game.
+The speed-up is another function and is not touched. mw2_guns_fixes.ini perkfastreloads=on gives the old behaviour.
+Log lines "speed cola: ...": how many MW guns are in the weapon table, and per pass how many fast reloads a perk alone asked for
+(normal reload used) and how many the gun or an attachment asked for (kept).

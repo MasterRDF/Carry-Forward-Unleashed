@@ -76,6 +76,9 @@ autoexec mwcf_box_init()
     level.mwcf_wall.fallbacks = 0;
     level.mwcf_wall.rarity_applied = 0;
     level.mwcf_wall.failed_list = [];
+    level.mwcf_wall.loot_list = [];
+    level.mwcf_wall.prompt_fixes = 0;
+    level.mwcf_wall.prompt_hooks = 0;
     mwcf_wall_seed();
     nengine_store_clear("mwcf_box");
     nengine_store_clear("mwcf_wall");
@@ -1992,7 +1995,7 @@ function mwcf_box_seed()
 //   stock ammo buy looks the gun up from the item bundle (the BO7 gun).
 // ---------------------------------------------------------------------------------------------------------------------------
 
-function mwcf_wall_row(bo7, bo6, meta, mw3, mw2)
+function mwcf_wall_row(bo7, bo6, meta, mw3, mw2, mw3_icon, mw2_icon, mw3_label, mw2_label)
 {
     level.mwcf_wall.s_row = function_5c418f65db2e25e8();
     level.mwcf_wall.s_row.bo7 = bo7;
@@ -2000,6 +2003,12 @@ function mwcf_wall_row(bo7, bo6, meta, mw3, mw2)
     level.mwcf_wall.s_row.meta = meta;
     level.mwcf_wall.s_row.mw3 = mw3;
     level.mwcf_wall.s_row.mw2 = mw2;
+    // wall-05: the MW guns' gunsmith render images as image hashes (wall-04: the names never reached the prompt).
+    level.mwcf_wall.s_row.mw3_icon = mw3_icon;
+    level.mwcf_wall.s_row.mw2_icon = mw2_icon;
+    // wall-04: plain names for the prompt title; MW3 name text is not loaded in a match, so its loc name showed blank.
+    level.mwcf_wall.s_row.mw3_label = mw3_label;
+    level.mwcf_wall.s_row.mw2_label = mw2_label;
     level.mwcf_wall.rows[level.mwcf_wall.rows.size] = level.mwcf_wall.s_row;
 }
 
@@ -2046,13 +2055,96 @@ function mwcf_wall_hook()
     level.mwcf_wall.s_hook_current = undefined;
     if (utility::function_6af4632c5734e07e(#"wallbuy", #"hash_509a18feb365c405"))
         level.mwcf_wall.s_hook_current = level.var_9e5c1a9e0a29d3ce[#"wallbuy"][#"hash_509a18feb365c405"];
-    if (isdefined(level.mwcf_wall.s_hook_current) && level.mwcf_wall.s_hook_current == &mwcf_wall_purchase)
-        return;
-    // A mode modifier can own this hook (zombie_mode_modifiers: wall buys refill owned guns); keep it for the other walls.
-    level.mwcf_wall.prev_purchase = level.mwcf_wall.s_hook_current;
-    utility::function_de57f49b8df192cc(#"wallbuy", #"hash_509a18feb365c405", &mwcf_wall_purchase);
-    level.mwcf_wall.hooks++;
-    mwcf_wall_report("purchase_hook_set");
+    if (!isdefined(level.mwcf_wall.s_hook_current) || level.mwcf_wall.s_hook_current != &mwcf_wall_purchase)
+    {
+        // A mode modifier can own this hook (zombie_mode_modifiers: wall buys refill owned guns); keep it for the other walls.
+        level.mwcf_wall.prev_purchase = level.mwcf_wall.s_hook_current;
+        utility::function_de57f49b8df192cc(#"wallbuy", #"hash_509a18feb365c405", &mwcf_wall_purchase);
+        level.mwcf_wall.hooks++;
+        mwcf_wall_report("purchase_hook_set");
+    }
+    // wall-02: the prompt hook (#"hash_24b240b4ca884d15", args player, weapon, title, icon), the same way.
+    level.mwcf_wall.s_hook_current = undefined;
+    if (utility::function_6af4632c5734e07e(#"wallbuy", #"hash_24b240b4ca884d15"))
+        level.mwcf_wall.s_hook_current = level.var_9e5c1a9e0a29d3ce[#"wallbuy"][#"hash_24b240b4ca884d15"];
+    if (!isdefined(level.mwcf_wall.s_hook_current) || level.mwcf_wall.s_hook_current != &mwcf_wall_prompt)
+    {
+        level.mwcf_wall.prev_prompt = level.mwcf_wall.s_hook_current;
+        utility::function_de57f49b8df192cc(#"wallbuy", #"hash_24b240b4ca884d15", &mwcf_wall_prompt);
+        level.mwcf_wall.prompt_hooks++;
+        mwcf_wall_report("prompt_hook_set");
+    }
+}
+
+// wall-02: the wall prompt takes its name and icon from the hint's loot ID (stock weapon::function_57559cfce1d2812d). For some MW
+// guns that returns 0 and the prompt showed no name and no icon. The gunsmith reads each MW gun's loot ID from its
+// "weapondata:<ref>" bundle (field lootID), so a buy prompt with loot ID 0 gets that one. The rest of the prompt is stock's: this
+// asks the stock prompt builder (re-entry passes through) for the wall the player is at.
+function mwcf_wall_prompt(player, weapon, title, icon)
+{
+    if (istrue(level.mwcf_wall.s_prompt_busy) || !isdefined(weapon))
+        return mwcf_wall_prompt_prev(player, weapon, title, icon);
+    level.mwcf_wall.s_prompt_usable = mwcf_wall_prompt_usable(player, weapon);
+    if (!isdefined(level.mwcf_wall.s_prompt_usable) || (!isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_loot) && !isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_name) && !isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_label)))
+        return mwcf_wall_prompt_prev(player, weapon, title, icon);
+    level.mwcf_wall.s_prompt_busy = 1;
+    level.mwcf_wall.s_prompt_hint = wallbuy::function_d02c6f27c7515d41(level.mwcf_wall.s_prompt_usable, player);
+    level.mwcf_wall.s_prompt_busy = 0;
+    // wall-03: buy and ammo prompts both carry the gun's title.
+    if (isdefined(level.mwcf_wall.s_prompt_hint) && isdefined(level.mwcf_wall.s_prompt_hint.title))
+    {
+        // wall-05: plain text never reaches the prompt (wall-04 showed no name at all), so the title is the gun's name ID again;
+        // the menu Lua puts in the name where a match has no text for that ID (MW3).
+        if (isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_name))
+            level.mwcf_wall.s_prompt_hint.title = level.mwcf_wall.s_prompt_usable.mwcf_wall_name;
+    }
+    if (isdefined(level.mwcf_wall.s_prompt_hint) && isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_loot) && isdefined(level.mwcf_wall.s_prompt_hint.var_c9116d406ee00be0) && level.mwcf_wall.s_prompt_hint.var_c9116d406ee00be0 == 0)
+    {
+        level.mwcf_wall.s_prompt_hint.var_c9116d406ee00be0 = level.mwcf_wall.s_prompt_usable.mwcf_wall_loot;
+        if (!isdefined(level.mwcf_wall.s_prompt_usable.mwcf_wall_prompt_fixed))
+        {
+            level.mwcf_wall.s_prompt_usable.mwcf_wall_prompt_fixed = 1;
+            level.mwcf_wall.prompt_fixes++;
+            mwcf_wall_report("prompt_loot_id_filled");
+        }
+    }
+    return level.mwcf_wall.s_prompt_hint;
+}
+
+function mwcf_wall_prompt_prev(player, weapon, title, icon)
+{
+    if (isdefined(level.mwcf_wall.prev_prompt))
+        return self [[ level.mwcf_wall.prev_prompt ]](player, weapon, title, icon);
+    return undefined;
+}
+
+// The MW wall this prompt is for: self if stock calls the hook on the wall, else the nearest MW wall selling this gun.
+function mwcf_wall_prompt_usable(player, weapon)
+{
+    if (isdefined(self) && isdefined(self.mwcf_wall_mw) && self.mwcf_wall_mw == weapon.var_1b57e3034f84a054)
+        return self;
+    if (!isdefined(level.var_caf65b937e9cbfaf) || !isdefined(player))
+        return undefined;
+    level.mwcf_wall.s_usable_best = undefined;
+    level.mwcf_wall.s_usable_best_d = 0;
+    level.mwcf_wall.s_usable_index = 0;
+    while (level.mwcf_wall.s_usable_index < level.var_caf65b937e9cbfaf.size)
+    {
+        level.mwcf_wall.s_usable_spawn = level.var_caf65b937e9cbfaf[level.mwcf_wall.s_usable_index];
+        level.mwcf_wall.s_usable_index++;
+        if (!isdefined(level.mwcf_wall.s_usable_spawn) || !isdefined(level.mwcf_wall.s_usable_spawn.var_f9b6c5834058f21c))
+            continue;
+        level.mwcf_wall.s_usable_wall = level.mwcf_wall.s_usable_spawn.var_f9b6c5834058f21c;
+        if (!isdefined(level.mwcf_wall.s_usable_wall.mwcf_wall_mw) || level.mwcf_wall.s_usable_wall.mwcf_wall_mw != weapon.var_1b57e3034f84a054)
+            continue;
+        level.mwcf_wall.s_usable_d = function_706f6395a53cdc33(level.mwcf_wall.s_usable_wall.origin, player.origin);
+        if (!isdefined(level.mwcf_wall.s_usable_best) || level.mwcf_wall.s_usable_d < level.mwcf_wall.s_usable_best_d)
+        {
+            level.mwcf_wall.s_usable_best = level.mwcf_wall.s_usable_wall;
+            level.mwcf_wall.s_usable_best_d = level.mwcf_wall.s_usable_d;
+        }
+    }
+    return level.mwcf_wall.s_usable_best;
 }
 
 function mwcf_wall_apply()
@@ -2083,9 +2175,9 @@ function mwcf_wall_apply()
         if (level.mwcf_wall.game == 2)
             level.mwcf_wall.s_apply_ok = mwcf_wall_swap_bo6(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row);
         else if (level.mwcf_wall.game == 3)
-            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw3);
+            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw3, level.mwcf_wall.s_apply_row.mw3_icon, level.mwcf_wall.s_apply_row.mw3_label);
         else
-            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw2);
+            level.mwcf_wall.s_apply_ok = mwcf_wall_swap_mw(level.mwcf_wall.s_apply_usable, level.mwcf_wall.s_apply_row.mw2, level.mwcf_wall.s_apply_row.mw2_icon, level.mwcf_wall.s_apply_row.mw2_label);
         if (level.mwcf_wall.s_apply_ok)
         {
             level.mwcf_wall.swapped++;
@@ -2147,7 +2239,7 @@ function mwcf_wall_swap_bo6(usable, row)
     return 1;
 }
 
-function mwcf_wall_swap_mw(usable, name)
+function mwcf_wall_swap_mw(usable, name, icon, label)
 {
     level.mwcf_wall.s_mw_w = function_c95bf1a14134f45c(name);
     if (!isdefined(level.mwcf_wall.s_mw_w) || level.mwcf_wall.s_mw_w.var_1b57e3034f84a054 != name)
@@ -2156,8 +2248,40 @@ function mwcf_wall_swap_mw(usable, name)
     mwcf_wall_set_weapon(usable, name);
     usable.var_2752c96850e281e8 = name;
     usable.mwcf_wall_mw = name;
+    if (isdefined(icon))
+        usable.icon = icon;
+    usable.mwcf_wall_label = label;
     level.mwcf_wall.mw_walls++;
     level.mwcf_wall.last_swap = name;
+    // wall-02: the gun's own loot ID (as the gunsmith reads it) for the prompt; logged with stock's value as name:stock:weapondata.
+    level.mwcf_wall.s_mw_data = undefined;
+    if (isdefined(level.mwcf_box_v1.refs[name]))
+        level.mwcf_wall.s_mw_data = function_6071eb16b74b2e99("weapondata:" + level.mwcf_box_v1.refs[name]);
+    if (isdefined(level.mwcf_wall.s_mw_data) && isdefined(level.mwcf_wall.s_mw_data.lootID) && level.mwcf_wall.s_mw_data.lootID != 0)
+        usable.mwcf_wall_loot = level.mwcf_wall.s_mw_data.lootID;
+    // wall-03: the prompt title (stock: the weapon's var_b5078c440f3b6f37) is blank for MW guns; the gunsmith shows the gun's name
+    // from this bundle's name field, so the prompt uses that.
+    level.mwcf_wall.s_mw_title = "noname";
+    if (isdefined(level.mwcf_wall.s_mw_data) && isdefined(level.mwcf_wall.s_mw_data.name))
+    {
+        usable.mwcf_wall_name = level.mwcf_wall.s_mw_data.name;
+        level.mwcf_wall.s_mw_title = "diff";
+        if (isdefined(level.mwcf_wall.s_mw_w.var_b5078c440f3b6f37) && level.mwcf_wall.s_mw_w.var_b5078c440f3b6f37 == usable.mwcf_wall_name)
+            level.mwcf_wall.s_mw_title = "same";
+    }
+    level.mwcf_wall.s_mw_stock = weapon::function_57559cfce1d2812d(usable.weapon);
+    if (!isdefined(level.mwcf_wall.s_mw_stock))
+        level.mwcf_wall.s_mw_stock = "undefined";
+    level.mwcf_wall.s_mw_entry = name + ":" + level.mwcf_wall.s_mw_stock + ":";
+    if (isdefined(usable.mwcf_wall_loot))
+        level.mwcf_wall.s_mw_entry = level.mwcf_wall.s_mw_entry + usable.mwcf_wall_loot;
+    else if (isdefined(level.mwcf_wall.s_mw_data))
+        level.mwcf_wall.s_mw_entry = level.mwcf_wall.s_mw_entry + "no_lootID";
+    else
+        level.mwcf_wall.s_mw_entry = level.mwcf_wall.s_mw_entry + "no_bundle";
+    level.mwcf_wall.s_mw_entry = level.mwcf_wall.s_mw_entry + ":name_" + level.mwcf_wall.s_mw_title;
+    if (level.mwcf_wall.loot_list.size < 40)
+        level.mwcf_wall.loot_list[level.mwcf_wall.loot_list.size] = level.mwcf_wall.s_mw_entry;
     return 1;
 }
 
@@ -2394,7 +2518,7 @@ function mwcf_wall_rarity()
 function mwcf_wall_report(status)
 {
     nengine_store_set("mwcf_wall", "status", status);
-    nengine_store_set("mwcf_wall", "build", "wall-01");
+    nengine_store_set("mwcf_wall", "build", "wall-05");
     nengine_store_set("mwcf_wall", "game", level.mwcf_wall.game);
     nengine_store_set("mwcf_wall", "walls_listed", isdefined(level.var_caf65b937e9cbfaf));
     if (isdefined(level.var_caf65b937e9cbfaf))
@@ -2417,6 +2541,15 @@ function mwcf_wall_report(status)
     if (isdefined(level.mwcf_wall.loot_stage))
         nengine_store_set("mwcf_wall", "loot_stage", level.mwcf_wall.loot_stage);
     nengine_store_set("mwcf_wall", "failed_count", level.mwcf_wall.failed_list.size);
+    nengine_store_set("mwcf_wall", "prompt_hooks", level.mwcf_wall.prompt_hooks);
+    nengine_store_set("mwcf_wall", "had_other_prompt_hook", isdefined(level.mwcf_wall.prev_prompt));
+    nengine_store_set("mwcf_wall", "prompt_loot_filled", level.mwcf_wall.prompt_fixes);
+    level.mwcf_wall.s_report_index = 0;
+    while (level.mwcf_wall.s_report_index < level.mwcf_wall.loot_list.size)
+    {
+        nengine_store_set("mwcf_wall", "loot_" + level.mwcf_wall.s_report_index, level.mwcf_wall.loot_list[level.mwcf_wall.s_report_index]);
+        level.mwcf_wall.s_report_index++;
+    }
     level.mwcf_wall.s_report_index = 0;
     while (level.mwcf_wall.s_report_index < level.mwcf_wall.failed_list.size && level.mwcf_wall.s_report_index < 30)
     {
@@ -2428,30 +2561,30 @@ function mwcf_wall_report(status)
 
 function mwcf_wall_seed()
 {
-    mwcf_wall_row("sat_ar_kite_mp", "t10_ar_p02_aking74_mp", %"hash_f21899151d35ef1", "jup_jp36_ar_anov94_mp", "iw9_ar_akilo_mp");
-    mwcf_wall_row("sat_ar_vulture_mp", "t10_ar_p54_aspen_mp", %"hash_675311d2fbe3378e", "jup_jp05_ar_foxtrot2000_mp", "iw9_ar_malima_mp");
-    mwcf_wall_row("sat_ar_eagle_mp", "t10_ar_p22_able18_mp", %"hash_555a679f48c6292d", "jup_jp01_ar_golf36_mp", "iw9_ar_scharlie_mp");
-    mwcf_wall_row("sat_ar_hawk_mp", "t10_ar_p01_coslo723_mp", %"hash_577b4040419a8c95", "jup_jp19_ar_acharlie_mp", "iw9_ar_mike4_mp");
-    mwcf_wall_row("sat_ar_condor_mp", "t10_ar_p06_asvalor_mp", %"hash_70733e71720f8548", "jup_jp34_ar_balpha27_mp", "iw9_ar_kilo53_mp");
-    mwcf_wall_row("sat_ar_falcon_mp", "t10_ar_p56_milan_mp", %"hash_665822d0d7db0ad2", "jup_jp08_ar_qbravo97_mp", "iw9_ar_mike16_mp");
-    mwcf_wall_row("sat_sm_puma_mp", "t10_sm_p52_lisbon_mp", %"hash_6193b83b5e30bf3b", "jup_jp41_sm_kpappa50_mp", "iw9_sm_alpha57_mp");
-    mwcf_wall_row("sat_sm_zebra_mp", "t10_sm_p21_pparis90_mp", %"hash_2a19159c6e4fcb34", "jup_jp04_sm_lwhiskey_mp", "iw9_sm_beta_mp");
-    mwcf_wall_row("sat_sm_cobra_mp", "t10_sm_p02_geasy9_mp", %"hash_1ad7c06e226ac271", "jup_jp07_sm_uzulu_mp", "iw9_sm_mpapa7_mp");
-    mwcf_wall_row("sat_sm_otter_mp", "t10_sm_p12_roger31_mp", %"hash_5e3658f740a995d7", "jup_jp02_sm_scharlie3_mp", "iw9_sm_acharlie9_mp");
-    mwcf_wall_row("sat_sm_komodo_mp", "t10_sm_p06_sroger3_mp", %"hash_2f7395db6cc88684", "jup_jp25_sm_talpham_mp", "iw9_sm_apapa_mp");
-    mwcf_wall_row("sat_sm_orca_mp", "t10_sm_p04_chuck9_mp", %"hash_58d1b50c6e00dba6", "jup_jp04_sm_umike_mp", "iw9_sm_mpapax_mp");
-    mwcf_wall_row("sat_sh_akita_mp", "t10_sh_p27_jhavana_mp", %"hash_178b529dbaf6fcc6", "jup_cp01_sh_aromeo410_mp", "iw9_sh_vecho_mp");
-    mwcf_wall_row("sat_sh_husky_mp", "t10_sh_p25_uncle12_mp", %"hash_35084c03056b87a9", "jup_jp38_sh_spapa12_mp", "iw9_sh_tsierra12_mp");
-    mwcf_wall_row("sat_sh_corso_mp", "t10_sh_p10_moslo500_mp", %"hash_26e3ea86f78c1448", "jup_jp16_sh_recho870_mp", "iw9_sh_mbravo_mp");
-    mwcf_wall_row("sat_lm_hades_mp", "t10_lm_p01_aroger10_mp", %"hash_2a971f52e3cfed02", "jup_jp08_lm_qbravo95lsw_mp", "iw9_lm_ngolf7_mp");
-    mwcf_wall_row("sat_lm_zeus_mp", "t10_lm_p53_mesa_mp", %"hash_208f48f9244207b2", "jup_cp15_lm_mkilo3_mp", "iw9_lm_kilo21_mp");
-    mwcf_wall_row("sat_dm_kara_mp", "t10_dm_p03_sgeorge550_mp", %"hash_24d67be09c6eaf7d", "jup_jp03_br_aromeo200_mp", "iw9_dm_mike14_mp");
-    mwcf_wall_row("sat_dm_oman_mp", "t10_dm_p50_erie_mp", %"hash_6fa69514afff117e", "jup_jp01_dm_slima8_mp", "iw9_dm_sbeta_mp");
-    mwcf_wall_row("sat_dm_scotia_mp", "t10_dm_p02_aeasy_mp", %"hash_4abafb8762015a73", "jup_jp40_br_hcharlie36_mp", "iw9_ar_schotel_mp");
-    mwcf_wall_row("sat_sn_caspian_mp", "t10_sn_p09_droger_mp", %"hash_797d579f5509211c", "jup_jp13_sn_svictor_mp", "iw9_sn_mromeo_mp");
-    mwcf_wall_row("sat_sn_drake_mp", "t10_sn_p08_ultiger_mp", %"hash_3f073921159a8936", "jup_jp17_sn_hsierra_mp", "iw9_sn_india_mp");
-    mwcf_wall_row("sat_sn_baltic_mp", "t10_sn_p26_mary82_mp", %"hash_61d9329d2e868e4b", "jup_jp10_sn_cdelta50_mp", "iw9_sn_alpha50_mp");
-    mwcf_wall_row("sat_pi_atlas_mp", "t10_pi_p14_stiger_mp", %"hash_734eaafed1558093", "jup_jp07_pi_uzulum_mp", "iw9_pi_tango9_mp");
-    mwcf_wall_row("sat_pi_timir_mp", "t10_pi_p13_usugar9_mp", %"hash_7b6dd6d4e4ced3be", "jup_cp24_pi_glima21_mp", "iw9_pi_papa220_mp");
-    mwcf_wall_row("sat_pi_orion_mp", "t10_pi_p12_paris30_mp", %"hash_34133fe395e273bb", "jup_jp12_pi_mike93_mp", "iw9_pi_golf18_mp");
+    mwcf_wall_row("sat_ar_kite_mp", "t10_ar_p02_aking74_mp", %"hash_f21899151d35ef1", "jup_jp36_ar_anov94_mp", "iw9_ar_akilo_mp", %"hash_cbf2541bc629e32", %"hash_1b4d7cc4d7f0dbe7", "SVA 545", "Kastov 762");
+    mwcf_wall_row("sat_ar_vulture_mp", "t10_ar_p54_aspen_mp", %"hash_675311d2fbe3378e", "jup_jp05_ar_foxtrot2000_mp", "iw9_ar_malima_mp", %"hash_6a89846cd9134b9", %"hash_310b992d830a69bc", "BP50", "TR-76 Geist");
+    mwcf_wall_row("sat_ar_eagle_mp", "t10_ar_p22_able18_mp", %"hash_555a679f48c6292d", "jup_jp01_ar_golf36_mp", "iw9_ar_scharlie_mp", %"hash_5be4388873f0aae6", %"hash_5f499954df38107a", "Holger 556", "TAQ-56");
+    mwcf_wall_row("sat_ar_hawk_mp", "t10_ar_p01_coslo723_mp", %"hash_577b4040419a8c95", "jup_jp19_ar_acharlie_mp", "iw9_ar_mike4_mp", %"hash_7cd07401f9ee2dff", %"hash_28e6890e4dbdbbd7", "MCW", "M4");
+    mwcf_wall_row("sat_ar_condor_mp", "t10_ar_p06_asvalor_mp", %"hash_70733e71720f8548", "jup_jp34_ar_balpha27_mp", "iw9_ar_kilo53_mp", %"hash_6de3fd348f9c869e", %"hash_567c83853432536e", "BAL-27", "Lachmann-556");
+    mwcf_wall_row("sat_ar_falcon_mp", "t10_ar_p56_milan_mp", %"hash_665822d0d7db0ad2", "jup_jp08_ar_qbravo97_mp", "iw9_ar_mike16_mp", %"hash_2e7f1ab8183e446f", %"hash_3d65d24e1957e3ea", "DG-56", "M16");
+    mwcf_wall_row("sat_sm_puma_mp", "t10_sm_p52_lisbon_mp", %"hash_6193b83b5e30bf3b", "jup_jp41_sm_kpappa50_mp", "iw9_sm_alpha57_mp", %"hash_12172117b6a6d86e", %"hash_470d7dcbc96ba02e", "Static-HV", "FSS Hurricane");
+    mwcf_wall_row("sat_sm_zebra_mp", "t10_sm_p21_pparis90_mp", %"hash_2a19159c6e4fcb34", "jup_jp04_sm_lwhiskey_mp", "iw9_sm_beta_mp", %"hash_59b89160ce1c6cfd", %"hash_559614aa83b8ad40", "Superi 46", "Minibak");
+    mwcf_wall_row("sat_sm_cobra_mp", "t10_sm_p02_geasy9_mp", %"hash_1ad7c06e226ac271", "jup_jp07_sm_uzulu_mp", "iw9_sm_mpapa7_mp", %"hash_5835fdd92ef709eb", %"hash_13214adb8b9e14f6", "WSP-9", "VEL 46");
+    mwcf_wall_row("sat_sm_otter_mp", "t10_sm_p12_roger31_mp", %"hash_5e3658f740a995d7", "jup_jp02_sm_scharlie3_mp", "iw9_sm_acharlie9_mp", %"hash_6e41eacbd92d0e95", %"hash_514cdb7558e65b4c", "HRM-9", "ISO 9mm");
+    mwcf_wall_row("sat_sm_komodo_mp", "t10_sm_p06_sroger3_mp", %"hash_2f7395db6cc88684", "jup_jp25_sm_talpham_mp", "iw9_sm_apapa_mp", %"hash_476ac6c0ae22f691", %"hash_61a919daa108fcc1", "RAM-9", "MX9");
+    mwcf_wall_row("sat_sm_orca_mp", "t10_sm_p04_chuck9_mp", %"hash_58d1b50c6e00dba6", "jup_jp04_sm_umike_mp", "iw9_sm_mpapax_mp", %"hash_abd5a4f852578d6", %"hash_132195db8b9e9467", "Striker", "BAS-P");
+    mwcf_wall_row("sat_sh_akita_mp", "t10_sh_p27_jhavana_mp", %"hash_178b529dbaf6fcc6", "jup_cp01_sh_aromeo410_mp", "iw9_sh_vecho_mp", %"hash_55a671fa38c84a96", %"hash_7cf8a6af86ebedca", "Riveter", "KV Broadside");
+    mwcf_wall_row("sat_sh_husky_mp", "t10_sh_p25_uncle12_mp", %"hash_35084c03056b87a9", "jup_jp38_sh_spapa12_mp", "iw9_sh_tsierra12_mp", %"hash_687e21b250d47171", %"hash_7e7248f4acbcf910", "Reclaimer 18", "MX Guardian");
+    mwcf_wall_row("sat_sh_corso_mp", "t10_sh_p10_moslo500_mp", %"hash_26e3ea86f78c1448", "jup_jp16_sh_recho870_mp", "iw9_sh_mbravo_mp", %"hash_d3d2684ea6bdee7", %"hash_9f77207c50ecbf6", "Lockwood 680", "Bryson 800");
+    mwcf_wall_row("sat_lm_hades_mp", "t10_lm_p01_aroger10_mp", %"hash_2a971f52e3cfed02", "jup_jp08_lm_qbravo95lsw_mp", "iw9_lm_ngolf7_mp", %"hash_482afa330a00b7bd", %"hash_5ce5d1e554741840", "DG-58 LSW", "Sakin MG38");
+    mwcf_wall_row("sat_lm_zeus_mp", "t10_lm_p53_mesa_mp", %"hash_208f48f9244207b2", "jup_cp15_lm_mkilo3_mp", "iw9_lm_kilo21_mp", %"hash_ccf68d02e6ad590", %"hash_5197f21a88ea384f", "TAQ Eradicator", "RAPP H");
+    mwcf_wall_row("sat_dm_kara_mp", "t10_dm_p03_sgeorge550_mp", %"hash_24d67be09c6eaf7d", "jup_jp03_br_aromeo200_mp", "iw9_dm_mike14_mp", %"hash_76b199c28caa871", %"hash_306a8769459aee74", "BAS-B", "EBR-14");
+    mwcf_wall_row("sat_dm_oman_mp", "t10_dm_p50_erie_mp", %"hash_6fa69514afff117e", "jup_jp01_dm_slima8_mp", "iw9_dm_sbeta_mp", %"hash_f2b3dd06431df91", %"hash_33051ceacdb1d2", "DM56", "Lockwood Mk2");
+    mwcf_wall_row("sat_dm_scotia_mp", "t10_dm_p02_aeasy_mp", %"hash_4abafb8762015a73", "jup_jp40_br_hcharlie36_mp", "iw9_ar_schotel_mp", %"hash_25bbced2d94cd632", %"hash_5c6f919f6fcc8459", "Sidewinder", "TAQ-V");
+    mwcf_wall_row("sat_sn_caspian_mp", "t10_sn_p09_droger_mp", %"hash_797d579f5509211c", "jup_jp13_sn_svictor_mp", "iw9_sn_mromeo_mp", %"hash_2b0b45192ec41578", %"hash_7d09c194db5bb6fe", "KV Inhibitor", "MCPR-300");
+    mwcf_wall_row("sat_sn_drake_mp", "t10_sn_p08_ultiger_mp", %"hash_3f073921159a8936", "jup_jp17_sn_hsierra_mp", "iw9_sn_india_mp", %"hash_698469000eebf03c", %"hash_506623ac70dd2534", "Longbow", "FJX Imperium");
+    mwcf_wall_row("sat_sn_baltic_mp", "t10_sn_p26_mary82_mp", %"hash_61d9329d2e868e4b", "jup_jp10_sn_cdelta50_mp", "iw9_sn_alpha50_mp", %"hash_2b60478f406a4ad9", %"hash_3676ccc071937ed6", "KATT-AMR", "Signal 50");
+    mwcf_wall_row("sat_pi_atlas_mp", "t10_pi_p14_stiger_mp", %"hash_734eaafed1558093", "jup_jp07_pi_uzulum_mp", "iw9_pi_tango9_mp", %"hash_4501a6e5d8fff5db", %"hash_73de519685a75c1f", "WSP Stinger", "FTAC Siege");
+    mwcf_wall_row("sat_pi_timir_mp", "t10_pi_p13_usugar9_mp", %"hash_7b6dd6d4e4ced3be", "jup_cp24_pi_glima21_mp", "iw9_pi_papa220_mp", %"hash_44ad13f13757c8b0", %"hash_6156e277e4773509", "COR-45", "P890");
+    mwcf_wall_row("sat_pi_orion_mp", "t10_pi_p12_paris30_mp", %"hash_34133fe395e273bb", "jup_jp12_pi_mike93_mp", "iw9_pi_golf18_mp", %"hash_2b0f3f10e2d2cc77", %"hash_3310d094a923457a", "Renetti", "X13 Auto");
 }

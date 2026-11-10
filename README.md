@@ -8,6 +8,8 @@
 4. In game, go to Zombies -> Weapons -> Mystery Box (or press Mystery Box Loadout on the Confirm Loadout screen before a match) and check the games you want the Mystery Box to give guns from (Black Ops 7, Black Ops 6, Modern Warfare III, Modern Warfare II). All four are on by default.
 5. On the same screen, press **Wall Buys** to switch which game's guns every weapon wall buy sells (Black Ops 7, Black Ops 6, Modern Warfare III, Modern Warfare II). Wall prices stay the same. Black Ops 7 by default.
 
+6. In weapon selection, open **Favorites** to view your favorite guns. Press **1** or click **Toggle Favorite** to add or remove the selected weapon. A gold star appears beside its saved-build counter. Favorites are saved across matches and restarts.
+
 ## Turning it off
 
 Switch "Carry Forward Unleashed" off in the Kronos launcher's Library, then restart the game. Switching it back on works the same way.

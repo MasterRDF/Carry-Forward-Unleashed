@@ -43,7 +43,21 @@ do
     end
 
     local function regroup(list)
-      if type(list) ~= "table" or #list < 2 then return false end
+      if type(list) ~= "table" then return false end
+      -- Favorites supplies native rows with weapon-type headers; keep those headers under this same publisher owner.
+      if rawget(list, "__mwcfFavoritesList") then
+        for i = #list, 1, -1 do
+          local bd = field(list[i], "bundleData")
+          if bd then
+            local ref = field(bd, REF[1]) or field(bd, REF[2])
+            ref = ref and tostring(ref)
+            if ref == "sat_dm_tasman" then table.remove(list, i)
+            elseif ref and S.swapIcon then pcall(S.swapIcon, bd, ref) end
+          end
+        end
+        return false
+      end
+      if #list < 2 then return false end
       local header, labelKey
       local buckets = {}
       for i = 1, #GAMES + 1 do buckets[i] = {} end
@@ -64,9 +78,15 @@ do
           if ref == nil then ref = field(bd, REF[2]) end
           if ref == nil then return false end
           ref = tostring(ref)
-          if S.swapIcon then pcall(S.swapIcon, bd, ref) end
-          local b = buckets[gameOf(ref)]
-          b[#b + 1] = row
+          -- The Miserable Bastille is a duplicate BO7 carry-forward gun, omitted like the BO7 PPSh/MP40/Olympia entries.
+          if ref ~= "sat_dm_tasman" then
+            if S.swapIcon then pcall(S.swapIcon, bd, ref) end
+            local b = buckets[gameOf(ref)]
+            b[#b + 1] = row
+          elseif not S.tasmanHidden then
+            S.tasmanHidden = true
+            log("The Miserable Bastille (sat_dm_tasman) removed from weapon selection")
+          end
         end
       end
       if not header then return false end

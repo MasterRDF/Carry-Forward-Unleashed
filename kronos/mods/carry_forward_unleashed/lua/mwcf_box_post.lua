@@ -219,24 +219,44 @@ do
       if plain:lower() ~= TITLE_FROM then return v end
       return plain == plain:upper() and TITLE_TO:upper() or TITLE_TO
     end
-    local localizeWraps = {}
+    -- names-01: one wrapper per Engine localize function, shared by everything this file does with localized text (filters in
+    -- S.locFilters, run in order on the result). Each wrapper is registered in _G.__mwcfLocalizeWrappers and never wrapped
+    -- again; before, the retitle wrapper and the wall-names wrapper re-wrapped each other on every install.
+    S.locFilters = {}
+    local function locRegistry()
+      local W = rawget(_G, "__mwcfLocalizeWrappers")
+      if type(W) ~= "table" then
+        W = setmetatable({}, { __mode = "k" })
+        rawset(_G, "__mwcfLocalizeWrappers", W)
+      end
+      return W
+    end
     local function hookLocalize()
       local E = rawget(_G, "Engine")
       if type(E) ~= "table" then return end
+      local W = locRegistry()
       for _, name in ipairs({ "Localize", "07d3158a9539a355", "aed84c33ec5f01ea" }) do
         local keys = name == "Localize" and { name, X(name) } or { H(name), H(alt(name)) }
         for _, k in ipairs(keys) do
           local f = get(E, k)
-          if type(f) == "function" and not localizeWraps[f] then
+          if type(f) == "function" and not W[f] then
+            local which = name
             local wrapped = function(...)
               local r = pack(f(...))
-              if (S.building or S.inMenu) and r.n >= 1 then r[1] = retitle(r[1]) end
+              for _, filter in ipairs(S.locFilters) do pcall(filter, r, which, ...) end
               return unpack(r, 1, r.n)
             end
-            if pcall(function() E[k] = wrapped end) and E[k] == wrapped then localizeWraps[wrapped] = true end
+            if pcall(function() E[k] = wrapped end) and get(E, k) == wrapped then
+              W[wrapped] = true
+              S.locWrapped = (S.locWrapped or 0) + 1
+            end
           end
         end
       end
+    end
+    S.hook_localize = hookLocalize
+    S.locFilters[#S.locFilters + 1] = function(r)
+      if (S.building or S.inMenu) and r.n >= 1 then r[1] = retitle(r[1]) end
     end
     local function retitleTree(root, depth, seen)
       depth = depth or 1
@@ -736,6 +756,215 @@ do
       log("weapons row wrapped")
     end
 
+    -- wall-04: MW wall-buy prompt icons. The prompt is a loot card that draws its icon with setImage(RegisterMaterial(icon)); the
+    -- match script sends MW walls the gunsmith render names (icon_weapon_<...>), which are images, not materials, so the card was
+    -- blank. Those names get the image's own hash instead (CLUA.PushXHashAsset, the way the weapon lists draw the same renders).
+    local MW_ICON_PREFIX = "icon_weapon_"
+    local function iconHash(name)
+      local C = rawget(_G, "CLUA")
+      if type(C) ~= "table" or type(C.PushXHashAsset) ~= "function" then return nil end
+      local ok, v = pcall(C.PushXHashAsset, name)
+      if ok and v ~= nil and tostring(v):sub(1, 10) == "xhash: #x4" then return v end
+    end
+    local function hookIcons()
+      local cur = rawget(_G, "RegisterMaterial")
+      if type(cur) ~= "function" or cur == S.regMat then return end
+      local orig = cur
+      S.iconLogs = S.iconLogs or {}
+      S.regMat = function(name, ...)
+        if type(name) == "string" and name:sub(1, #MW_ICON_PREFIX) == MW_ICON_PREFIX then
+          local h = iconHash(name)
+          if not S.iconLogs[name] and (S.iconLogCount or 0) < 20 then
+            S.iconLogs[name] = true
+            S.iconLogCount = (S.iconLogCount or 0) + 1
+            log("wall icon " .. name .. (h and (" -> " .. tostring(h)) or " (no image hash)"))
+          end
+          if h ~= nil then return orig(h, ...) end
+        elseif type(name) ~= "string" and name ~= nil and (S.iconSeenCount or 0) < 60 then
+          -- wall-05 diagnostics: the distinct non-text values cards ask for (the wall sends MW icons as image hashes now).
+          local ok, k = pcall(tostring, name)
+          S.iconSeen = S.iconSeen or {}
+          if ok and not S.iconSeen[k] then
+            S.iconSeen[k] = true
+            S.iconSeenCount = (S.iconSeenCount or 0) + 1
+            log("wall icon diag: RegisterMaterial(" .. type(name) .. " " .. k .. ")")
+          end
+        end
+        return orig(name, ...)
+      end
+      rawset(_G, "RegisterMaterial", S.regMat)
+      log("wall icons: RegisterMaterial wrapped")
+    end
+    S.hook_icons = hookIcons
+
+    -- wall-05: MW wall-buy prompt names. The prompt title is the gun's own name ID (weapondata:<ref> field name); MW2 name text
+    -- shows, MW3 name text is missing in a match, so Engine.Localize returns nothing for it. Names for the wall guns' IDs come from
+    -- WALL_NAMES (ref -> name, written by build.py from the wall table); the IDs are read from the same bundle the gunsmith reads.
+    -- names-01: every MW2/MW3 gun (ref -> the name Reid approved), so any gun whose name text is missing in a match shows one.
+    local WALL_NAMES = { iw9_ar_acharlie300 = "Honey Badger", iw9_ar_akilo = "AK-103", iw9_ar_akilo105 = "AK-105", iw9_ar_akilo74 = "AKS-74U", iw9_ar_augolf = "AUG A3 (MW2)", iw9_ar_falpha = "FAMAS Valorisé (MW2)", iw9_ar_fecho = "VHS-K2", iw9_ar_golf3 = "G3", iw9_ar_helima = "APC556", iw9_ar_kilo53 = "HK33", iw9_ar_malima = "Malyuk", iw9_ar_mcbravo = "MCX Virtus", iw9_ar_mcharlie = "MCX Virtus .300", iw9_ar_mike16 = "M16", iw9_ar_mike4 = "M4A1", iw9_ar_scharlie = "SCAR-L", iw9_ar_schotel = "SCAR-H", iw9_br_msecho = "AR-15 .458 SOCOM", iw9_br_ngsierra = "RM277", iw9_br_soscar14 = "M14", iw9_dm_crossbow = "Crossbow", iw9_dm_la700 = "Mk 13", iw9_dm_mike14 = "M14 EBR", iw9_dm_mike24 = "M24 SWS", iw9_dm_pgolf1 = "SR9", iw9_dm_sa700 = "Remington 700", iw9_dm_sbeta = "Marlin 336", iw9_dm_scromeo = "SCAR 17S", iw9_dm_stango25 = "SR-25 E2", iw9_dm_xmike2010 = "M2010", iw9_la_gromeo = "9K333 Verba", iw9_la_juliet = "FGM-148 Javelin", iw9_la_kgolf = "Carl Gustaf M4", iw9_la_mike32 = "MGL", iw9_la_rpapa7 = "RPG-7", iw9_lm_ahotel = "AUG HBAR", iw9_lm_foxtrot = "MCR", iw9_lm_kilo21 = "HK21", iw9_lm_ngolf7 = "Negev NG7", iw9_lm_rkilo = "RPK", iw9_lm_slima = "MG 338", iw9_pi_decho = "Desert Eagle", iw9_pi_dechoauto = "Desert Eagle (full-auto)", iw9_pi_golf17 = "Glock 17", iw9_pi_golf18 = "Glock 18", iw9_pi_mike2011 = "P", iw9_pi_papa220 = "P220", iw9_pi_swhiskey = "S&W Model 500", iw9_pi_tango9 = "TEC-9", iw9_sh_charlie725 = "Citori 725", iw9_sh_mbravo = "Mossberg 590", iw9_sh_mike1014 = "Benelli M4", iw9_sh_mviktor = "590M", iw9_sh_tsierra12 = "Tavor TS12", iw9_sh_vecho = "Vepr-12", iw9_sm_acharlie45 = "APC45", iw9_sm_acharlie9 = "APC9K", iw9_sm_alpha57 = "AR-57", iw9_sm_apapa = "AUG 9mm", iw9_sm_aviktor = "PP-19-01 Vityaz", iw9_sm_beta = "PP-19 Bizon", iw9_sm_mpapa5 = "MP5 (MW2)", iw9_sm_mpapa7 = "MP7A2", iw9_sm_mpapax = "MPX", iw9_sm_papa90 = "P90", iw9_sm_sdelta = "MP5SD", iw9_sm_victor = "Vector", iw9_sn_alpha50 = "Gepard GM6 Lynx", iw9_sn_india = "Intervention", iw9_sn_limax = "AW50", iw9_sn_mromeo = "MRAD", iw9_sn_walpha = "WA 2000", jup_cp01_sh_aromeo410 = "Riveter", jup_cp01_sm_coscar635 = "AR-15 9mm", jup_cp01_sm_pcharlie9 = "Banshee MkG", jup_cp05_lm_halpha = "Halpha LMG", jup_cp06_ar_falpha = "FAMAS F1", jup_cp08_br_xmike5 = "MCX-SPEAR", jup_cp15_lm_mkilo3 = "Minimi Mk3", jup_cp24_pi_glima21 = "21C", jup_jp01_ar_golf36 = "G36", jup_jp01_dm_slima8 = "SL8 (MW3)", jup_jp01_lm_mgolf36 = "G36K", jup_jp02_ar_bromeo805 = "805 BREN A2", jup_jp02_br_bromeo2 = "BREN 2 BR", jup_jp02_dm_bromeop = "BREN 2 DMR", jup_jp02_sm_scharlie3 = "Scorpion Evo 3 (MW3)", jup_jp03_br_aromeo200 = "ARX200", jup_jp03_sm_pmike = "PMX", jup_jp04_sm_lwhiskey = "SMG-45 (9mm)", jup_jp04_sm_umike = "UMP45 (MW3)", jup_jp05_ar_foxtrot2000 = "F2000", jup_jp06_lm_pkilop = "PKP Pecheneg", jup_jp07_pi_uzulum = "Micro Uzi", jup_jp07_sm_uzulu = "Uzi", jup_jp07_sm_uzulup = "Uzi Pro", jup_jp08_ar_qbravo97 = "QBZ-97", jup_jp08_lm_qbravo95lsw = "QJB-95-1", jup_jp09_sh_oromeo12 = "Origin-12", jup_jp10_sn_cdelta50 = "CDX-50 Tremor", jup_jp12_pi_mike93 = "92FS", jup_jp13_dm_svictork = "SVK", jup_jp13_sn_svictor = "SVCh-8.6", jup_jp14_pi_rsierra12 = "RSh-12", jup_jp16_sh_recho870 = "Remington 870", jup_jp17_sn_hsierra = "HS .50", jup_jp19_ar_acharlie = "ACR", jup_jp19_br_acharlie450 = "ACR .450", jup_jp19_dm_acharlied = "ACR DMR", jup_jp20_lm_evictor = "EVOLYS", jup_jp22_la_dromeo = "Dromeo", jup_jp25_ar_talpha95 = "Tavor CTAR-21", jup_jp25_sm_talpham = "Tavor 9mm", jup_jp28_lm_rpapa20 = "RPL-20", jup_jp31_dm_compound = "Compound Bow", jup_jp32_pi_mpapa9 = "MP9", jup_jp34_ar_balpha27 = "BAL-27", jup_jp35_sn_moscar = "MORS", jup_jp36_ar_anov94 = "SVA 545", jup_jp36_sn_boscar = "K11", jup_jp37_dm_kappa98 = "Kar98k", jup_jp38_sh_spapa12 = "SPAS-12", jup_jp40_br_hcharlie36 = "HCAR", jup_jp41_sm_kpappa50 = "P50", jup_jp44_ar_stango44 = "StG 44" }
+    local function clock()
+      local ok, t = pcall(function() return os.clock() end)
+      return ok and t or 0
+    end
+    local function nameCache()
+      if S.names and S.namesComplete then return S.names end
+      -- A gun's bundle can be missing in this VM; look again at most every 5 s.
+      if S.names and S.namesScanAt and clock() - S.namesScanAt < 5 then return S.names end
+      S.namesScanAt = clock()
+      S.names = S.names or {}
+      local E = rawget(_G, "Engine")
+      local getBundle = E and get(E, H("f06093d047200548"))
+      if type(getBundle) ~= "function" then return S.names end
+      local found, total = 0, 0
+      for ref, label in pairs(WALL_NAMES) do
+        total = total + 1
+        local ok, wb = pcall(getBundle, H("31705bf9ed477170", 3) .. ref)
+        local key = ok and type(wb) == "table" and get(wb, H("c4bcadba8e631b86")) or nil
+        if key ~= nil then
+          local okK, k = pcall(tostring, key)
+          if okK then S.names[k] = label; found = found + 1 end
+        end
+      end
+      S.namesComplete = found == total and total > 0
+      if found ~= S.namesFound then S.namesFound = found; log("wall names: " .. found .. " of " .. total .. " name IDs read") end
+      return S.names
+    end
+    S.name_cache = nameCache
+    -- Blank name text with a gun's name ID: the approved name (all localize functions; was the aed84c33 one only).
+    S.locFilters[#S.locFilters + 1] = function(r, which, a)
+      if a == nil or type(a) == "string" or (r[1] ~= nil and r[1] ~= "") then return end
+      local okK, k = pcall(tostring, a)
+      if not okK then return end
+      local label = nameCache()[k]
+      if label then
+        r[1] = label
+        r.n = math.max(r.n, 1)
+      end
+      if (S.nameDiag or 0) < 30 then
+        S.nameDiagSeen = S.nameDiagSeen or {}
+        if not S.nameDiagSeen[k] then
+          S.nameDiagSeen[k] = true
+          S.nameDiag = (S.nameDiag or 0) + 1
+          log("names diag: no text for " .. k .. " (" .. which .. ")" .. (label and (" -> " .. label) or ""))
+        end
+      end
+    end
+
+    -- names-01: real gun names (Reid's list, output/realnames-01/final_names.json). Lower-cased old name -> { old, new },
+    -- written by build.py; labels that overlap another gun's final name are left to the native ID-based rename.
+    -- Only a whole name is replaced ("MK35 ISR", not "MK35 ISR Barrel"); localization markers and colours stay;
+    -- text the game shows in capitals (the old name has lower case, the text has none) gets the new name in capitals.
+    local REAL_NAMES = { [".50 gs"] = { ".50 GS", "Desert Eagle" }, ["1911"] = { "1911", "M1911" }, ["556 icarus"] = { "556 Icarus", "MCR" }, ["9mm daemon"] = { "9mm Daemon", "P" }, ["9mm pm"] = { "9mm PM", "Makarov PM" }, ["abr a1"] = { "ABR A1", "AUG A3 (BO6)" }, ["ak-74"] = { "Ak-74", "AK-74" }, ["ames 85"] = { "AMES 85", "AR-18" }, ["amr mod 4"] = { "AMR Mod 4", "M82A1" }, ["amr9"] = { "AMR9", "AR-15 9mm" }, ["as val"] = { "As Val", "AS Val" }, ["asg-89"] = { "ASG-89", "USAS-12" }, ["bas-b"] = { "BAS-B", "MCX-SPEAR" }, ["bas-p"] = { "BAS-P", "MPX" }, ["basilisk"] = { "Basilisk", "S&W Model 500" }, ["bp50"] = { "BP50", "F2000" }, ["bruen mk9"] = { "Bruen Mk9", "Minimi Mk3" }, ["bryson 800"] = { "Bryson 800", "Mossberg 590" }, ["bryson 890"] = { "Bryson 890", "590M" }, ["c9"] = { "C9", "MP5 (BO6)" }, ["carrack .300"] = { "Carrack .300", "WA 2000" }, ["chimera"] = { "Chimera", "Honey Badger" }, ["coda 9"] = { "CODA 9", "Kard" }, ["cor-45"] = { "COR-45", "21C" }, ["cr-56 amax"] = { "CR-56 AMAX", "Galil ACE" }, ["cronen squall"] = { "Cronen Squall", "RM277" }, ["cypher 091"] = { "Cypher 091", "TKB-022PM" }, ["dg-56"] = { "DG-56", "QBZ-97" }, ["dg-58 lsw"] = { "DG-58 LSW", "QJB-95-1" }, ["dm-10"] = { "DM-10", "SR-25" }, ["dm56"] = { "DM56", "SL8 (MW3)" }, ["dresden 9mm"] = { "Dresden 9mm", "MP 40" }, ["dtir 30-06"] = { "DTIR 30-06", "HCAR" }, ["ebr-14"] = { "EBR-14", "M14 EBR" }, ["echo 12"] = { "Echo 12", "SRM 1216" }, ["essex model 07"] = { "Essex Model 07", "Winchester Model 1895" }, ["expedite 12"] = { "Expedite 12", "Benelli M4" }, ["feng 82"] = { "Feng 82", "Ultimax 100 Mk3" }, ["fennec 45"] = { "Fennec 45", "Vector" }, ["ffar 1"] = { "FFAR 1", "FAMAS Valorisé (BO6)" }, ["fg42"] = { "FG42", "FG 42" }, ["fjx horus"] = { "FJX Horus", "MP9" }, ["fjx imperium"] = { "FJX Imperium", "Intervention" }, ["fr 5.56"] = { "FR 5.56", "FAMAS F1" }, ["fr avancer"] = { "FR Avancer", "FAMAS Valorisé (MW2)" }, ["fss hurricane"] = { "FSS Hurricane", "AR-57" }, ["ftac recon"] = { "FTAC Recon", "AR-15 .458 SOCOM" }, ["ftac siege"] = { "FTAC Siege", "TEC-9" }, ["goblin mk2"] = { "Goblin Mk2", "RMC No. 2" }, ["gpmg-7"] = { "GPMG-7", "MAG" }, ["gpr 91"] = { "GPR 91", "L85A1" }, ["gravemark .357"] = { "Gravemark .357", "Single Action Army" }, ["grekhova"] = { "Grekhova", "Stechkin APS" }, ["gremlin"] = { "Gremlin", "ZiP .22" }, ["grimhawk"] = { "Grimhawk", "APS" }, ["gs magna"] = { "GS Magna", "Desert Eagle (full-auto)" }, ["gs45"] = { "GS45", "USP45" }, ["hawker hx"] = { "Hawker HX", "Ballista" }, ["haymaker"] = { "Haymaker", "Origin-12" }, ["hcr 56"] = { "HCR 56", "AUG HBAR" }, ["holger 26"] = { "Holger 26", "G36K" }, ["holger 556"] = { "Holger 556", "G36" }, ["hrm-9"] = { "HRM-9", "PMX" }, ["iso 45"] = { "ISO 45", "APC45" }, ["iso 9mm"] = { "ISO 9mm", "APC9K" }, ["iso hemlock"] = { "ISO Hemlock", "APC556" }, ["jackal pdw"] = { "Jackal PDW", "Gepard PDW" }, ["jokr"] = { "JOKR", "FGM-148 Javelin" }, ["jÄger 45"] = { "Jäger 45", "FNP-45" }, ["jäger 45"] = { "Jäger 45", "FNP-45" }, ["kastov 545"] = { "Kastov 545", "AK-105" }, ["kastov 762"] = { "Kastov 762", "AK-103" }, ["kastov lsw"] = { "Kastov LSW", "RPL-20" }, ["kastov-74u"] = { "Kastov-74u", "AKS-74U" }, ["katt-amr"] = { "KATT-AMR", "HS .50" }, ["kilo 141"] = { "Kilo 141", "HK433" }, ["kogot-7"] = { "Kogot-7", "SR-2 Veresk" }, ["kompakt 92"] = { "Kompakt 92", "SAF" }, ["krig c"] = { "Krig C", "SS1-V5" }, ["krs-7.62"] = { "KRS-7.62", "SL8 (BO7)" }, ["ksv"] = { "KSV", "SR-3 Vikhr" }, ["kv broadside"] = { "KV Broadside", "Vepr-12" }, ["kv inhibitor"] = { "KV Inhibitor", "SVCh-8.6" }, ["kvd enforcer"] = { "KVD Enforcer", "SVK" }, ["la-b 330"] = { "LA-B 330", "Mk 13" }, ["lachmann shroud"] = { "Lachmann Shroud", "MP5SD" }, ["lachmann sub"] = { "Lachmann Sub", "MP5 (MW2)" }, ["lachmann-556"] = { "Lachmann-556", "HK33" }, ["lachmann-762"] = { "Lachmann-762", "G3" }, ["ladra"] = { "Ladra", "Spectre M4" }, ["lc10"] = { "LC10", "MPK" }, ["lm-s"] = { "LM-S", "SR9" }, ["lockwood 300"] = { "Lockwood 300", "Citori 725" }, ["lockwood 680"] = { "Lockwood 680", "Remington 870" }, ["lockwood mk2"] = { "Lockwood Mk2", "Marlin 336" }, ["longbow"] = { "Longbow", "K11" }, ["lr 7.62"] = { "LR 7.62", "Ultima Ratio" }, ["lw3a1 frostline"] = { "LW3A1 Frostline", "Arctic Warfare" }, ["m13b"] = { "M13B", "MCX Virtus" }, ["m13c"] = { "M13C", "MCX Virtus .300" }, ["m34 novaline"] = { "M34 Novaline", "M14 EBR Novaline" }, ["m4"] = { "M4", "M4A1" }, ["m8a1"] = { "M8A1", "XM8" }, ["maelstrom"] = { "Maelstrom", "Jackhammer" }, ["marine sp"] = { "Marine SP", "Mossberg 500" }, ["mcpr-300"] = { "MCPR-300", "MRAD" }, ["mcw"] = { "MCW", "ACR" }, ["mcw 6.8"] = { "MCW 6.8", "ACR DMR" }, ["merrick 556"] = { "Merrick 556", "AC556" }, ["minibak"] = { "Minibak", "PP-19 Bizon" }, ["mk35 isr"] = { "MK35 ISR", "HK416" }, ["mpc-25"] = { "MPC-25", "MSMC" }, ["mtz interceptor"] = { "MTZ Interceptor", "BREN 2 DMR" }, ["mtz-556"] = { "MTZ-556", "805 BREN A2" }, ["mtz-762"] = { "MTZ-762", "BREN 2 BR" }, ["mx guardian"] = { "MX Guardian", "Tavor TS12" }, ["mx9"] = { "MX9", "AUG 9mm" }, ["olympia"] = { "Olympia", "Olympia 72" }, ["p890"] = { "P890", "P220" }, ["pdsw 528"] = { "PDSW 528", "P90" }, ["pila"] = { "PILA", "9K333 Verba" }, ["pml 5.56"] = { "PML 5.56", "M249 SAW" }, ["pp-919"] = { "PP-919", "PP-90M1" }, ["pulemyot 762"] = { "Pulemyot 762", "PKP Pecheneg" }, ["raal mg"] = { "RAAL MG", "MG 338" }, ["ram-7"] = { "RAM-7", "Tavor CTAR-21" }, ["ram-9"] = { "RAM-9", "Tavor 9mm" }, ["rapp h"] = { "RAPP H", "HK21" }, ["reclaimer 18"] = { "Reclaimer 18", "SPAS-12" }, ["renetti"] = { "Renetti", "92FS" }, ["rev-46"] = { "REV-46", "Scorpion Evo 3 (BO7)" }, ["rgl-80"] = { "RGL-80", "MGL" }, ["rival-9"] = { "Rival-9", "Scorpion Evo 3 (MW3)" }, ["sa-b 50"] = { "SA-B 50", "Remington 700" }, ["sakin mg38"] = { "Sakin MG38", "Negev NG7" }, ["saug"] = { "SAUG", "Saug" }, ["shadow sk"] = { "Shadow SK", "SVCh" }, ["sidewinder"] = { "Sidewinder", "ACR .450" }, ["signal 50"] = { "Signal 50", "Gepard GM6 Lynx" }, ["sirin 9mm"] = { "Sirin 9mm", "PP-90M" }, ["so-14"] = { "SO-14", "M14" }, ["soa subverter"] = { "SOA Subverter", "ARX200" }, ["sokol 545"] = { "Sokol 545", "Kord 5.45" }, ["sp-r 208"] = { "SP-R 208", "M24 SWS" }, ["sp-x 80"] = { "SP-X 80", "M2010" }, ["static-hv"] = { "Static-HV", "P50" }, ["stb 556"] = { "STB 556", "AUG A3 (MW2)" }, ["strela-p"] = { "STRELA-P", "Carl Gustaf M4" }, ["striker"] = { "Striker", "UMP45 (MW3)" }, ["striker 9"] = { "Striker 9", "SMG-45 (9mm)" }, ["stryder .22"] = { "Stryder .22", "P-30" }, ["sturmwolf 45"] = { "Sturmwolf 45", "UMP45 (BO7)" }, ["superi 46"] = { "Superi 46", "Banshee MkG" }, ["swat 5.56"] = { "SWAT 5.56", "SG 550" }, ["tanto .22"] = { "Tanto .22", "R-31" }, ["taq evolvere"] = { "TAQ Evolvere", "EVOLYS" }, ["taq-56"] = { "TAQ-56", "SCAR-L" }, ["taq-m"] = { "TAQ-M", "SCAR 17S" }, ["taq-v"] = { "TAQ-V", "SCAR-H" }, ["tempus razorback"] = { "Tempus Razorback", "VHS-K2" }, ["tempus torrent"] = { "Tempus Torrent", "SR-25 E2" }, ["tr-76 geist"] = { "TR-76 Geist", "Malyuk" }, ["tr2"] = { "TR2", "FAL" }, ["tr51 para"] = { "TR51 Para", "SA58 Para" }, ["tsarkov 7.62"] = { "Tsarkov 7.62", "SVU" }, ["tyr"] = { "TYR", "RSh-12" }, ["vaznev-9k"] = { "Vaznev-9K", "PP-19-01 Vityaz" }, ["vel 46"] = { "VEL 46", "MP7A2" }, ["victus xmr"] = { "Victus XMR", "AW50" }, ["vst"] = { "VST", "CPW" }, ["wsp stinger"] = { "WSP Stinger", "Micro Uzi" }, ["wsp swarm"] = { "WSP Swarm", "Uzi Pro" }, ["wsp-9"] = { "WSP-9", "Uzi" }, ["x12"] = { "X12", "Glock 17" }, ["x13 auto"] = { "X13 Auto", "Glock 18" }, ["xm4"] = { "XM4", "Colt 723" }, ["xmg"] = { "XMG", "AR-10 LMG" }, ["xrk stalker"] = { "XRK Stalker", "CDX-50 Tremor" } }
+    S.real_names = REAL_NAMES
+    local function renameText(s)
+      if type(s) ~= "string" or #s == 0 or #s > 48 then return nil end
+      -- Engine text is commonly prefixed with 0x1f, and can end with 0x1e. Lua's %s does not include either marker.
+      -- Keep the surrounding formatting, but exclude it from the exact name lookup (including colours before/after a marker).
+      local prefix = s:match("^[%s\30\31]*") or ""
+      local body = s:sub(#prefix + 1)
+      while body:find("^%^%d") do
+        local lead = body:match("^%^%d[%s\30\31]*")
+        prefix = prefix .. lead
+        body = body:sub(#lead + 1)
+      end
+      local plain, suffix = body:match("^(.-)([%s\30\31]*)$")
+      plain = plain:gsub("%^.", "")
+      -- Windows' string.lower/upper can change individual UTF-8 bytes in its current locale (e.g. the first byte of ä).
+      local key = plain:gsub("[A-Z]", string.lower)
+      local e = REAL_NAMES[key]
+      if not e then return nil end
+      local new = e[2]
+      if e[1]:find("[a-z]") and not plain:find("[a-z]") then new = (new:gsub("[a-z]", string.upper):gsub("\195\169", "\195\137"):gsub("\195\164", "\195\132")) end
+      return prefix .. new .. suffix
+    end
+    S.rename_text = renameText
+    S.locFilters[#S.locFilters + 1] = function(r, which)
+      if r.n < 1 then return end
+      local v = renameText(r[1])
+      if not v then return end
+      if (S.renameLogged or 0) < 40 then
+        S.renameSeen = S.renameSeen or {}
+        if not S.renameSeen[r[1]] then
+          S.renameSeen[r[1]] = true
+          S.renameLogged = (S.renameLogged or 0) + 1
+          log("names: '" .. r[1] .. "' -> '" .. v .. "' (" .. which .. ")")
+        end
+      end
+      r[1] = v
+    end
+    -- Kept for callers and tests from wall-05: the names now come through the shared wrappers.
+    local function hookNames() hookLocalize() end
+    S.hook_names = hookNames
+
+    -- names-02: names-01 renamed nothing: no gun name reached the localize wrappers (menus resolve them another way). Text
+    -- elements still get their text through setText (as Rogue Re-Run's prompt amounts showed), so setText is wrapped on the
+    -- element classes and on built widgets' class chains. Each (class, key) is wrapped once, never again, whatever wraps it later
+    -- (Rogue Re-Run wraps the same methods). The first 60 distinct short texts are logged ("names diag setText:") so a test
+    -- shows what passes here. Successful replacements are logged separately, even after that startup diagnostics cap.
+    local setTextDone = setmetatable({}, { __mode = "k" })
+    local function wrapSetText(owner, key)
+      local done = setTextDone[owner]
+      if done and done[key] then return end
+      local f = rawget(owner, key)
+      if type(f) ~= "function" then return end
+      local W = locRegistry()
+      if W[f] then return end
+      local wrapped = function(self, text, ...)
+        if type(text) == "string" and #text > 0 and #text <= 48 then
+          local okR, v = pcall(renameText, text)
+          if okR and v then
+            if (S.renameLogged or 0) < 40 then
+              S.renameSeen = S.renameSeen or {}
+              if not S.renameSeen[text] then
+                S.renameSeen[text] = true
+                S.renameLogged = (S.renameLogged or 0) + 1
+                log("names: '" .. text .. "' -> '" .. v .. "' (setText)")
+              end
+            end
+            text = v
+          elseif (S.textDiag or 0) < 60 and text:find("[%u%d]") then
+            S.textDiagSeen = S.textDiagSeen or {}
+            if not S.textDiagSeen[text] then
+              S.textDiagSeen[text] = true
+              S.textDiag = (S.textDiag or 0) + 1
+              log("names diag setText: " .. text)
+            end
+          end
+        end
+        return f(self, text, ...)
+      end
+      if pcall(rawset, owner, key, wrapped) and rawget(owner, key) == wrapped then
+        W[wrapped] = true
+        done = done or {}
+        done[key] = true
+        setTextDone[owner] = done
+        S.setTextWrapped = (S.setTextWrapped or 0) + 1
+      end
+    end
+    local function hookSetText(el)
+      local tables = {}
+      local LUIt = rawget(_G, "LUI")
+      if type(LUIt) == "table" then
+        for _, n in ipairs({ "UIElement", "UIText", "UITightText", "UIStyledText" }) do
+          local c = get(LUIt, n)
+          if type(c) == "table" then tables[#tables + 1] = c end
+        end
+      end
+      local t = el
+      for _ = 1, 8 do
+        if t == nil then break end
+        local okM, mt = pcall(getmetatable, t)
+        local idx = okM and type(mt) == "table" and rawget(mt, "__index")
+        if type(idx) ~= "table" then break end
+        tables[#tables + 1] = idx
+        t = idx
+      end
+      for _, owner in ipairs(tables) do
+        for _, key in ipairs({ "setText", X("setText"), "SetText" }) do pcall(wrapSetText, owner, key) end
+      end
+    end
+    S.hook_settext = hookSetText
+
     local hooked, loading = {}, {}
     local busy = false
     local function install()
@@ -744,6 +973,9 @@ do
       local ok, err = pcall(function()
         registerMenu()
         hookTab()
+        pcall(hookIcons)
+        pcall(hookNames)
+        pcall(hookSetText)
         patchLaunch()
         local MB = rawget(_G, "MenuBuilder")
         if type(MB) == "table" and type(MB.BuildRegisteredType) == "function" and not hooked[MB] then
@@ -753,6 +985,7 @@ do
             if not S.building and same(name, X(MAP_SELECTION)) then S.inMenu = false end
             pcall(hookTab); pcall(patchLaunch)
             local r = pack(orig(name, ...))
+            if (S.setTextWalks or 0) < 300 and r[1] ~= nil then S.setTextWalks = (S.setTextWalks or 0) + 1; pcall(hookSetText, r[1]) end
             pcall(patchLaunch)
             if r.n >= 1 and (same(name, X(CONFIRM)) or same(name, H(CONFIRM_HASH)) or same(name, H(alt(CONFIRM_HASH)))) then
               if not S.confirmSeenBuild then S.confirmSeenBuild = true; log("confirm loadout: screen built through MenuBuilder.BuildRegisteredType") end
@@ -816,7 +1049,9 @@ do
       end
     end
     install()
-    log("1.6.0-wall-01 loaded, pools " .. pools() .. ", wall buys " .. wallGame())
+    local nReal = 0
+    for _ in pairs(REAL_NAMES) do nReal = nReal + 1 end
+    log("1.6.0-names-07-colt loaded, pools " .. pools() .. ", wall buys " .. wallGame() .. ", " .. nReal .. " real gun names, localize functions wrapped " .. tostring(S.locWrapped or 0) .. ", setText wrapped " .. tostring(S.setTextWrapped or 0))
     return true
   end
   -- Mod post scripts can run before ui/LUIFPSCounter creates KRONOS.H: keep a bootstrap until it exists.
