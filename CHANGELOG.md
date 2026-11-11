@@ -1,3 +1,9 @@
+# Version 1.5.2.1
+
+Changelog
+
+-Fixed an issue where MW guns would sometimes not refill their reserves when pack-a-punching
+
 # Version 1.5.2
 
 Changelog

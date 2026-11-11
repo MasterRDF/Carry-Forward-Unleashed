@@ -132,6 +132,7 @@ function mwcf_box_hooks()
     mwcf_box_register(#"hash_c6570893b1c63e14", &mwcf_box_before_item_spawn);
     mwcf_box_register("magicbox_item_revealed", &mwcf_box_revealed);
     mwcf_box_register("magicbox_purchase", &mwcf_box_purchased);
+    mwcf_box_register("zm_packed_weapon", &mwcf_ammo_packed);
     if (!isdefined(level.var_cb8cece2b97f9dc))
         level.var_cb8cece2b97f9dc = [];
     level.mwcf_box_v1.s_hooks_mwcf_index_0 = 0;
@@ -942,8 +943,12 @@ function mwcf_ammo_loop()
         {
             level.mwcf_box_v1.s_ammo_p = level.players[level.mwcf_box_v1.s_ammo_i];
             level.mwcf_box_v1.s_ammo_i++;
-            if (isdefined(level.mwcf_box_v1.s_ammo_p) && isalive(level.mwcf_box_v1.s_ammo_p))
-                level.mwcf_box_v1.s_ammo_p mwcf_ammo_tick();
+            if (isdefined(level.mwcf_box_v1.s_ammo_p))
+            {
+                level.mwcf_box_v1.s_ammo_p mwcf_max_observe();
+                if (isalive(level.mwcf_box_v1.s_ammo_p))
+                    level.mwcf_box_v1.s_ammo_p mwcf_ammo_tick();
+            }
         }
     }
 }
@@ -959,8 +964,43 @@ function mwcf_ammo_key(w)
     return undefined;
 }
 
+function mwcf_ammo_packed(params)
+{
+    mwcf_trace_event(params);
+    if (!isdefined(params) || !isdefined(params.player) || !isdefined(params.var_101633ed971732ba))
+        return;
+    level.mwcf_box_v1.s_ammo_packed_key = mwcf_ammo_key(params.var_101633ed971732ba);
+    if (!isdefined(level.mwcf_box_v1.s_ammo_packed_key) || !isdefined(params.player.mwcf_ammo_stock))
+        return;
+    if (isdefined(params.player.mwcf_ammo_stock[level.mwcf_box_v1.s_ammo_packed_key]))
+        nengine_store_set("mwcf_box", "ammo_pap_cached_before", params.player.mwcf_ammo_stock[level.mwcf_box_v1.s_ammo_packed_key]);
+    else
+        nengine_store_set("mwcf_box", "ammo_pap_cached_before", -1);
+    if (isdefined(params.var_951c89546ec50477))
+        nengine_store_set("mwcf_box", "ammo_pap_last_tier", params.var_951c89546ec50477);
+    else
+        nengine_store_set("mwcf_box", "ammo_pap_last_tier", -1);
+    params.player.mwcf_ammo_stock[level.mwcf_box_v1.s_ammo_packed_key] = undefined;
+    params.player.mwcf_ammo_from[level.mwcf_box_v1.s_ammo_packed_key] = undefined;
+    if (params.player.mwcf_ammo_cur == level.mwcf_box_v1.s_ammo_packed_key)
+        params.player.mwcf_ammo_cur = undefined;
+    params.player.mwcf_ammo_pap_key = level.mwcf_box_v1.s_ammo_packed_key;
+    if (!isdefined(level.mwcf_box_v1.ammo_pap_resets))
+        level.mwcf_box_v1.ammo_pap_resets = 0;
+    level.mwcf_box_v1.ammo_pap_resets++;
+    nengine_store_set("mwcf_box", "ammo_pap_fix", "cache-reset-trial-01");
+    nengine_store_set("mwcf_box", "ammo_pap_resets", level.mwcf_box_v1.ammo_pap_resets);
+    nengine_store_set("mwcf_box", "ammo_pap_last_weapon", level.mwcf_box_v1.s_ammo_packed_key);
+    nengine_store_set("mwcf_box", "ammo_pap_sample", "waiting_for_inventory");
+    nengine_store_set("mwcf_box", "ammo_pap_first_stock", -1);
+    nengine_store_set("mwcf_box", "ammo_pap_first_max", -1);
+    nengine_store_save("mwcf_box", "status");
+}
+
 function mwcf_ammo_tick()
 {
+    self mwcf_max_poll();
+    self mwcf_trace_poll();
     if (!isdefined(self.mwcf_ammo_stock))
     {
         self.mwcf_ammo_stock = [];
@@ -993,6 +1033,18 @@ function mwcf_ammo_tick()
         {
             self.mwcf_ammo_stock[self.mwcf_ammo_k] = self.mwcf_ammo_pool;
             self.mwcf_ammo_from[self.mwcf_ammo_k] = self.mwcf_ammo_epoch;
+            if (isdefined(self.mwcf_ammo_pap_key) && self.mwcf_ammo_pap_key == self.mwcf_ammo_k)
+            {
+                if (isdefined(self.mwcf_ammo_seen[self.mwcf_ammo_k]) && self.mwcf_ammo_pool > self.mwcf_ammo_seen[self.mwcf_ammo_k] &&
+                    self.mwcf_ammo_pool >= weaponmaxammo(self.mwcf_ammo_w))
+                    self.mwcf_ammo_refilled = 1;
+                nengine_store_set("mwcf_box", "ammo_pap_last_weapon", self.mwcf_ammo_k);
+                nengine_store_set("mwcf_box", "ammo_pap_sample", "first_inventory_sample");
+                nengine_store_set("mwcf_box", "ammo_pap_first_stock", self.mwcf_ammo_pool);
+                nengine_store_set("mwcf_box", "ammo_pap_first_max", weaponmaxammo(self.mwcf_ammo_w));
+                nengine_store_save("mwcf_box", "status");
+                self.mwcf_ammo_pap_key = undefined;
+            }
         }
         else if (isdefined(self.mwcf_ammo_seen[self.mwcf_ammo_k]) && self.mwcf_ammo_pool > self.mwcf_ammo_seen[self.mwcf_ammo_k] &&
             self.mwcf_ammo_pool >= weaponmaxammo(self.mwcf_ammo_w))
@@ -1031,7 +1083,9 @@ function mwcf_ammo_tick()
             self.mwcf_ammo_val = self.mwcf_ammo_stock[self.mwcf_ammo_k];
         if (self getweaponammostock(self.mwcf_ammo_w) != self.mwcf_ammo_val)
         {
+            self mwcf_trace_before(self.mwcf_ammo_w, self.mwcf_ammo_val);
             self setweaponammostock(self.mwcf_ammo_w, self.mwcf_ammo_val);
+            self mwcf_trace_after(self.mwcf_ammo_w, self.mwcf_ammo_val);
             level.mwcf_box_v1.ammo_restores++;
             // The guns sharing this reserve read the new value now: that is not a refill.
             self.mwcf_ammo_j = 0;
@@ -1053,7 +1107,7 @@ function mwcf_ammo_tick()
 function mwcf_box_report(status)
 {
     nengine_store_set("mwcf_box", "status", status);
-    nengine_store_set("mwcf_box", "build", "box-21-own-reserves");
+    nengine_store_set("mwcf_box", "build", "box-24-maxammo-fix-trial-01");
     nengine_store_set("mwcf_box", "pool_size", level.mwcf_box_v1.loaded.size);
     nengine_store_set("mwcf_box", "failed_weapon_count", level.mwcf_box_v1.failed_list.size);
     level.mwcf_box_v1.s_report_failed_index = 0;
@@ -2587,4 +2641,569 @@ function mwcf_wall_seed()
     mwcf_wall_row("sat_pi_atlas_mp", "t10_pi_p14_stiger_mp", %"hash_734eaafed1558093", "jup_jp07_pi_uzulum_mp", "iw9_pi_tango9_mp", %"hash_4501a6e5d8fff5db", %"hash_73de519685a75c1f", "WSP Stinger", "FTAC Siege");
     mwcf_wall_row("sat_pi_timir_mp", "t10_pi_p13_usugar9_mp", %"hash_7b6dd6d4e4ced3be", "jup_cp24_pi_glima21_mp", "iw9_pi_papa220_mp", %"hash_44ad13f13757c8b0", %"hash_6156e277e4773509", "COR-45", "P890");
     mwcf_wall_row("sat_pi_orion_mp", "t10_pi_p12_paris30_mp", %"hash_34133fe395e273bb", "jup_jp12_pi_mike93_mp", "iw9_pi_golf18_mp", %"hash_2b0f3f10e2d2cc77", %"hash_3310d094a923457a", "Renetti", "X13 Auto");
+}
+
+function mwcf_trace_init()
+{
+    if (isdefined(level.mwcf_at))
+        return;
+    level.mwcf_at = function_5c418f65db2e25e8();
+    level.mwcf_at.rows = [];
+    level.mwcf_at.watches = [];
+    level.mwcf_at.count = 0;
+    level.mwcf_at.saved = 0;
+    level.mwcf_at.events = 0;
+    level.mwcf_at.players = 0;
+    level.mwcf_at.restores = 0;
+    level.mwcf_at.timeouts = 0;
+    level.mwcf_at.replacements = 0;
+    level.mwcf_at.active = 0;
+    level.mwcf_at.stopped = 0;
+    level.mwcf_at.started = function_83bf4b34fbbe124b();
+    level.mwcf_at.last_flush = level.mwcf_at.started;
+    level.mwcf_at.state = "capturing";
+    level.mwcf_at.capacity_event = "-";
+    level.mwcf_at.capacity_restore = "-";
+    level.mwcf_at.capacity_time = "-";
+}
+
+function mwcf_trace_value(value)
+{
+    if (!isdefined(value))
+        return "-";
+    return value;
+}
+
+function mwcf_trace_name(weapon)
+{
+    if (!isdefined(weapon))
+        return "-";
+    if (isdefined(weapon.basename))
+        return weapon.basename;
+    if (isdefined(weapon.var_1b57e3034f84a054))
+        return weapon.var_1b57e3034f84a054;
+    return "-";
+}
+
+function mwcf_trace_key(weapon)
+{
+    if (!isdefined(level.mwcf_box_v1) || !isdefined(level.mwcf_box_v1.games))
+        return undefined;
+    return mwcf_ammo_key(weapon);
+}
+
+function mwcf_trace_parts(weapon)
+{
+    if (mwcf_trace_name(weapon) == "-")
+        return "-";
+    level.mwcf_at.parts_list = function_18230039fad6de43(weapon);
+    if (!isdefined(level.mwcf_at.parts_list))
+        return "-";
+    level.mwcf_at.parts_text = "";
+    level.mwcf_at.parts_i = 0;
+    while (level.mwcf_at.parts_i < level.mwcf_at.parts_list.size)
+    {
+        if (level.mwcf_at.parts_i > 0)
+            level.mwcf_at.parts_text += ",";
+        level.mwcf_at.parts_text += level.mwcf_at.parts_list[level.mwcf_at.parts_i];
+        level.mwcf_at.parts_i++;
+    }
+    return level.mwcf_at.parts_text;
+}
+
+function mwcf_trace_policy()
+{
+    if (isdefined(level.var_a1afeb27a3d180ff) && isdefined(level.var_a1afeb27a3d180ff.var_1976506fada1193b))
+        return level.var_a1afeb27a3d180ff.var_1976506fada1193b;
+    return "-";
+}
+
+function mwcf_trace_cache(player, key)
+{
+    level.mwcf_at.cache_stock = "-";
+    level.mwcf_at.cache_seen = "-";
+    level.mwcf_at.cache_from = "-";
+    if (isdefined(player) && isdefined(key))
+    {
+        if (isdefined(player.mwcf_ammo_stock))
+            level.mwcf_at.cache_stock = mwcf_trace_value(player.mwcf_ammo_stock[key]);
+        if (isdefined(player.mwcf_ammo_seen))
+            level.mwcf_at.cache_seen = mwcf_trace_value(player.mwcf_ammo_seen[key]);
+        if (isdefined(player.mwcf_ammo_from))
+            level.mwcf_at.cache_from = mwcf_trace_value(player.mwcf_ammo_from[key]);
+    }
+    if (!isdefined(player))
+        return "-|-|-|-";
+    return level.mwcf_at.cache_stock + "|" + level.mwcf_at.cache_seen + "|" + level.mwcf_at.cache_from + "|" + mwcf_trace_value(player.mwcf_ammo_epoch);
+}
+
+function mwcf_trace_prefix(kind, watch)
+{
+    return kind + "|" + function_83bf4b34fbbe124b() + "|" + watch.pid + "|" + watch.event + "|" + mwcf_trace_value(watch.key);
+}
+
+function mwcf_trace_flush()
+{
+    nengine_store_set("mwcf_ammo_trace", "build_tag", "v1.5.2-pap-ammo-fix-trial-01");
+    nengine_store_set("mwcf_ammo_trace", "format_version", 1);
+    nengine_store_set("mwcf_ammo_trace", "session_id", "fix01-" + level.mwcf_at.started);
+    nengine_store_set("mwcf_ammo_trace", "capture_limit_ms", 30000);
+    nengine_store_set("mwcf_ammo_trace", "record_limit", 256);
+    nengine_store_set("mwcf_ammo_trace", "sample_flush_ms", 1000);
+    nengine_store_set("mwcf_ammo_trace", "row_format", "pipe-delimited; columns in README; dash=undefined; bool=0/1");
+    nengine_store_set("mwcf_ammo_trace", "zmod", "not_observed");
+    level.mwcf_at.flush_i = level.mwcf_at.saved;
+    while (level.mwcf_at.flush_i < level.mwcf_at.count)
+    {
+        nengine_store_set("mwcf_ammo_trace", "row_" + level.mwcf_at.flush_i, level.mwcf_at.rows[level.mwcf_at.flush_i]);
+        level.mwcf_at.flush_i++;
+    }
+    nengine_store_set("mwcf_ammo_trace", "row_count", level.mwcf_at.count);
+    nengine_store_set("mwcf_ammo_trace", "event_count", level.mwcf_at.events);
+    nengine_store_set("mwcf_ammo_trace", "restore_count", level.mwcf_at.restores);
+    nengine_store_set("mwcf_ammo_trace", "active_watches", level.mwcf_at.active);
+    nengine_store_set("mwcf_ammo_trace", "timeout_count", level.mwcf_at.timeouts);
+    nengine_store_set("mwcf_ammo_trace", "replacement_count", level.mwcf_at.replacements);
+    nengine_store_set("mwcf_ammo_trace", "state", level.mwcf_at.state);
+    nengine_store_set("mwcf_ammo_trace", "capacity_reached", level.mwcf_at.stopped);
+    nengine_store_set("mwcf_ammo_trace", "capacity_time", level.mwcf_at.capacity_time);
+    nengine_store_set("mwcf_ammo_trace", "capacity_event", level.mwcf_at.capacity_event);
+    nengine_store_set("mwcf_ammo_trace", "capacity_restore", level.mwcf_at.capacity_restore);
+    nengine_store_save("mwcf_ammo_trace", "pap");
+    level.mwcf_at.saved = level.mwcf_at.count;
+    level.mwcf_at.last_flush = function_83bf4b34fbbe124b();
+}
+
+function mwcf_trace_capacity(event, restore)
+{
+    level.mwcf_at.stopped = 1;
+    level.mwcf_at.state = "capacity_reached";
+    level.mwcf_at.capacity_time = function_83bf4b34fbbe124b();
+    level.mwcf_at.capacity_event = event;
+    level.mwcf_at.capacity_restore = restore;
+    mwcf_trace_flush();
+}
+
+function mwcf_trace_emit(row, urgent)
+{
+    if (level.mwcf_at.stopped)
+        return;
+    level.mwcf_at.rows[level.mwcf_at.count] = row;
+    level.mwcf_at.count++;
+    if (level.mwcf_at.count == 256)
+    {
+        mwcf_trace_capacity(level.mwcf_at.events, level.mwcf_at.restores);
+        return;
+    }
+    if (urgent || function_83bf4b34fbbe124b() - level.mwcf_at.last_flush >= 1000)
+        mwcf_trace_flush();
+}
+
+function mwcf_trace_event(params)
+{
+    mwcf_trace_init();
+    if (level.mwcf_at.stopped)
+        return;
+    level.mwcf_at.events++;
+    level.mwcf_at.pap_event_watch = function_5c418f65db2e25e8();
+    level.mwcf_at.pap_event_watch.event = level.mwcf_at.events;
+    level.mwcf_at.pap_event_watch.started = function_83bf4b34fbbe124b();
+    level.mwcf_at.pap_event_watch.pid = "-";
+    level.mwcf_at.pap_event_watch.tier = "-";
+    level.mwcf_at.pap_event_status = "missing_payload";
+    if (isdefined(params))
+    {
+        level.mwcf_at.pap_event_watch.player = params.player;
+        level.mwcf_at.pap_event_watch.expected = params.var_101633ed971732ba;
+        level.mwcf_at.pap_event_watch.old = params.var_39044599845b54cf;
+        level.mwcf_at.pap_event_watch.tier = mwcf_trace_value(params.var_951c89546ec50477);
+        level.mwcf_at.pap_event_watch.key = mwcf_trace_key(params.var_101633ed971732ba);
+        level.mwcf_at.pap_event_status = "missing_player";
+        if (isdefined(params.player))
+        {
+            if (!isdefined(params.player.mwcf_trace_pid))
+            {
+                level.mwcf_at.players++;
+                params.player.mwcf_trace_pid = level.mwcf_at.players;
+            }
+            level.mwcf_at.pap_event_watch.pid = params.player.mwcf_trace_pid;
+            level.mwcf_at.pap_event_status = "missing_expected";
+            if (isdefined(params.var_101633ed971732ba))
+            {
+                level.mwcf_at.pap_event_status = "non_mw_or_table_unavailable";
+                if (isdefined(level.mwcf_at.pap_event_watch.key))
+                    level.mwcf_at.pap_event_status = "watching";
+            }
+        }
+    }
+    if (level.mwcf_at.pap_event_status == "watching")
+    {
+        level.mwcf_at.pap_event_i = 0;
+        while (level.mwcf_at.pap_event_i < level.mwcf_at.watches.size)
+        {
+            level.mwcf_at.pap_event_previous = level.mwcf_at.watches[level.mwcf_at.pap_event_i];
+            level.mwcf_at.pap_event_i++;
+            if (level.mwcf_at.pap_event_previous.active && level.mwcf_at.pap_event_previous.player == level.mwcf_at.pap_event_watch.player && level.mwcf_at.pap_event_previous.key == level.mwcf_at.pap_event_watch.key)
+            {
+                level.mwcf_at.pap_event_previous.active = 0;
+                level.mwcf_at.active--;
+                level.mwcf_at.replacements++;
+                mwcf_trace_emit(mwcf_trace_prefix("R", level.mwcf_at.pap_event_previous) + "|replaced|" + level.mwcf_at.pap_event_watch.event, 1);
+            }
+        }
+        if (level.mwcf_at.stopped)
+            return;
+        level.mwcf_at.pap_event_watch.active = 1;
+        level.mwcf_at.watches[level.mwcf_at.watches.size] = level.mwcf_at.pap_event_watch;
+        level.mwcf_at.active++;
+        level.mwcf_at.state = "capturing";
+    }
+    mwcf_trace_emit(mwcf_trace_prefix("E", level.mwcf_at.pap_event_watch) + "|" + level.mwcf_at.pap_event_watch.tier + "|" + mwcf_trace_name(level.mwcf_at.pap_event_watch.expected) + "|" + mwcf_trace_name(level.mwcf_at.pap_event_watch.old) + "|" + mwcf_trace_parts(level.mwcf_at.pap_event_watch.expected) + "|" + mwcf_trace_parts(level.mwcf_at.pap_event_watch.old) + "|" + mwcf_trace_cache(level.mwcf_at.pap_event_watch.player, level.mwcf_at.pap_event_watch.key) + "|" + mwcf_trace_policy() + "|" + level.mwcf_at.pap_event_status, 1);
+}
+
+function mwcf_trace_sample(watch, target)
+{
+    if (level.mwcf_at.stopped)
+        return;
+    level.mwcf_at.sample_stock = "-";
+    level.mwcf_at.sample_max = "-";
+    level.mwcf_at.sample_start = "-";
+    level.mwcf_at.sample_expected = 0;
+    level.mwcf_at.sample_old = 0;
+    if (isdefined(target))
+    {
+        level.mwcf_at.sample_stock = self getweaponammostock(target);
+        level.mwcf_at.sample_max = weaponmaxammo(target);
+        level.mwcf_at.sample_start = weaponstartammo(target);
+        level.mwcf_at.sample_expected = target == watch.expected;
+        level.mwcf_at.sample_old = target == watch.old;
+    }
+    mwcf_trace_emit(mwcf_trace_prefix("S", watch) + "|" + watch.tier + "|" + (function_83bf4b34fbbe124b() - watch.started) + "|" + isdefined(level.mwcf_at.poll_list) + "|" + level.mwcf_at.poll_expected + "|" + level.mwcf_at.poll_old + "|" + mwcf_trace_name(level.mwcf_at.poll_current) + "|" + (isdefined(level.mwcf_at.poll_current) && level.mwcf_at.poll_current == watch.expected) + "|" + (isdefined(level.mwcf_at.poll_current) && level.mwcf_at.poll_current == watch.old) + "|" + mwcf_trace_name(target) + "|" + level.mwcf_at.sample_expected + "|" + level.mwcf_at.sample_old + "|" + level.mwcf_at.sample_stock + "|" + level.mwcf_at.sample_max + "|" + level.mwcf_at.sample_start + "|" + mwcf_trace_cache(self, watch.key) + "|" + mwcf_trace_policy(), 0);
+}
+
+function mwcf_trace_poll()
+{
+    if (!isdefined(level.mwcf_at) || level.mwcf_at.stopped || level.mwcf_at.active == 0)
+        return;
+    level.mwcf_at.poll_i = 0;
+    while (level.mwcf_at.poll_i < level.mwcf_at.watches.size && !level.mwcf_at.stopped)
+    {
+        level.mwcf_at.poll_watch = level.mwcf_at.watches[level.mwcf_at.poll_i];
+        level.mwcf_at.poll_i++;
+        if (!level.mwcf_at.poll_watch.active)
+            continue;
+        if (function_83bf4b34fbbe124b() - level.mwcf_at.poll_watch.started >= 30000)
+        {
+            level.mwcf_at.poll_watch.active = 0;
+            level.mwcf_at.active--;
+            level.mwcf_at.timeouts++;
+            if (level.mwcf_at.active == 0)
+                level.mwcf_at.state = "timeout";
+            mwcf_trace_emit(mwcf_trace_prefix("T", level.mwcf_at.poll_watch) + "|timeout|-", 1);
+            continue;
+        }
+        if (level.mwcf_at.poll_watch.player != self)
+            continue;
+        level.mwcf_at.poll_list = self getweaponslistprimaries();
+        level.mwcf_at.poll_current = self getcurrentweapon();
+        level.mwcf_at.poll_expected = 0;
+        level.mwcf_at.poll_old = 0;
+        level.mwcf_at.poll_j = 0;
+        if (isdefined(level.mwcf_at.poll_list))
+        {
+            while (level.mwcf_at.poll_j < level.mwcf_at.poll_list.size)
+            {
+                if (level.mwcf_at.poll_list[level.mwcf_at.poll_j] == level.mwcf_at.poll_watch.expected)
+                    level.mwcf_at.poll_expected = 1;
+                if (level.mwcf_at.poll_list[level.mwcf_at.poll_j] == level.mwcf_at.poll_watch.old)
+                    level.mwcf_at.poll_old = 1;
+                level.mwcf_at.poll_j++;
+            }
+        }
+        if (level.mwcf_at.poll_expected)
+            self mwcf_trace_sample(level.mwcf_at.poll_watch, level.mwcf_at.poll_watch.expected);
+        if (level.mwcf_at.poll_old && level.mwcf_at.poll_watch.old != level.mwcf_at.poll_watch.expected)
+            self mwcf_trace_sample(level.mwcf_at.poll_watch, level.mwcf_at.poll_watch.old);
+        if (!level.mwcf_at.poll_expected && !level.mwcf_at.poll_old)
+            self mwcf_trace_sample(level.mwcf_at.poll_watch, undefined);
+    }
+}
+
+function mwcf_trace_restore_row(watch, kind, after)
+{
+    return mwcf_trace_prefix(kind, watch) + "|" + watch.tier + "|" + level.mwcf_at.before_id + "|" + mwcf_trace_value(level.mwcf_at.before_key) + "|" + mwcf_trace_name(level.mwcf_at.before_weapon) + "|" + (level.mwcf_at.before_weapon == watch.expected) + "|" + (level.mwcf_at.before_weapon == watch.old) + "|" + level.mwcf_at.before_native + "|" + level.mwcf_at.before_desired + "|" + after + "|" + level.mwcf_at.before_reason + "|" + mwcf_trace_cache(self, level.mwcf_at.before_key) + "|" + mwcf_trace_policy();
+}
+
+function mwcf_trace_before(weapon, desired)
+{
+    self mwcf_max_before(weapon, desired);
+    if (!isdefined(level.mwcf_at) || level.mwcf_at.stopped || level.mwcf_at.active == 0)
+        return;
+    level.mwcf_at.before_pending = [];
+    level.mwcf_at.before_omitted = 0;
+    level.mwcf_at.before_i = 0;
+    level.mwcf_at.before_weapon = weapon;
+    level.mwcf_at.before_key = mwcf_trace_key(weapon);
+    level.mwcf_at.before_desired = desired;
+    level.mwcf_at.before_native = self getweaponammostock(weapon);
+    level.mwcf_at.before_reason = "cached_switch";
+    if (self.mwcf_ammo_from[self.mwcf_ammo_k] < self.mwcf_ammo_epoch)
+        level.mwcf_at.before_reason = "full_refill_epoch";
+    level.mwcf_at.restores++;
+    level.mwcf_at.before_id = level.mwcf_at.restores;
+    while (level.mwcf_at.before_i < level.mwcf_at.watches.size && !level.mwcf_at.stopped)
+    {
+        level.mwcf_at.before_watch = level.mwcf_at.watches[level.mwcf_at.before_i];
+        level.mwcf_at.before_i++;
+        if (!level.mwcf_at.before_watch.active || level.mwcf_at.before_watch.player != self)
+            continue;
+        if (level.mwcf_at.count + level.mwcf_at.before_pending.size + 2 > 256)
+        {
+            level.mwcf_at.before_omitted = 1;
+            if (level.mwcf_at.before_pending.size == 0)
+                mwcf_trace_capacity(level.mwcf_at.before_watch.event, level.mwcf_at.before_id);
+            return;
+        }
+        level.mwcf_at.before_pending[level.mwcf_at.before_pending.size] = level.mwcf_at.before_watch;
+        mwcf_trace_emit(self mwcf_trace_restore_row(level.mwcf_at.before_watch, "B", "-"), 1);
+    }
+}
+
+function mwcf_trace_after(weapon, desired)
+{
+    self mwcf_max_after(weapon, desired);
+    if (!isdefined(level.mwcf_at) || level.mwcf_at.stopped || !isdefined(level.mwcf_at.before_pending) || level.mwcf_at.before_pending.size == 0)
+        return;
+    level.mwcf_at.after_native = self getweaponammostock(weapon);
+    level.mwcf_at.after_i = 0;
+    while (level.mwcf_at.after_i < level.mwcf_at.before_pending.size)
+    {
+        mwcf_trace_emit(self mwcf_trace_restore_row(level.mwcf_at.before_pending[level.mwcf_at.after_i], "A", level.mwcf_at.after_native), 1);
+        level.mwcf_at.after_i++;
+    }
+    level.mwcf_at.before_pending = [];
+    if (isdefined(level.mwcf_at.before_omitted) && level.mwcf_at.before_omitted && !level.mwcf_at.stopped)
+        mwcf_trace_capacity(level.mwcf_at.events, level.mwcf_at.before_id);
+}
+
+function mwcf_max_observe()
+{
+    if (isdefined(self.mwcf_max_watching))
+        return;
+    self.mwcf_max_watching = 1;
+    self thread mwcf_max_watch();
+}
+
+function mwcf_max_watch()
+{
+    self endon(#"disconnect");
+    for (;;)
+    {
+        self waittill(#"hash_eb1d2a660ae3792a");
+        self mwcf_max_complete();
+    }
+}
+
+function mwcf_max_init()
+{
+    if (isdefined(level.mwcf_mx))
+        return;
+    level.mwcf_mx = function_5c418f65db2e25e8();
+    level.mwcf_mx.rows = [];
+    level.mwcf_mx.count = 0;
+    level.mwcf_mx.saved = 0;
+    level.mwcf_mx.sequence = 0;
+    level.mwcf_mx.players = 0;
+    level.mwcf_mx.restores = 0;
+    level.mwcf_mx.capped = 0;
+    level.mwcf_mx.started = function_83bf4b34fbbe124b();
+    level.mwcf_mx.last_flush = level.mwcf_mx.started;
+}
+
+function mwcf_max_value(value)
+{
+    if (!isdefined(value))
+        return "-";
+    return value;
+}
+
+function mwcf_max_prefix(kind)
+{
+    return kind + "|" + function_83bf4b34fbbe124b() + "|" + self.mwcf_max_id + "|" + self.mwcf_max_event;
+}
+
+function mwcf_max_flush()
+{
+    nengine_store_set("mwcf_maxammo_trace", "build_tag", "v1.5.2-maxammo-fix-trial-01");
+    nengine_store_set("mwcf_maxammo_trace", "format_version", 1);
+    nengine_store_set("mwcf_maxammo_trace", "session_id", "max01-" + level.mwcf_mx.started);
+    nengine_store_set("mwcf_maxammo_trace", "record_limit", 512);
+    nengine_store_set("mwcf_maxammo_trace", "capture_limit_ms", 30000);
+    nengine_store_set("mwcf_maxammo_trace", "row_count", level.mwcf_mx.count);
+    nengine_store_set("mwcf_maxammo_trace", "capacity_reached", level.mwcf_mx.capped);
+    nengine_store_set("mwcf_maxammo_trace", "events", level.mwcf_mx.sequence);
+    while (level.mwcf_mx.saved < level.mwcf_mx.count)
+    {
+        nengine_store_set("mwcf_maxammo_trace", "row_" + level.mwcf_mx.saved, level.mwcf_mx.rows[level.mwcf_mx.saved]);
+        level.mwcf_mx.saved++;
+    }
+    nengine_store_save("mwcf_maxammo_trace", "maxammo");
+    level.mwcf_mx.last_flush = function_83bf4b34fbbe124b();
+}
+
+function mwcf_max_emit(row, immediate)
+{
+    if (level.mwcf_mx.count >= 512)
+    {
+        if (!level.mwcf_mx.capped)
+        {
+            level.mwcf_mx.capped = 1;
+            mwcf_max_flush();
+        }
+        return;
+    }
+    level.mwcf_mx.rows[level.mwcf_mx.count] = row;
+    level.mwcf_mx.count++;
+    if (immediate || function_83bf4b34fbbe124b() - level.mwcf_mx.last_flush >= 1000)
+        mwcf_max_flush();
+}
+
+function mwcf_max_complete()
+{
+    mwcf_max_init();
+    if (!isdefined(self.mwcf_max_id))
+    {
+        level.mwcf_mx.players++;
+        self.mwcf_max_id = level.mwcf_mx.players;
+    }
+    level.mwcf_mx.sequence++;
+    self.mwcf_max_event = level.mwcf_mx.sequence;
+    self.mwcf_max_deadline = function_83bf4b34fbbe124b() + 30000;
+    self.mwcf_max_zmod = istrue(namespace_60b3bdcc70f79fc6::function_81557bcd4ddf6a05(#"zombie", #"hash_3930894d8d2f0ee6", "specialty_z_mod", #"hash_b9c78074fa73e5ae"));
+    self.mwcf_max_current = self getcurrentweapon();
+    self mwcf_max_emit(self mwcf_max_prefix("E") + "|" + mwcf_trace_policy() + "|" + self.mwcf_max_zmod + "|" + mwcf_max_value(mwcf_ammo_key(self.mwcf_max_current)), 1);
+    if (!isdefined(self.mwcf_ammo_stock))
+    {
+        self.mwcf_ammo_stock = [];
+        self.mwcf_ammo_from = [];
+        self.mwcf_ammo_seen = [];
+        self.mwcf_ammo_mark = [];
+        self.mwcf_ammo_keys = [];
+        self.mwcf_ammo_epoch = 0;
+        self.mwcf_ammo_tickid = 0;
+    }
+    self.mwcf_max_list = self getweaponslistprimaries();
+    self.mwcf_max_count = 0;
+    self.mwcf_max_selected = 0;
+    if (isdefined(self.mwcf_max_list))
+    {
+        self.mwcf_max_index = 0;
+        while (self.mwcf_max_index < self.mwcf_max_list.size)
+        {
+            self.mwcf_max_weapon = self.mwcf_max_list[self.mwcf_max_index];
+            self.mwcf_max_index++;
+            self.mwcf_max_key = mwcf_ammo_key(self.mwcf_max_weapon);
+            if (!isdefined(self.mwcf_max_key))
+                continue;
+            if (namespace_8f1241659942304e::function_71a662b35139507c(self.mwcf_max_weapon))
+            {
+                self mwcf_max_emit(self mwcf_max_prefix("K") + "|" + self.mwcf_max_key + "|stock_skipped", 0);
+                self.mwcf_ammo_seen[self.mwcf_max_key] = self getweaponammostock(self.mwcf_max_weapon);
+                continue;
+            }
+            self.mwcf_max_amount = namespace_60b3bdcc70f79fc6::function_a4de202cfe48379(self.mwcf_max_weapon, self.mwcf_max_zmod);
+            if (!isdefined(self.mwcf_max_amount) || self.mwcf_max_amount < 0)
+            {
+                self mwcf_max_emit(self mwcf_max_prefix("K") + "|" + self.mwcf_max_key + "|invalid_stock_amount", 0);
+                self.mwcf_ammo_seen[self.mwcf_max_key] = self getweaponammostock(self.mwcf_max_weapon);
+                continue;
+            }
+            self mwcf_max_emit(self mwcf_max_prefix("G") + "|" + self.mwcf_max_key + "|" + self getweaponammostock(self.mwcf_max_weapon) + "|" + mwcf_max_value(self.mwcf_ammo_stock[self.mwcf_max_key]) + "|" + self.mwcf_max_amount + "|" + weaponmaxammo(self.mwcf_max_weapon) + "|" + weaponstartammo(self.mwcf_max_weapon) + "|" + mwcf_max_value(self.mwcf_ammo_seen[self.mwcf_max_key]) + "|" + mwcf_max_value(self.mwcf_ammo_from[self.mwcf_max_key]) + "|" + self.mwcf_ammo_epoch, 0);
+            self.mwcf_max_found = 0;
+            self.mwcf_max_key_index = 0;
+            while (self.mwcf_max_key_index < self.mwcf_ammo_keys.size)
+            {
+                if (self.mwcf_ammo_keys[self.mwcf_max_key_index] == self.mwcf_max_key)
+                    self.mwcf_max_found = 1;
+                self.mwcf_max_key_index++;
+            }
+            if (!self.mwcf_max_found)
+                self.mwcf_ammo_keys[self.mwcf_ammo_keys.size] = self.mwcf_max_key;
+            self.mwcf_ammo_stock[self.mwcf_max_key] = self.mwcf_max_amount;
+            self.mwcf_ammo_from[self.mwcf_max_key] = self.mwcf_ammo_epoch;
+            self.mwcf_ammo_seen[self.mwcf_max_key] = self getweaponammostock(self.mwcf_max_weapon);
+            self.mwcf_ammo_mark[self.mwcf_max_key] = self.mwcf_ammo_tickid;
+            if (self.mwcf_max_key == mwcf_ammo_key(self.mwcf_max_current))
+                self.mwcf_max_selected = 1;
+            self.mwcf_max_count++;
+        }
+    }
+    mwcf_max_flush();
+    if (self.mwcf_max_count > 0)
+    {
+        if (self.mwcf_max_selected)
+            self.mwcf_ammo_cur = undefined;
+        self mwcf_ammo_tick();
+    }
+    nengine_store_set("mwcf_box", "maxammo_fix", "post-grant-stock-quantities-trial-01");
+    nengine_store_set("mwcf_box", "maxammo_events", level.mwcf_mx.sequence);
+    nengine_store_set("mwcf_box", "maxammo_last_guns", self.mwcf_max_count);
+    nengine_store_set("mwcf_box", "maxammo_last_zmod", self.mwcf_max_zmod);
+    nengine_store_save("mwcf_box", "status");
+}
+
+function mwcf_max_poll()
+{
+    if (!isdefined(self.mwcf_max_deadline) || !isdefined(level.mwcf_mx))
+        return;
+    if (function_83bf4b34fbbe124b() >= self.mwcf_max_deadline)
+    {
+        self mwcf_max_emit(self mwcf_max_prefix("T") + "|timeout", 1);
+        self.mwcf_max_deadline = undefined;
+        return;
+    }
+    if (level.mwcf_mx.capped)
+        return;
+    self.mwcf_max_poll_list = self getweaponslistprimaries();
+    if (!isdefined(self.mwcf_max_poll_list))
+        return;
+    self.mwcf_max_poll_current = mwcf_ammo_key(self getcurrentweapon());
+    self.mwcf_max_poll_index = 0;
+    while (self.mwcf_max_poll_index < self.mwcf_max_poll_list.size)
+    {
+        self.mwcf_max_poll_weapon = self.mwcf_max_poll_list[self.mwcf_max_poll_index];
+        self.mwcf_max_poll_index++;
+        self.mwcf_max_poll_key = mwcf_ammo_key(self.mwcf_max_poll_weapon);
+        if (!isdefined(self.mwcf_max_poll_key))
+            continue;
+        self mwcf_max_emit(self mwcf_max_prefix("S") + "|" + self.mwcf_max_poll_key + "|" + self getweaponammostock(self.mwcf_max_poll_weapon) + "|" + mwcf_max_value(self.mwcf_ammo_stock[self.mwcf_max_poll_key]) + "|" + mwcf_max_value(self.mwcf_ammo_seen[self.mwcf_max_poll_key]) + "|" + mwcf_max_value(self.mwcf_ammo_from[self.mwcf_max_poll_key]) + "|" + self.mwcf_ammo_epoch + "|" + mwcf_max_value(self.mwcf_max_poll_current), 0);
+    }
+}
+
+function mwcf_max_before(weapon, desired)
+{
+    self.mwcf_max_pending = 0;
+    if (!isdefined(self.mwcf_max_deadline) || function_83bf4b34fbbe124b() >= self.mwcf_max_deadline || level.mwcf_mx.capped)
+        return;
+    if (level.mwcf_mx.count > 510)
+    {
+        level.mwcf_mx.capped = 1;
+        mwcf_max_flush();
+        return;
+    }
+    level.mwcf_mx.restores++;
+    self.mwcf_max_restore = level.mwcf_mx.restores;
+    self.mwcf_max_write_key = mwcf_ammo_key(weapon);
+    self.mwcf_max_write_before = self getweaponammostock(weapon);
+    self.mwcf_max_write_desired = desired;
+    self.mwcf_max_pending = 1;
+    self mwcf_max_emit(self mwcf_max_prefix("B") + "|" + self.mwcf_max_restore + "|" + self.mwcf_max_write_key + "|" + self.mwcf_max_write_before + "|" + desired + "|-", 1);
+}
+
+function mwcf_max_after(weapon, desired)
+{
+    if (!isdefined(self.mwcf_max_pending) || !self.mwcf_max_pending)
+        return;
+    self mwcf_max_emit(self mwcf_max_prefix("A") + "|" + self.mwcf_max_restore + "|" + self.mwcf_max_write_key + "|" + self.mwcf_max_write_before + "|" + self.mwcf_max_write_desired + "|" + self getweaponammostock(weapon), 1);
+    self.mwcf_max_pending = 0;
 }
