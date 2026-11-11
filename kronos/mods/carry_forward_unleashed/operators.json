@@ -1,0 +1,3417 @@
+{
+ "operators": [
+  {
+   "label": "Ghost (MWII)",
+   "op": "ghost_western",
+   "skins": [
+    {
+     "label": "Ghost",
+     "ref": "ghost_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Nicki Minaj (MWII)",
+   "op": "nicki_eastern",
+   "skins": [
+    {
+     "label": "Nicki Minaj",
+     "ref": "nicki_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Sardaukar (Dune)",
+   "op": "dune_eastern",
+   "skins": [
+    {
+     "label": "Sardaukar",
+     "ref": "dune_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Paul Atreides (MWIII)",
+   "op": "jup_mp_beta",
+   "skins": [
+    {
+     "label": "Paul Atreides",
+     "ref": "jup_mp_beta_skin"
+    },
+    {
+     "label": "Paul Atreides (alt)",
+     "ref": "jup_mp_beta_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Snoop Dogg (MWII)",
+   "op": "snoop_western",
+   "skins": [
+    {
+     "label": "Snoop Dogg",
+     "ref": "snoop_western_a"
+    },
+    {
+     "label": "Snoop Dogg (alt)",
+     "ref": "snoop_western_alt"
+    }
+   ]
+  },
+  {
+   "label": "Homelander (MWII)",
+   "op": "homelander_eastern",
+   "skins": [
+    {
+     "label": "Homelander",
+     "ref": "homelander_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Cheech (MWIII)",
+   "op": "jup_mp_spring",
+   "skins": [
+    {
+     "label": "Cheech",
+     "ref": "jup_mp_spring_skin"
+    }
+   ]
+  },
+  {
+   "label": "Chong (MWIII)",
+   "op": "jup_mp_summer",
+   "skins": [
+    {
+     "label": "Chong",
+     "ref": "jup_mp_summer_skin"
+    }
+   ]
+  },
+  {
+   "label": "Gus kitty (MWII)",
+   "op": "gus_western",
+   "skins": [
+    {
+     "label": "Kitty",
+     "ref": "gus_kitty_western"
+    },
+    {
+     "label": "Kitty (alt)",
+     "ref": "gus_kitty_western_alt"
+    }
+   ]
+  },
+  {
+   "label": "Scorch (MWIII)",
+   "op": "jup_mp_hotel",
+   "skins": [
+    {
+     "label": "Scorch",
+     "ref": "jup_mp_hotel_skin"
+    },
+    {
+     "label": "Scorch (skin 10)",
+     "ref": "jup_mp_hotel_10_skin"
+    },
+    {
+     "label": "Scorch (skin 11)",
+     "ref": "jup_mp_hotel_11_skin"
+    },
+    {
+     "label": "Scorch (skin 12)",
+     "ref": "jup_mp_hotel_12_skin"
+    },
+    {
+     "label": "Scorch (skin 13)",
+     "ref": "jup_mp_hotel_13_skin"
+    },
+    {
+     "label": "Scorch (skin 14)",
+     "ref": "jup_mp_hotel_14_skin"
+    },
+    {
+     "label": "Scorch (skin 15a)",
+     "ref": "jup_mp_hotel_15a_skin"
+    },
+    {
+     "label": "Scorch (skin 15b)",
+     "ref": "jup_mp_hotel_15b_skin"
+    },
+    {
+     "label": "Scorch (skin 17)",
+     "ref": "jup_mp_hotel_17_skin"
+    },
+    {
+     "label": "Scorch (skin 18)",
+     "ref": "jup_mp_hotel_18_skin"
+    },
+    {
+     "label": "Scorch (skin 19)",
+     "ref": "jup_mp_hotel_19_skin"
+    },
+    {
+     "label": "Scorch (skin 20)",
+     "ref": "jup_mp_hotel_20_skin"
+    },
+    {
+     "label": "Scorch (skin 21)",
+     "ref": "jup_mp_hotel_21_skin"
+    },
+    {
+     "label": "Scorch (skin 22)",
+     "ref": "jup_mp_hotel_22_skin"
+    },
+    {
+     "label": "Scorch (skin 23)",
+     "ref": "jup_mp_hotel_23_skin"
+    },
+    {
+     "label": "Scorch (skin 26)",
+     "ref": "jup_mp_hotel_26_skin"
+    }
+   ]
+  },
+  {
+   "label": "Void (MWIII)",
+   "op": "jup_mp_void",
+   "skins": [
+    {
+     "label": "Void",
+     "ref": "jup_mp_void_skin"
+    },
+    {
+     "label": "Void (skin 10)",
+     "ref": "jup_mp_void_10_skin"
+    },
+    {
+     "label": "Void (skin 11)",
+     "ref": "jup_mp_void_11_skin"
+    },
+    {
+     "label": "Void (skin 13)",
+     "ref": "jup_mp_void_13_skin"
+    },
+    {
+     "label": "Void (skin 14)",
+     "ref": "jup_mp_void_14_skin"
+    }
+   ]
+  },
+  {
+   "label": "Pathfinder (MWIII)",
+   "op": "jup_mp_bravo",
+   "skins": [
+    {
+     "label": "Pathfinder",
+     "ref": "jup_mp_bravo_skin"
+    },
+    {
+     "label": "Pathfinder (skin 10)",
+     "ref": "jup_mp_bravo_10_skin"
+    },
+    {
+     "label": "Pathfinder (skin 11)",
+     "ref": "jup_mp_bravo_11_skin"
+    },
+    {
+     "label": "Pathfinder (skin 12)",
+     "ref": "jup_mp_bravo_12_skin"
+    },
+    {
+     "label": "Pathfinder (skin 13)",
+     "ref": "jup_mp_bravo_13_skin"
+    },
+    {
+     "label": "Pathfinder (skin 14)",
+     "ref": "jup_mp_bravo_14_skin"
+    },
+    {
+     "label": "Pathfinder (skin 15)",
+     "ref": "jup_mp_bravo_15_skin"
+    },
+    {
+     "label": "Pathfinder (skin 17)",
+     "ref": "jup_mp_bravo_17_skin"
+    },
+    {
+     "label": "Pathfinder (skin 18)",
+     "ref": "jup_mp_bravo_18_skin"
+    },
+    {
+     "label": "Pathfinder (skin 19)",
+     "ref": "jup_mp_bravo_19_skin"
+    },
+    {
+     "label": "Pathfinder (skin 20)",
+     "ref": "jup_mp_bravo_20_skin"
+    },
+    {
+     "label": "Pathfinder (skin 21)",
+     "ref": "jup_mp_bravo_21_skin"
+    },
+    {
+     "label": "Pathfinder (skin 22)",
+     "ref": "jup_mp_bravo_22_skin"
+    }
+   ]
+  },
+  {
+   "label": "Jabber (MWIII)",
+   "op": "jup_mp_mike",
+   "skins": [
+    {
+     "label": "Jabber",
+     "ref": "jup_mp_mike_skin"
+    },
+    {
+     "label": "Jabber (skin 10)",
+     "ref": "jup_mp_mike_10_skin"
+    },
+    {
+     "label": "Jabber (skin 11)",
+     "ref": "jup_mp_mike_11_skin"
+    },
+    {
+     "label": "Jabber (skin 12)",
+     "ref": "jup_mp_mike_12_skin"
+    },
+    {
+     "label": "Jabber (skin 13)",
+     "ref": "jup_mp_mike_13_skin"
+    },
+    {
+     "label": "Jabber (skin 14)",
+     "ref": "jup_mp_mike_14_skin"
+    },
+    {
+     "label": "Jabber (skin 15)",
+     "ref": "jup_mp_mike_15_skin"
+    },
+    {
+     "label": "Jabber (skin 16)",
+     "ref": "jup_mp_mike_16_skin"
+    },
+    {
+     "label": "Jabber (skin 17)",
+     "ref": "jup_mp_mike_17_skin"
+    },
+    {
+     "label": "Jabber (skin 18)",
+     "ref": "jup_mp_mike_18_skin"
+    },
+    {
+     "label": "Jabber (skin 19)",
+     "ref": "jup_mp_mike_19_skin"
+    },
+    {
+     "label": "Jabber (skin 21)",
+     "ref": "jup_mp_mike_21_skin"
+    },
+    {
+     "label": "Jabber (skin 22)",
+     "ref": "jup_mp_mike_22_skin"
+    },
+    {
+     "label": "Jabber (skin 23)",
+     "ref": "jup_mp_mike_23_skin"
+    },
+    {
+     "label": "Jabber (skin 24)",
+     "ref": "jup_mp_mike_24_skin"
+    },
+    {
+     "label": "Jabber (skin 25)",
+     "ref": "jup_mp_mike_25_skin"
+    },
+    {
+     "label": "Jabber (skin 26)",
+     "ref": "jup_mp_mike_26_skin"
+    },
+    {
+     "label": "Jabber (skin 27)",
+     "ref": "jup_mp_mike_27_skin"
+    },
+    {
+     "label": "Jabber (skin 28)",
+     "ref": "jup_mp_mike_28_skin"
+    },
+    {
+     "label": "Jabber (skin 28b)",
+     "ref": "jup_mp_mike_28b_skin"
+    },
+    {
+     "label": "Jabber (skin 29)",
+     "ref": "jup_mp_mike_29_skin"
+    },
+    {
+     "label": "Jabber (skin 30)",
+     "ref": "jup_mp_mike_30_skin"
+    },
+    {
+     "label": "Jabber (skin 31)",
+     "ref": "jup_mp_mike_31_skin"
+    }
+   ]
+  },
+  {
+   "label": "Price (MWII)",
+   "op": "price_western",
+   "skins": [
+    {
+     "label": "Price (a)",
+     "ref": "price_western_a"
+    },
+    {
+     "label": "Price (highrise)",
+     "ref": "price_western_highrise"
+    },
+    {
+     "label": "Price (intercept)",
+     "ref": "price_western_intercept"
+    },
+    {
+     "label": "Price (desert)",
+     "ref": "price_western_desert"
+    },
+    {
+     "label": "Price (MWIII vault)",
+     "ref": "jup_mp_price_vault_skin"
+    },
+    {
+     "label": "Price (3)",
+     "ref": "price_western_3"
+    },
+    {
+     "label": "Price (MWIII 10)",
+     "ref": "jup_mp_price_10_skin"
+    },
+    {
+     "label": "Price (MWIII 13)",
+     "ref": "jup_mp_price_13_skin"
+    },
+    {
+     "label": "Price (MWIII 11)",
+     "ref": "jup_mp_price_11_skin"
+    },
+    {
+     "label": "Price (MWIII 12)",
+     "ref": "jup_mp_price_12_skin"
+    },
+    {
+     "label": "Price (MWIII 16)",
+     "ref": "jup_mp_price_16_skin"
+    },
+    {
+     "label": "Price (MWIII 15)",
+     "ref": "jup_mp_price_15_skin"
+    },
+    {
+     "label": "Price (MWIII 20)",
+     "ref": "jup_mp_price_20_skin"
+    },
+    {
+     "label": "Price (MWIII 17)",
+     "ref": "jup_mp_price_17_skin"
+    },
+    {
+     "label": "Price (MWIII 23)",
+     "ref": "jup_mp_price_23_skin"
+    },
+    {
+     "label": "Price (MWIII 22)",
+     "ref": "jup_mp_price_22_skin"
+    },
+    {
+     "label": "Price (MWIII 21)",
+     "ref": "jup_mp_price_21_skin"
+    }
+   ]
+  },
+  {
+   "label": "Soap (MWII)",
+   "op": "soap_western",
+   "skins": [
+    {
+     "label": "Soap (a)",
+     "ref": "soap_western_a"
+    },
+    {
+     "label": "Soap (nightwar)",
+     "ref": "soap_western_nightwar"
+    },
+    {
+     "label": "Soap (co)",
+     "ref": "soap_western_co"
+    },
+    {
+     "label": "Soap (classic)",
+     "ref": "soap_western_classic"
+    },
+    {
+     "label": "Soap (nightwar bc)",
+     "ref": "soap_western_nightwar_bc"
+    },
+    {
+     "label": "Soap (4)",
+     "ref": "soap_western_4"
+    },
+    {
+     "label": "Soap (4 alt)",
+     "ref": "soap_western_4_alt"
+    },
+    {
+     "label": "Soap (mexico)",
+     "ref": "soap_western_mexico"
+    },
+    {
+     "label": "Soap (MWIII 10)",
+     "ref": "jup_mp_soap_10_skin"
+    },
+    {
+     "label": "Soap (MWIII 12)",
+     "ref": "jup_mp_soap_12_skin"
+    },
+    {
+     "label": "Soap (MWIII 11)",
+     "ref": "jup_mp_soap_11_skin"
+    },
+    {
+     "label": "Soap (MWIII 14)",
+     "ref": "jup_mp_soap_14_skin"
+    },
+    {
+     "label": "Soap (MWIII 13)",
+     "ref": "jup_mp_soap_13_skin"
+    },
+    {
+     "label": "Soap (MWIII 17)",
+     "ref": "jup_mp_soap_17_skin"
+    },
+    {
+     "label": "Soap (MWIII 19)",
+     "ref": "jup_mp_soap_19_skin"
+    },
+    {
+     "label": "Soap (MWIII 20)",
+     "ref": "jup_mp_soap_20_skin"
+    },
+    {
+     "label": "Soap (MWIII 15)",
+     "ref": "jup_mp_soap_15_skin"
+    },
+    {
+     "label": "Soap (MWIII 16)",
+     "ref": "jup_mp_soap_16_skin"
+    },
+    {
+     "label": "Soap (MWIII 22)",
+     "ref": "jup_mp_soap_22_skin"
+    }
+   ]
+  },
+  {
+   "label": "Valeria (MWII)",
+   "op": "valeria_eastern",
+   "skins": [
+    {
+     "label": "Valeria (a)",
+     "ref": "valeria_eastern_a"
+    },
+    {
+     "label": "Valeria (t100)",
+     "ref": "valeria_eastern_t100"
+    },
+    {
+     "label": "Valeria (2 2)",
+     "ref": "valeria_eastern_2_2"
+    },
+    {
+     "label": "Valeria (blackcell)",
+     "ref": "valeria_eastern_blackcell"
+    },
+    {
+     "label": "Valeria (jaguar)",
+     "ref": "valeria_eastern_jaguar"
+    },
+    {
+     "label": "Valeria (5)",
+     "ref": "valeria_eastern_5"
+    },
+    {
+     "label": "Valeria (5 bc alt)",
+     "ref": "valeria_eastern_5_bc_alt"
+    },
+    {
+     "label": "Valeria (3)",
+     "ref": "valeria_eastern_3"
+    },
+    {
+     "label": "Valeria (6)",
+     "ref": "valeria_eastern_6"
+    },
+    {
+     "label": "Valeria (7)",
+     "ref": "valeria_eastern_7"
+    },
+    {
+     "label": "Valeria (8)",
+     "ref": "valeria_eastern_8"
+    },
+    {
+     "label": "Valeria (MWIII 10)",
+     "ref": "jup_mp_valeria_10_skin"
+    },
+    {
+     "label": "Valeria (MWIII 11)",
+     "ref": "jup_mp_valeria_11_skin"
+    },
+    {
+     "label": "Valeria (MWIII 12)",
+     "ref": "jup_mp_valeria_12_skin"
+    },
+    {
+     "label": "Valeria (MWIII 17)",
+     "ref": "jup_mp_valeria_17_skin"
+    },
+    {
+     "label": "Valeria (MWIII 15)",
+     "ref": "jup_mp_valeria_15_skin"
+    },
+    {
+     "label": "Valeria (MWIII 18)",
+     "ref": "jup_mp_valeria_18_skin"
+    },
+    {
+     "label": "Valeria (MWIII 19)",
+     "ref": "jup_mp_valeria_19_skin"
+    },
+    {
+     "label": "Valeria (MWIII 14)",
+     "ref": "jup_mp_valeria_14_skin"
+    },
+    {
+     "label": "Valeria (MWIII 21)",
+     "ref": "jup_mp_valeria_21_skin"
+    },
+    {
+     "label": "Valeria (MWIII 22)",
+     "ref": "jup_mp_valeria_22_skin"
+    }
+   ]
+  },
+  {
+   "label": "Raptor (MWIII)",
+   "op": "jup_mp_tango",
+   "skins": [
+    {
+     "label": "Raptor",
+     "ref": "jup_mp_tango_skin"
+    },
+    {
+     "label": "Raptor (10)",
+     "ref": "jup_mp_tango_10_skin"
+    },
+    {
+     "label": "Raptor (11)",
+     "ref": "jup_mp_tango_11_skin"
+    },
+    {
+     "label": "Raptor (13)",
+     "ref": "jup_mp_tango_13_skin"
+    },
+    {
+     "label": "Raptor (14)",
+     "ref": "jup_mp_tango_14_skin"
+    },
+    {
+     "label": "Raptor (15)",
+     "ref": "jup_mp_tango_15_skin"
+    },
+    {
+     "label": "Raptor (18)",
+     "ref": "jup_mp_tango_18_skin"
+    },
+    {
+     "label": "Raptor (19)",
+     "ref": "jup_mp_tango_19_skin"
+    },
+    {
+     "label": "Raptor (20)",
+     "ref": "jup_mp_tango_20_skin"
+    },
+    {
+     "label": "Raptor (21)",
+     "ref": "jup_mp_tango_21_skin"
+    }
+   ]
+  },
+  {
+   "label": "Ripper (MWIII)",
+   "op": "jup_mp_sierra",
+   "skins": [
+    {
+     "label": "Ripper",
+     "ref": "jup_mp_sierra_skin"
+    },
+    {
+     "label": "Ripper (10)",
+     "ref": "jup_mp_sierra_10_skin"
+    },
+    {
+     "label": "Ripper (13)",
+     "ref": "jup_mp_sierra_13_skin"
+    },
+    {
+     "label": "Ripper (12)",
+     "ref": "jup_mp_sierra_12_skin"
+    },
+    {
+     "label": "Ripper (14)",
+     "ref": "jup_mp_sierra_14_skin"
+    },
+    {
+     "label": "Ripper (17)",
+     "ref": "jup_mp_sierra_17_skin"
+    },
+    {
+     "label": "Ripper (15)",
+     "ref": "jup_mp_sierra_15_skin"
+    },
+    {
+     "label": "Ripper (16)",
+     "ref": "jup_mp_sierra_16_skin"
+    },
+    {
+     "label": "Ripper (18)",
+     "ref": "jup_mp_sierra_18_skin"
+    },
+    {
+     "label": "Ripper (19)",
+     "ref": "jup_mp_sierra_19_skin"
+    },
+    {
+     "label": "Ripper (20)",
+     "ref": "jup_mp_sierra_20_skin"
+    }
+   ]
+  },
+  {
+   "label": "Riptide (MWIII)",
+   "op": "jup_mp_zulu",
+   "skins": [
+    {
+     "label": "Riptide",
+     "ref": "jup_mp_zulu_skin"
+    },
+    {
+     "label": "Riptide (10)",
+     "ref": "jup_mp_zulu_10_skin"
+    },
+    {
+     "label": "Riptide (11)",
+     "ref": "jup_mp_zulu_11_skin"
+    },
+    {
+     "label": "Riptide (12)",
+     "ref": "jup_mp_zulu_12_skin"
+    },
+    {
+     "label": "Riptide (18)",
+     "ref": "jup_mp_zulu_18_skin"
+    },
+    {
+     "label": "Riptide (15)",
+     "ref": "jup_mp_zulu_15_skin"
+    },
+    {
+     "label": "Riptide (16)",
+     "ref": "jup_mp_zulu_16_skin"
+    },
+    {
+     "label": "Riptide (17)",
+     "ref": "jup_mp_zulu_17_skin"
+    },
+    {
+     "label": "Riptide (20)",
+     "ref": "jup_mp_zulu_20_skin"
+    },
+    {
+     "label": "Riptide (22)",
+     "ref": "jup_mp_zulu_22_skin"
+    },
+    {
+     "label": "Riptide (21)",
+     "ref": "jup_mp_zulu_21_skin"
+    },
+    {
+     "label": "Riptide (23)",
+     "ref": "jup_mp_zulu_23_skin"
+    },
+    {
+     "label": "Riptide (19)",
+     "ref": "jup_mp_zulu_19_skin"
+    },
+    {
+     "label": "Riptide (25)",
+     "ref": "jup_mp_zulu_25_skin"
+    },
+    {
+     "label": "Riptide (26)",
+     "ref": "jup_mp_zulu_26_skin"
+    }
+   ]
+  },
+  {
+   "label": "Swagger (MWIII)",
+   "op": "jup_mp_whiskey",
+   "skins": [
+    {
+     "label": "Swagger",
+     "ref": "jup_mp_whiskey_skin"
+    },
+    {
+     "label": "Swagger (10)",
+     "ref": "jup_mp_whiskey_10_skin"
+    },
+    {
+     "label": "Swagger (11)",
+     "ref": "jup_mp_whiskey_11_skin"
+    },
+    {
+     "label": "Swagger (13)",
+     "ref": "jup_mp_whiskey_13_skin"
+    },
+    {
+     "label": "Swagger (14)",
+     "ref": "jup_mp_whiskey_14_skin"
+    },
+    {
+     "label": "Swagger (18)",
+     "ref": "jup_mp_whiskey_18_skin"
+    },
+    {
+     "label": "Swagger (15)",
+     "ref": "jup_mp_whiskey_15_skin"
+    },
+    {
+     "label": "Swagger (17)",
+     "ref": "jup_mp_whiskey_17_skin"
+    },
+    {
+     "label": "Swagger (16)",
+     "ref": "jup_mp_whiskey_16_skin"
+    },
+    {
+     "label": "Swagger (20)",
+     "ref": "jup_mp_whiskey_20_skin"
+    },
+    {
+     "label": "Swagger (21)",
+     "ref": "jup_mp_whiskey_21_skin"
+    },
+    {
+     "label": "Swagger (22)",
+     "ref": "jup_mp_whiskey_22_skin"
+    },
+    {
+     "label": "Swagger (23)",
+     "ref": "jup_mp_whiskey_23_skin"
+    },
+    {
+     "label": "Swagger (24)",
+     "ref": "jup_mp_whiskey_24_skin"
+    }
+   ]
+  },
+  {
+   "label": "Warden (MWIII)",
+   "op": "jup_mp_kilo",
+   "skins": [
+    {
+     "label": "Warden (vault)",
+     "ref": "jup_mp_kilo_vault_skin"
+    },
+    {
+     "label": "Warden (10)",
+     "ref": "jup_mp_kilo_10_skin"
+    },
+    {
+     "label": "Warden (11)",
+     "ref": "jup_mp_kilo_11_skin"
+    },
+    {
+     "label": "Warden (13)",
+     "ref": "jup_mp_kilo_13_skin"
+    },
+    {
+     "label": "Warden (14)",
+     "ref": "jup_mp_kilo_14_skin"
+    },
+    {
+     "label": "Warden (16)",
+     "ref": "jup_mp_kilo_16_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII india",
+   "op": "jup_mp_india",
+   "skins": [
+    {
+     "label": "MWIII india (base)",
+     "ref": "jup_mp_india_skin"
+    },
+    {
+     "label": "MWIII india (02)",
+     "ref": "jup_mp_india_02_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII charlie",
+   "op": "jup_mp_charlie",
+   "skins": [
+    {
+     "label": "MWIII charlie (base)",
+     "ref": "jup_mp_charlie_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII delta",
+   "op": "jup_mp_delta",
+   "skins": [
+    {
+     "label": "MWIII delta (base)",
+     "ref": "jup_mp_delta_skin"
+    },
+    {
+     "label": "MWIII delta (02)",
+     "ref": "jup_mp_delta_02_skin"
+    }
+   ]
+  },
+  {
+   "label": "BBQ (MWIII)",
+   "op": "jup_mp_alpha",
+   "skins": [
+    {
+     "label": "BBQ (base)",
+     "ref": "jup_mp_alpha_skin"
+    },
+    {
+     "label": "BBQ (10)",
+     "ref": "jup_mp_alpha_10_skin"
+    },
+    {
+     "label": "BBQ (12)",
+     "ref": "jup_mp_alpha_12_skin"
+    },
+    {
+     "label": "BBQ (15)",
+     "ref": "jup_mp_alpha_15_skin"
+    },
+    {
+     "label": "BBQ (11)",
+     "ref": "jup_mp_alpha_11_skin"
+    },
+    {
+     "label": "BBQ (13)",
+     "ref": "jup_mp_alpha_13_skin"
+    },
+    {
+     "label": "BBQ (13a)",
+     "ref": "jup_mp_alpha_13a_skin"
+    },
+    {
+     "label": "BBQ (13c)",
+     "ref": "jup_mp_alpha_13c_skin"
+    },
+    {
+     "label": "BBQ (16)",
+     "ref": "jup_mp_alpha_16_skin"
+    },
+    {
+     "label": "BBQ (17)",
+     "ref": "jup_mp_alpha_17_skin"
+    },
+    {
+     "label": "BBQ (25)",
+     "ref": "jup_mp_alpha_25_skin"
+    },
+    {
+     "label": "BBQ (23)",
+     "ref": "jup_mp_alpha_23_skin"
+    },
+    {
+     "label": "BBQ (26)",
+     "ref": "jup_mp_alpha_26_skin"
+    },
+    {
+     "label": "BBQ (20)",
+     "ref": "jup_mp_alpha_20_skin"
+    },
+    {
+     "label": "BBQ (19)",
+     "ref": "jup_mp_alpha_19_skin"
+    },
+    {
+     "label": "BBQ (24)",
+     "ref": "jup_mp_alpha_24_skin"
+    },
+    {
+     "label": "BBQ (27)",
+     "ref": "jup_mp_alpha_27_skin"
+    },
+    {
+     "label": "BBQ (28)",
+     "ref": "jup_mp_alpha_28_skin"
+    },
+    {
+     "label": "BBQ (29)",
+     "ref": "jup_mp_alpha_29_skin"
+    },
+    {
+     "label": "BBQ (30)",
+     "ref": "jup_mp_alpha_30_skin"
+    },
+    {
+     "label": "BBQ (31)",
+     "ref": "jup_mp_alpha_31_skin"
+    },
+    {
+     "label": "BBQ (32)",
+     "ref": "jup_mp_alpha_32_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII cdl_male_away",
+   "op": "jup_mp_cdl_male_away",
+   "skins": [
+    {
+     "label": "MWIII cdl_male_away (base)",
+     "ref": "jup_mp_cdl_male_away_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII cdl_male_home",
+   "op": "jup_mp_cdl_male_home",
+   "skins": [
+    {
+     "label": "MWIII cdl_male_home (base)",
+     "ref": "jup_mp_cdl_male_home_skin"
+    }
+   ]
+  },
+  {
+   "label": "Bantam (MWIII)",
+   "op": "jup_mp_golf",
+   "skins": [
+    {
+     "label": "Bantam (base)",
+     "ref": "jup_mp_golf_skin"
+    },
+    {
+     "label": "Bantam (10)",
+     "ref": "jup_mp_golf_10_skin"
+    },
+    {
+     "label": "Bantam (11)",
+     "ref": "jup_mp_golf_11_skin"
+    },
+    {
+     "label": "Bantam (12)",
+     "ref": "jup_mp_golf_12_skin"
+    },
+    {
+     "label": "Bantam (14)",
+     "ref": "jup_mp_golf_14_skin"
+    },
+    {
+     "label": "Bantam (16)",
+     "ref": "jup_mp_golf_16_skin"
+    },
+    {
+     "label": "Bantam (17)",
+     "ref": "jup_mp_golf_17_skin"
+    },
+    {
+     "label": "Bantam (13)",
+     "ref": "jup_mp_golf_13_skin"
+    },
+    {
+     "label": "Bantam (15)",
+     "ref": "jup_mp_golf_15_skin"
+    },
+    {
+     "label": "Bantam (19)",
+     "ref": "jup_mp_golf_19_skin"
+    },
+    {
+     "label": "Bantam (20)",
+     "ref": "jup_mp_golf_20_skin"
+    },
+    {
+     "label": "Bantam (21)",
+     "ref": "jup_mp_golf_21_skin"
+    },
+    {
+     "label": "Bantam (18)",
+     "ref": "jup_mp_golf_18_skin"
+    }
+   ]
+  },
+  {
+   "label": "Alpine (MWIII)",
+   "op": "jup_mp_echo",
+   "skins": [
+    {
+     "label": "Alpine (base)",
+     "ref": "jup_mp_echo_skin"
+    },
+    {
+     "label": "Alpine (10)",
+     "ref": "jup_mp_echo_10_skin"
+    },
+    {
+     "label": "Alpine (11)",
+     "ref": "jup_mp_echo_11_skin"
+    },
+    {
+     "label": "Alpine (12)",
+     "ref": "jup_mp_echo_12_skin"
+    },
+    {
+     "label": "Alpine (14)",
+     "ref": "jup_mp_echo_14_skin"
+    },
+    {
+     "label": "Alpine (17)",
+     "ref": "jup_mp_echo_17_skin"
+    },
+    {
+     "label": "Alpine (13)",
+     "ref": "jup_mp_echo_13_skin"
+    },
+    {
+     "label": "Alpine (18)",
+     "ref": "jup_mp_echo_18_skin"
+    },
+    {
+     "label": "Alpine (19)",
+     "ref": "jup_mp_echo_19_skin"
+    },
+    {
+     "label": "Alpine (15)",
+     "ref": "jup_mp_echo_15_skin"
+    },
+    {
+     "label": "Alpine (16)",
+     "ref": "jup_mp_echo_16_skin"
+    },
+    {
+     "label": "Alpine (21)",
+     "ref": "jup_mp_echo_21_skin"
+    },
+    {
+     "label": "Alpine (24)",
+     "ref": "jup_mp_echo_24_skin"
+    },
+    {
+     "label": "Alpine (23)",
+     "ref": "jup_mp_echo_23_skin"
+    },
+    {
+     "label": "Alpine (22)",
+     "ref": "jup_mp_echo_22_skin"
+    }
+   ]
+  },
+  {
+   "label": "Ateret Dahan (MWIII)",
+   "op": "jup_mp_juliet",
+   "skins": [
+    {
+     "label": "Ateret Dahan (base)",
+     "ref": "jup_mp_juliet_skin"
+    },
+    {
+     "label": "Ateret Dahan (10)",
+     "ref": "jup_mp_juliet_10_skin"
+    },
+    {
+     "label": "Ateret Dahan (11)",
+     "ref": "jup_mp_juliet_11_skin"
+    },
+    {
+     "label": "Ateret Dahan (12)",
+     "ref": "jup_mp_juliet_12_skin"
+    },
+    {
+     "label": "Ateret Dahan (13)",
+     "ref": "jup_mp_juliet_13_skin"
+    },
+    {
+     "label": "Ateret Dahan (14)",
+     "ref": "jup_mp_juliet_14_skin"
+    },
+    {
+     "label": "Ateret Dahan (20)",
+     "ref": "jup_mp_juliet_20_skin"
+    },
+    {
+     "label": "Ateret Dahan (18)",
+     "ref": "jup_mp_juliet_18_skin"
+    },
+    {
+     "label": "Ateret Dahan (19)",
+     "ref": "jup_mp_juliet_19_skin"
+    },
+    {
+     "label": "Ateret Dahan (17)",
+     "ref": "jup_mp_juliet_17_skin"
+    },
+    {
+     "label": "Ateret Dahan (21)",
+     "ref": "jup_mp_juliet_21_skin"
+    },
+    {
+     "label": "Ateret Dahan (15)",
+     "ref": "jup_mp_juliet_15_skin"
+    },
+    {
+     "label": "Ateret Dahan (22)",
+     "ref": "jup_mp_juliet_22_skin"
+    }
+   ]
+  },
+  {
+   "label": "Elodie Michaux (MWIII)",
+   "op": "jup_mp_lima",
+   "skins": [
+    {
+     "label": "Elodie Michaux (base)",
+     "ref": "jup_mp_lima_skin"
+    },
+    {
+     "label": "Elodie Michaux (10)",
+     "ref": "jup_mp_lima_10_skin"
+    },
+    {
+     "label": "Elodie Michaux (14)",
+     "ref": "jup_mp_lima_14_skin"
+    },
+    {
+     "label": "Elodie Michaux (11)",
+     "ref": "jup_mp_lima_11_skin"
+    },
+    {
+     "label": "Elodie Michaux (13)",
+     "ref": "jup_mp_lima_13_skin"
+    },
+    {
+     "label": "Elodie Michaux (15)",
+     "ref": "jup_mp_lima_15_skin"
+    },
+    {
+     "label": "Elodie Michaux (16)",
+     "ref": "jup_mp_lima_16_skin"
+    }
+   ]
+  },
+  {
+   "label": "Byline (MWIII)",
+   "op": "jup_mp_november",
+   "skins": [
+    {
+     "label": "Byline (base)",
+     "ref": "jup_mp_november_skin"
+    },
+    {
+     "label": "Byline (10)",
+     "ref": "jup_mp_november_10_skin"
+    },
+    {
+     "label": "Byline (11)",
+     "ref": "jup_mp_november_11_skin"
+    },
+    {
+     "label": "Byline (12)",
+     "ref": "jup_mp_november_12_skin"
+    },
+    {
+     "label": "Byline (13)",
+     "ref": "jup_mp_november_13_skin"
+    },
+    {
+     "label": "Byline (14)",
+     "ref": "jup_mp_november_14_skin"
+    },
+    {
+     "label": "Byline (15)",
+     "ref": "jup_mp_november_15_skin"
+    },
+    {
+     "label": "Byline (17)",
+     "ref": "jup_mp_november_17_skin"
+    },
+    {
+     "label": "Byline (16)",
+     "ref": "jup_mp_november_16_skin"
+    },
+    {
+     "label": "Byline (18)",
+     "ref": "jup_mp_november_18_skin"
+    },
+    {
+     "label": "Byline (19)",
+     "ref": "jup_mp_november_19_skin"
+    },
+    {
+     "label": "Byline (21)",
+     "ref": "jup_mp_november_21_skin"
+    },
+    {
+     "label": "Byline (20)",
+     "ref": "jup_mp_november_20_skin"
+    },
+    {
+     "label": "Byline (23)",
+     "ref": "jup_mp_november_23_skin"
+    }
+   ]
+  },
+  {
+   "label": "Corso (MWIII)",
+   "op": "jup_mp_oscar",
+   "skins": [
+    {
+     "label": "Corso (base)",
+     "ref": "jup_mp_oscar_skin"
+    },
+    {
+     "label": "Corso (10)",
+     "ref": "jup_mp_oscar_10_skin"
+    },
+    {
+     "label": "Corso (13)",
+     "ref": "jup_mp_oscar_13_skin"
+    },
+    {
+     "label": "Corso (11)",
+     "ref": "jup_mp_oscar_11_skin"
+    },
+    {
+     "label": "Corso (19)",
+     "ref": "jup_mp_oscar_19_skin"
+    },
+    {
+     "label": "Corso (18)",
+     "ref": "jup_mp_oscar_18_skin"
+    },
+    {
+     "label": "Corso (15)",
+     "ref": "jup_mp_oscar_15_skin"
+    },
+    {
+     "label": "Corso (20)",
+     "ref": "jup_mp_oscar_20_skin"
+    },
+    {
+     "label": "Corso (14)",
+     "ref": "jup_mp_oscar_14_skin"
+    },
+    {
+     "label": "Corso (21)",
+     "ref": "jup_mp_oscar_21_skin"
+    },
+    {
+     "label": "Corso (22)",
+     "ref": "jup_mp_oscar_22_skin"
+    },
+    {
+     "label": "Corso (23)",
+     "ref": "jup_mp_oscar_23_skin"
+    }
+   ]
+  },
+  {
+   "label": "Jet (MWIII)",
+   "op": "jup_mp_papa",
+   "skins": [
+    {
+     "label": "Jet (base)",
+     "ref": "jup_mp_papa_skin"
+    },
+    {
+     "label": "Jet (10)",
+     "ref": "jup_mp_papa_10_skin"
+    },
+    {
+     "label": "Jet (12)",
+     "ref": "jup_mp_papa_12_skin"
+    },
+    {
+     "label": "Jet (11)",
+     "ref": "jup_mp_papa_11_skin"
+    },
+    {
+     "label": "Jet (13)",
+     "ref": "jup_mp_papa_13_skin"
+    },
+    {
+     "label": "Jet (17)",
+     "ref": "jup_mp_papa_17_skin"
+    },
+    {
+     "label": "Jet (16)",
+     "ref": "jup_mp_papa_16_skin"
+    },
+    {
+     "label": "Jet (14)",
+     "ref": "jup_mp_papa_14_skin"
+    },
+    {
+     "label": "Jet (15)",
+     "ref": "jup_mp_papa_15_skin"
+    },
+    {
+     "label": "Jet (18)",
+     "ref": "jup_mp_papa_18_skin"
+    },
+    {
+     "label": "Jet (19)",
+     "ref": "jup_mp_papa_19_skin"
+    },
+    {
+     "label": "Jet (20)",
+     "ref": "jup_mp_papa_20_skin"
+    },
+    {
+     "label": "Jet (24)",
+     "ref": "jup_mp_papa_24_skin"
+    },
+    {
+     "label": "Jet (22)",
+     "ref": "jup_mp_papa_22_skin"
+    },
+    {
+     "label": "Jet (21)",
+     "ref": "jup_mp_papa_21_skin"
+    },
+    {
+     "label": "Jet (23)",
+     "ref": "jup_mp_papa_23_skin"
+    },
+    {
+     "label": "Jet (26)",
+     "ref": "jup_mp_papa_26_skin"
+    },
+    {
+     "label": "Jet (25)",
+     "ref": "jup_mp_papa_25_skin"
+    },
+    {
+     "label": "Jet (27)",
+     "ref": "jup_mp_papa_27_skin"
+    },
+    {
+     "label": "Jet (28)",
+     "ref": "jup_mp_papa_28_skin"
+    },
+    {
+     "label": "Jet (29)",
+     "ref": "jup_mp_papa_29_skin"
+    }
+   ]
+  },
+  {
+   "label": "Enigma (MWIII)",
+   "op": "jup_mp_quebec",
+   "skins": [
+    {
+     "label": "Enigma (base)",
+     "ref": "jup_mp_quebec_skin"
+    },
+    {
+     "label": "Enigma (10)",
+     "ref": "jup_mp_quebec_10_skin"
+    },
+    {
+     "label": "Enigma (11)",
+     "ref": "jup_mp_quebec_11_skin"
+    },
+    {
+     "label": "Enigma (14)",
+     "ref": "jup_mp_quebec_14_skin"
+    },
+    {
+     "label": "Enigma (12)",
+     "ref": "jup_mp_quebec_12_skin"
+    },
+    {
+     "label": "Enigma (13)",
+     "ref": "jup_mp_quebec_13_skin"
+    },
+    {
+     "label": "Enigma (15)",
+     "ref": "jup_mp_quebec_15_skin"
+    },
+    {
+     "label": "Enigma (16)",
+     "ref": "jup_mp_quebec_16_skin"
+    },
+    {
+     "label": "Enigma (17)",
+     "ref": "jup_mp_quebec_17_skin"
+    },
+    {
+     "label": "Enigma (18)",
+     "ref": "jup_mp_quebec_18_skin"
+    },
+    {
+     "label": "Enigma (19)",
+     "ref": "jup_mp_quebec_19_skin"
+    },
+    {
+     "label": "Enigma (23)",
+     "ref": "jup_mp_quebec_23_skin"
+    },
+    {
+     "label": "Enigma (22)",
+     "ref": "jup_mp_quebec_22_skin"
+    },
+    {
+     "label": "Enigma (24)",
+     "ref": "jup_mp_quebec_24_skin"
+    },
+    {
+     "label": "Enigma (25)",
+     "ref": "jup_mp_quebec_25_skin"
+    }
+   ]
+  },
+  {
+   "label": "Ben (MWIII)",
+   "op": "jup_mp_romeo",
+   "skins": [
+    {
+     "label": "Ben (base)",
+     "ref": "jup_mp_romeo_skin"
+    },
+    {
+     "label": "Ben (10)",
+     "ref": "jup_mp_romeo_10_skin"
+    },
+    {
+     "label": "Ben (10a)",
+     "ref": "jup_mp_romeo_10a_skin"
+    }
+   ]
+  },
+  {
+   "label": "Laswell (MWIII)",
+   "op": "jup_mp_laswell",
+   "skins": [
+    {
+     "label": "Laswell (base)",
+     "ref": "jup_mp_laswell_skin"
+    },
+    {
+     "label": "Laswell (11)",
+     "ref": "jup_mp_laswell_11_skin"
+    },
+    {
+     "label": "Laswell (12)",
+     "ref": "jup_mp_laswell_12_skin"
+    }
+   ]
+  },
+  {
+   "label": "Nolan (MWIII)",
+   "op": "jup_mp_nolan",
+   "skins": [
+    {
+     "label": "Nolan (base)",
+     "ref": "jup_mp_nolan_skin"
+    },
+    {
+     "label": "Nolan (10)",
+     "ref": "jup_mp_nolan_10_skin"
+    },
+    {
+     "label": "Nolan (11)",
+     "ref": "jup_mp_nolan_11_skin"
+    },
+    {
+     "label": "Nolan (15)",
+     "ref": "jup_mp_nolan_15_skin"
+    },
+    {
+     "label": "Nolan (13)",
+     "ref": "jup_mp_nolan_13_skin"
+    },
+    {
+     "label": "Nolan (16)",
+     "ref": "jup_mp_nolan_16_skin"
+    },
+    {
+     "label": "Nolan (17)",
+     "ref": "jup_mp_nolan_17_skin"
+    },
+    {
+     "label": "Nolan (18)",
+     "ref": "jup_mp_nolan_18_skin"
+    },
+    {
+     "label": "Nolan (19)",
+     "ref": "jup_mp_nolan_19_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII uniform",
+   "op": "jup_mp_uniform",
+   "skins": [
+    {
+     "label": "MWIII uniform (02)",
+     "ref": "jup_mp_uniform_02_skin"
+    },
+    {
+     "label": "MWIII uniform (01)",
+     "ref": "jup_mp_uniform_01_skin"
+    }
+   ]
+  },
+  {
+   "label": "Makarov (MWIII)",
+   "op": "jup_mp_makarov",
+   "skins": [
+    {
+     "label": "Makarov (vault)",
+     "ref": "jup_mp_makarov_vault_skin"
+    },
+    {
+     "label": "Makarov (12)",
+     "ref": "jup_mp_makarov_12_skin"
+    },
+    {
+     "label": "Makarov (13)",
+     "ref": "jup_mp_makarov_13_skin"
+    },
+    {
+     "label": "Makarov (14)",
+     "ref": "jup_mp_makarov_14_skin"
+    },
+    {
+     "label": "Makarov (21)",
+     "ref": "jup_mp_makarov_21_skin"
+    },
+    {
+     "label": "Makarov (15)",
+     "ref": "jup_mp_makarov_15_skin"
+    },
+    {
+     "label": "Makarov (20)",
+     "ref": "jup_mp_makarov_20_skin"
+    },
+    {
+     "label": "Makarov (16)",
+     "ref": "jup_mp_makarov_16_skin"
+    },
+    {
+     "label": "Makarov (18)",
+     "ref": "jup_mp_makarov_18_skin"
+    },
+    {
+     "label": "Makarov (19)",
+     "ref": "jup_mp_makarov_19_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII cdl_female_away",
+   "op": "jup_mp_cdl_female_away",
+   "skins": [
+    {
+     "label": "MWIII cdl_female_away (base)",
+     "ref": "jup_mp_cdl_female_away_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII cdl_female_home",
+   "op": "jup_mp_cdl_female_home",
+   "skins": [
+    {
+     "label": "MWIII cdl_female_home (base)",
+     "ref": "jup_mp_cdl_female_home_skin"
+    }
+   ]
+  },
+  {
+   "label": "Ari (MWIII)",
+   "op": "jup_mp_maestro",
+   "skins": [
+    {
+     "label": "Ari (base)",
+     "ref": "jup_mp_maestro_skin"
+    },
+    {
+     "label": "Ari (13)",
+     "ref": "jup_mp_maestro_13_skin"
+    },
+    {
+     "label": "Ari (11)",
+     "ref": "jup_mp_maestro_11_skin"
+    },
+    {
+     "label": "Ari (10)",
+     "ref": "jup_mp_maestro_10_skin"
+    },
+    {
+     "label": "Ari (14)",
+     "ref": "jup_mp_maestro_14_skin"
+    },
+    {
+     "label": "Ari (15)",
+     "ref": "jup_mp_maestro_15_skin"
+    },
+    {
+     "label": "Ari (18)",
+     "ref": "jup_mp_maestro_18_skin"
+    },
+    {
+     "label": "Ari (19)",
+     "ref": "jup_mp_maestro_19_skin"
+    },
+    {
+     "label": "Ari (20)",
+     "ref": "jup_mp_maestro_20_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII gamma",
+   "op": "jup_mp_gamma",
+   "skins": [
+    {
+     "label": "MWIII gamma (base)",
+     "ref": "jup_mp_gamma_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII zeta",
+   "op": "jup_mp_zeta",
+   "skins": [
+    {
+     "label": "MWIII zeta (base)",
+     "ref": "jup_mp_zeta_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII eta",
+   "op": "jup_mp_eta",
+   "skins": [
+    {
+     "label": "MWIII eta (base)",
+     "ref": "jup_mp_eta_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII ash",
+   "op": "jup_mp_ash",
+   "skins": [
+    {
+     "label": "MWIII ash (01)",
+     "ref": "jup_mp_ash_01_skin"
+    },
+    {
+     "label": "MWIII ash (10)",
+     "ref": "jup_mp_ash_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII cal",
+   "op": "jup_mp_cal",
+   "skins": [
+    {
+     "label": "MWIII cal (base)",
+     "ref": "jup_mp_cal_skin"
+    }
+   ]
+  },
+  {
+   "label": "Rick Grimes (MWIII)",
+   "op": "jup_mp_judo",
+   "skins": [
+    {
+     "label": "Rick Grimes (base)",
+     "ref": "jup_mp_judo_skin"
+    },
+    {
+     "label": "Rick Grimes (10)",
+     "ref": "jup_mp_judo_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Michonne (MWIII)",
+   "op": "jup_mp_bike",
+   "skins": [
+    {
+     "label": "Michonne (base)",
+     "ref": "jup_mp_bike_skin"
+    }
+   ]
+  },
+  {
+   "label": "Bashiir (MWIII)",
+   "op": "jup_mp_lambda",
+   "skins": [
+    {
+     "label": "Bashiir (base)",
+     "ref": "jup_mp_lambda_skin"
+    },
+    {
+     "label": "Bashiir (10)",
+     "ref": "jup_mp_lambda_10_skin"
+    },
+    {
+     "label": "Bashiir (11)",
+     "ref": "jup_mp_lambda_11_skin"
+    },
+    {
+     "label": "Bashiir (13)",
+     "ref": "jup_mp_lambda_13_skin"
+    },
+    {
+     "label": "Bashiir (12)",
+     "ref": "jup_mp_lambda_12_skin"
+    },
+    {
+     "label": "Bashiir (14)",
+     "ref": "jup_mp_lambda_14_skin"
+    },
+    {
+     "label": "Bashiir (15)",
+     "ref": "jup_mp_lambda_15_skin"
+    }
+   ]
+  },
+  {
+   "label": "Orla Murphy (MWIII)",
+   "op": "jup_mp_kappa",
+   "skins": [
+    {
+     "label": "Orla Murphy (base)",
+     "ref": "jup_mp_kappa_skin"
+    },
+    {
+     "label": "Orla Murphy (10)",
+     "ref": "jup_mp_kappa_10_skin"
+    },
+    {
+     "label": "Orla Murphy (12)",
+     "ref": "jup_mp_kappa_12_skin"
+    },
+    {
+     "label": "Orla Murphy (15)",
+     "ref": "jup_mp_kappa_15_skin"
+    },
+    {
+     "label": "Orla Murphy (17)",
+     "ref": "jup_mp_kappa_17_skin"
+    },
+    {
+     "label": "Orla Murphy (14)",
+     "ref": "jup_mp_kappa_14_skin"
+    },
+    {
+     "label": "Orla Murphy (16)",
+     "ref": "jup_mp_kappa_16_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII fall",
+   "op": "jup_mp_fall",
+   "skins": [
+    {
+     "label": "MWIII fall (base)",
+     "ref": "jup_mp_fall_skin"
+    }
+   ]
+  },
+  {
+   "label": "Book (MWIII)",
+   "op": "jup_mp_winter",
+   "skins": [
+    {
+     "label": "Book (base)",
+     "ref": "jup_mp_winter_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII thyme",
+   "op": "jup_mp_thyme",
+   "skins": [
+    {
+     "label": "MWIII thyme (base)",
+     "ref": "jup_mp_thyme_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII sage",
+   "op": "jup_mp_sage",
+   "skins": [
+    {
+     "label": "MWIII sage (base)",
+     "ref": "jup_mp_sage_skin"
+    }
+   ]
+  },
+  {
+   "label": "Woods (MWIII)",
+   "op": "jup_mp_woods",
+   "skins": [
+    {
+     "label": "Woods (base)",
+     "ref": "jup_mp_woods_skin"
+    },
+    {
+     "label": "Woods (10)",
+     "ref": "jup_mp_woods_10_skin"
+    },
+    {
+     "label": "Woods (11)",
+     "ref": "jup_mp_woods_11_skin"
+    }
+   ]
+  },
+  {
+   "label": "Hammer (MWIII)",
+   "op": "jup_mp_hammer",
+   "skins": [
+    {
+     "label": "Hammer (base)",
+     "ref": "jup_mp_hammer_skin"
+    },
+    {
+     "label": "Hammer (10)",
+     "ref": "jup_mp_hammer_10_skin"
+    },
+    {
+     "label": "Hammer (12)",
+     "ref": "jup_mp_hammer_12_skin"
+    },
+    {
+     "label": "Hammer (11)",
+     "ref": "jup_mp_hammer_11_skin"
+    },
+    {
+     "label": "Hammer (13)",
+     "ref": "jup_mp_hammer_13_skin"
+    },
+    {
+     "label": "Hammer (14)",
+     "ref": "jup_mp_hammer_14_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII mochi",
+   "op": "jup_mp_mochi",
+   "skins": [
+    {
+     "label": "MWIII mochi (base)",
+     "ref": "jup_mp_mochi_skin"
+    }
+   ]
+  },
+  {
+   "label": "WWE gelato (MWIII)",
+   "op": "jup_mp_gelato",
+   "skins": [
+    {
+     "label": "WWE gelato (base)",
+     "ref": "jup_mp_gelato_skin"
+    }
+   ]
+  },
+  {
+   "label": "Rhea Ripley (MWIII)",
+   "op": "jup_mp_caramel",
+   "skins": [
+    {
+     "label": "Rhea Ripley (base)",
+     "ref": "jup_mp_caramel_skin"
+    },
+    {
+     "label": "Rhea Ripley (11)",
+     "ref": "jup_mp_caramel_11_skin"
+    },
+    {
+     "label": "Rhea Ripley (12)",
+     "ref": "jup_mp_caramel_12_skin"
+    },
+    {
+     "label": "Rhea Ripley (13)",
+     "ref": "jup_mp_caramel_13_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII onyx",
+   "op": "jup_mp_onyx",
+   "skins": [
+    {
+     "label": "MWIII onyx (base)",
+     "ref": "jup_mp_onyx_skin"
+    }
+   ]
+  },
+  {
+   "label": "Ivan (MWIII)",
+   "op": "jup_mp_gulag",
+   "skins": [
+    {
+     "label": "Ivan (base)",
+     "ref": "jup_mp_gulag_skin"
+    },
+    {
+     "label": "Ivan (10)",
+     "ref": "jup_mp_gulag_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Eric (The Crow) (MWIII)",
+   "op": "jup_mp_thorn",
+   "skins": [
+    {
+     "label": "Eric (The Crow) (base)",
+     "ref": "jup_mp_thorn_skin"
+    },
+    {
+     "label": "Eric (The Crow) (10)",
+     "ref": "jup_mp_thorn_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "MWIII fuse",
+   "op": "jup_mp_fuse",
+   "skins": [
+    {
+     "label": "MWIII fuse (base)",
+     "ref": "jup_mp_fuse_skin"
+    }
+   ]
+  },
+  {
+   "label": "Felix (MWIII)",
+   "op": "jup_mp_slamfire",
+   "skins": [
+    {
+     "label": "Felix (base)",
+     "ref": "jup_mp_slamfire_skin"
+    },
+    {
+     "label": "Felix (10)",
+     "ref": "jup_mp_slamfire_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Daryl Dixon (MWIII)",
+   "op": "jup_mp_darts",
+   "skins": [
+    {
+     "label": "Daryl Dixon (base)",
+     "ref": "jup_mp_darts_skin"
+    },
+    {
+     "label": "Daryl Dixon (10)",
+     "ref": "jup_mp_darts_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Sam (MWIII)",
+   "op": "jup_mp_copper",
+   "skins": [
+    {
+     "label": "Sam (base)",
+     "ref": "jup_mp_copper_skin"
+    },
+    {
+     "label": "Sam (10)",
+     "ref": "jup_mp_copper_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Michael Myers (MWIII)",
+   "op": "jup_mp_mithril",
+   "skins": [
+    {
+     "label": "Michael Myers (base)",
+     "ref": "jup_mp_mithril_skin"
+    },
+    {
+     "label": "Michael Myers (10)",
+     "ref": "jup_mp_mithril_10_skin"
+    }
+   ]
+  },
+  {
+   "label": "Art the Clown (MWIII)",
+   "op": "jup_mp_clay",
+   "skins": [
+    {
+     "label": "Art the Clown (base)",
+     "ref": "jup_mp_clay_skin"
+    }
+   ]
+  },
+  {
+   "label": "Zimo (MWII)",
+   "op": "zimo_western",
+   "skins": [
+    {
+     "label": "Zimo (base)",
+     "ref": "zimo_western_a"
+    },
+    {
+     "label": "Zimo (pa)",
+     "ref": "zimo_western_pa"
+    },
+    {
+     "label": "Zimo (dmz_2)",
+     "ref": "zimo_western_dmz_2"
+    },
+    {
+     "label": "Zimo (dmz_1)",
+     "ref": "zimo_western_dmz_1"
+    },
+    {
+     "label": "Zimo (lny)",
+     "ref": "zimo_western_lny"
+    },
+    {
+     "label": "Zimo (4_1)",
+     "ref": "zimo_western_4_1"
+    }
+   ]
+  },
+  {
+   "label": "Kpop (MWII)",
+   "op": "kpop_eastern",
+   "skins": [
+    {
+     "label": "Kpop (base)",
+     "ref": "kpop_eastern_a"
+    },
+    {
+     "label": "Kpop (wf)",
+     "ref": "kpop_eastern_wf"
+    },
+    {
+     "label": "Kpop (drug)",
+     "ref": "kpop_eastern_drug"
+    },
+    {
+     "label": "Kpop (pilotish)",
+     "ref": "kpop_eastern_pilotish"
+    },
+    {
+     "label": "Kpop (6)",
+     "ref": "kpop_eastern_6"
+    },
+    {
+     "label": "Kpop (8)",
+     "ref": "kpop_eastern_8"
+    },
+    {
+     "label": "Kpop (8_alt)",
+     "ref": "kpop_eastern_8_alt"
+    }
+   ]
+  },
+  {
+   "label": "Chili (MWII)",
+   "op": "chili_western",
+   "skins": [
+    {
+     "label": "Chili (base)",
+     "ref": "chili_western_a"
+    },
+    {
+     "label": "Chili (agu)",
+     "ref": "chili_western_agu"
+    },
+    {
+     "label": "Chili (chuy)",
+     "ref": "chili_western_chuy"
+    },
+    {
+     "label": "Chili (ma)",
+     "ref": "chili_western_ma"
+    },
+    {
+     "label": "Chili (s2)",
+     "ref": "chili_western_s2"
+    },
+    {
+     "label": "Chili (assassin)",
+     "ref": "chili_western_assassin"
+    },
+    {
+     "label": "Chili (diego)",
+     "ref": "chili_western_diego"
+    },
+    {
+     "label": "Chili (overgrown)",
+     "ref": "chili_western_overgrown"
+    },
+    {
+     "label": "Chili (diego_bc)",
+     "ref": "chili_western_diego_bc"
+    },
+    {
+     "label": "Chili (wendingo)",
+     "ref": "chili_western_wendingo"
+    }
+   ]
+  },
+  {
+   "label": "Hutch (MWII)",
+   "op": "hutch_western",
+   "skins": [
+    {
+     "label": "Hutch (base)",
+     "ref": "hutch_western_a"
+    },
+    {
+     "label": "Hutch (b)",
+     "ref": "hutch_western_b"
+    },
+    {
+     "label": "Hutch (greed)",
+     "ref": "hutch_western_greed"
+    },
+    {
+     "label": "Hutch (frontline)",
+     "ref": "hutch_western_frontline"
+    },
+    {
+     "label": "Hutch (merry)",
+     "ref": "hutch_western_merry"
+    },
+    {
+     "label": "Hutch (por)",
+     "ref": "hutch_western_por"
+    },
+    {
+     "label": "Hutch (fox)",
+     "ref": "hutch_western_fox"
+    },
+    {
+     "label": "Hutch (darpa)",
+     "ref": "hutch_western_darpa"
+    },
+    {
+     "label": "Hutch (10)",
+     "ref": "hutch_western_10"
+    }
+   ]
+  },
+  {
+   "label": "Fender (MWII)",
+   "op": "fender_western",
+   "skins": [
+    {
+     "label": "Fender (base)",
+     "ref": "fender_western_a"
+    },
+    {
+     "label": "Fender (b)",
+     "ref": "fender_western_b"
+    },
+    {
+     "label": "Fender (knight)",
+     "ref": "fender_western_knight"
+    },
+    {
+     "label": "Fender (fringe)",
+     "ref": "fender_western_fringe"
+    },
+    {
+     "label": "Fender (por)",
+     "ref": "fender_western_por"
+    },
+    {
+     "label": "Fender (bodybuilder)",
+     "ref": "fender_western_bodybuilder"
+    },
+    {
+     "label": "Fender (grenadier)",
+     "ref": "fender_western_grenadier"
+    },
+    {
+     "label": "Fender (9)",
+     "ref": "fender_western_9"
+    }
+   ]
+  },
+  {
+   "label": "Stiletto (MWII)",
+   "op": "stiletto_eastern",
+   "skins": [
+    {
+     "label": "Stiletto (a1)",
+     "ref": "stiletto_eastern_a1"
+    },
+    {
+     "label": "Stiletto (mt)",
+     "ref": "stiletto_eastern_mt"
+    },
+    {
+     "label": "Stiletto (et)",
+     "ref": "stiletto_eastern_et"
+    },
+    {
+     "label": "Stiletto (c)",
+     "ref": "stiletto_eastern_c"
+    },
+    {
+     "label": "Stiletto (sicaria_bc)",
+     "ref": "stiletto_eastern_sicaria_bc"
+    },
+    {
+     "label": "Stiletto (sicaria)",
+     "ref": "stiletto_eastern_sicaria"
+    },
+    {
+     "label": "Stiletto (krueger)",
+     "ref": "stiletto_eastern_krueger"
+    },
+    {
+     "label": "Stiletto (8_1)",
+     "ref": "stiletto_eastern_8_1"
+    }
+   ]
+  },
+  {
+   "label": "Farah (MWII)",
+   "op": "farah_western",
+   "skins": [
+    {
+     "label": "Farah (base)",
+     "ref": "farah_western_a"
+    },
+    {
+     "label": "Farah (raid)",
+     "ref": "farah_western_raid"
+    },
+    {
+     "label": "Farah (xrk)",
+     "ref": "farah_western_xrk"
+    },
+    {
+     "label": "Farah (convoy)",
+     "ref": "farah_western_convoy"
+    },
+    {
+     "label": "Farah (convoy_bc)",
+     "ref": "farah_western_convoy_bc"
+    }
+   ]
+  },
+  {
+   "label": "Kleo (MWII)",
+   "op": "kleo_western",
+   "skins": [
+    {
+     "label": "Kleo (base)",
+     "ref": "kleo_western_a"
+    },
+    {
+     "label": "Kleo (th2)",
+     "ref": "kleo_western_th2"
+    },
+    {
+     "label": "Kleo (por)",
+     "ref": "kleo_western_por"
+    },
+    {
+     "label": "Kleo (bm1)",
+     "ref": "kleo_western_bm1"
+    },
+    {
+     "label": "Kleo (bm2)",
+     "ref": "kleo_western_bm2"
+    },
+    {
+     "label": "Kleo (envy)",
+     "ref": "kleo_western_envy"
+    },
+    {
+     "label": "Kleo (darpa)",
+     "ref": "kleo_western_darpa"
+    },
+    {
+     "label": "Kleo (s2)",
+     "ref": "kleo_western_s2"
+    },
+    {
+     "label": "Kleo (7)",
+     "ref": "kleo_western_7"
+    },
+    {
+     "label": "Kleo (bc_alt)",
+     "ref": "kleo_western_bc_alt"
+    },
+    {
+     "label": "Kleo (8)",
+     "ref": "kleo_western_8"
+    }
+   ]
+  },
+  {
+   "label": "Ronin (MWII)",
+   "op": "ronin_western",
+   "skins": [
+    {
+     "label": "Ronin (base)",
+     "ref": "ronin_western_a"
+    },
+    {
+     "label": "Ronin (b)",
+     "ref": "ronin_western_b"
+    },
+    {
+     "label": "Ronin (wrath)",
+     "ref": "ronin_western_wrath"
+    },
+    {
+     "label": "Ronin (5)",
+     "ref": "ronin_western_5"
+    }
+   ]
+  },
+  {
+   "label": "Kilgore (MWII)",
+   "op": "kilgore_eastern",
+   "skins": [
+    {
+     "label": "Kilgore (base)",
+     "ref": "kilgore_eastern_a"
+    },
+    {
+     "label": "Kilgore (sloth)",
+     "ref": "kilgore_eastern_sloth"
+    },
+    {
+     "label": "Kilgore (dmz_2)",
+     "ref": "kilgore_eastern_dmz_2"
+    },
+    {
+     "label": "Kilgore (dmz_3)",
+     "ref": "kilgore_eastern_dmz_3"
+    },
+    {
+     "label": "Kilgore (dmz_1)",
+     "ref": "kilgore_eastern_dmz_1"
+    },
+    {
+     "label": "Kilgore (overgrown)",
+     "ref": "kilgore_eastern_overgrown"
+    },
+    {
+     "label": "Kilgore (por)",
+     "ref": "kilgore_eastern_por"
+    },
+    {
+     "label": "Kilgore (hazmat)",
+     "ref": "kilgore_eastern_hazmat"
+    },
+    {
+     "label": "Kilgore (dr)",
+     "ref": "kilgore_eastern_dr"
+    },
+    {
+     "label": "Kilgore (nightops)",
+     "ref": "kilgore_eastern_nightops"
+    },
+    {
+     "label": "Kilgore (wolf)",
+     "ref": "kilgore_eastern_wolf"
+    },
+    {
+     "label": "Kilgore (cthulhu)",
+     "ref": "kilgore_eastern_cthulhu"
+    },
+    {
+     "label": "Kilgore (phalanx)",
+     "ref": "kilgore_eastern_phalanx"
+    },
+    {
+     "label": "Kilgore (mgl_c)",
+     "ref": "kilgore_eastern_mgl_c"
+    },
+    {
+     "label": "Kilgore (1_5)",
+     "ref": "kilgore_eastern_1_5"
+    },
+    {
+     "label": "Kilgore (12)",
+     "ref": "kilgore_eastern_12"
+    },
+    {
+     "label": "Kilgore (12_alt)",
+     "ref": "kilgore_eastern_12_alt"
+    }
+   ]
+  },
+  {
+   "label": "Calisto (MWII)",
+   "op": "calisto_eastern",
+   "skins": [
+    {
+     "label": "Calisto (base)",
+     "ref": "calisto_eastern_a"
+    },
+    {
+     "label": "Calisto (et)",
+     "ref": "calisto_eastern_et"
+    },
+    {
+     "label": "Calisto (red)",
+     "ref": "calisto_eastern_red"
+    },
+    {
+     "label": "Calisto (purple)",
+     "ref": "calisto_eastern_purple"
+    },
+    {
+     "label": "Calisto (7)",
+     "ref": "calisto_eastern_7"
+    },
+    {
+     "label": "Calisto (5)",
+     "ref": "calisto_eastern_5"
+    },
+    {
+     "label": "Calisto (6)",
+     "ref": "calisto_eastern_6"
+    }
+   ]
+  },
+  {
+   "label": "Nova (MWII)",
+   "op": "nova_eastern",
+   "skins": [
+    {
+     "label": "Nova (base)",
+     "ref": "nova_eastern_a"
+    },
+    {
+     "label": "Nova (tht)",
+     "ref": "nova_eastern_tht"
+    },
+    {
+     "label": "Nova (por)",
+     "ref": "nova_eastern_por"
+    },
+    {
+     "label": "Nova (inkblot)",
+     "ref": "nova_eastern_inkblot"
+    },
+    {
+     "label": "Nova (champions)",
+     "ref": "nova_eastern_champions"
+    },
+    {
+     "label": "Nova (4_1)",
+     "ref": "nova_eastern_4_1"
+    },
+    {
+     "label": "Nova (sergeant)",
+     "ref": "nova_eastern_sergeant"
+    },
+    {
+     "label": "Nova (8)",
+     "ref": "nova_eastern_8"
+    }
+   ]
+  },
+  {
+   "label": "Oni (MWII)",
+   "op": "oni_eastern",
+   "skins": [
+    {
+     "label": "Oni (base)",
+     "ref": "oni_eastern_a"
+    },
+    {
+     "label": "Oni (b)",
+     "ref": "oni_eastern_b"
+    },
+    {
+     "label": "Oni (s2)",
+     "ref": "oni_eastern_s2"
+    },
+    {
+     "label": "Oni (s3)",
+     "ref": "oni_eastern_s3"
+    },
+    {
+     "label": "Oni (combat_p4)",
+     "ref": "oni_eastern_combat_p4"
+    },
+    {
+     "label": "Oni (6)",
+     "ref": "oni_eastern_6"
+    },
+    {
+     "label": "Oni (7)",
+     "ref": "oni_eastern_7"
+    }
+   ]
+  },
+  {
+   "label": "Reyes (MWII)",
+   "op": "reyes_western",
+   "skins": [
+    {
+     "label": "Reyes (base)",
+     "ref": "reyes_western_a"
+    },
+    {
+     "label": "Reyes (b)",
+     "ref": "reyes_western_b"
+    },
+    {
+     "label": "Reyes (et)",
+     "ref": "reyes_western_et"
+    },
+    {
+     "label": "Reyes (dr)",
+     "ref": "reyes_western_dr"
+    },
+    {
+     "label": "Reyes (lust)",
+     "ref": "reyes_western_lust"
+    },
+    {
+     "label": "Reyes (s2)",
+     "ref": "reyes_western_s2"
+    },
+    {
+     "label": "Reyes (nc)",
+     "ref": "reyes_western_nc"
+    },
+    {
+     "label": "Reyes (rat)",
+     "ref": "reyes_western_rat"
+    },
+    {
+     "label": "Reyes (8)",
+     "ref": "reyes_western_8"
+    }
+   ]
+  },
+  {
+   "label": "Conor (MWII)",
+   "op": "conor_eastern",
+   "skins": [
+    {
+     "label": "Conor (base)",
+     "ref": "conor_eastern_a"
+    },
+    {
+     "label": "Conor (b)",
+     "ref": "conor_eastern_b"
+    },
+    {
+     "label": "Conor (greased)",
+     "ref": "conor_eastern_greased"
+    },
+    {
+     "label": "Conor (exotic)",
+     "ref": "conor_eastern_exotic"
+    },
+    {
+     "label": "Conor (por)",
+     "ref": "conor_eastern_por"
+    },
+    {
+     "label": "Conor (stpatrick)",
+     "ref": "conor_eastern_stpatrick"
+    }
+   ]
+  },
+  {
+   "label": "Aksel (MWII)",
+   "op": "aksel_eastern",
+   "skins": [
+    {
+     "label": "Aksel (base)",
+     "ref": "aksel_eastern_a"
+    },
+    {
+     "label": "Aksel (wrath)",
+     "ref": "aksel_eastern_wrath"
+    },
+    {
+     "label": "Aksel (guerrilla)",
+     "ref": "aksel_eastern_guerrilla"
+    },
+    {
+     "label": "Aksel (s3bp)",
+     "ref": "aksel_eastern_s3bp"
+    },
+    {
+     "label": "Aksel (bc)",
+     "ref": "aksel_eastern_bc"
+    },
+    {
+     "label": "Aksel (techno)",
+     "ref": "aksel_eastern_techno"
+    },
+    {
+     "label": "Aksel (unmasked)",
+     "ref": "aksel_eastern_unmasked"
+    },
+    {
+     "label": "Aksel (police)",
+     "ref": "aksel_eastern_police"
+    }
+   ]
+  },
+  {
+   "label": "Gromsko (MWII)",
+   "op": "gromsko_western",
+   "skins": [
+    {
+     "label": "Gromsko (base)",
+     "ref": "gromsko_western_a"
+    },
+    {
+     "label": "Gromsko (b)",
+     "ref": "gromsko_western_b"
+    },
+    {
+     "label": "Gromsko (gluttony)",
+     "ref": "gromsko_western_gluttony"
+    },
+    {
+     "label": "Gromsko (sanguine)",
+     "ref": "gromsko_western_sanguine"
+    },
+    {
+     "label": "Gromsko (weedlove)",
+     "ref": "gromsko_western_weedlove"
+    },
+    {
+     "label": "Gromsko (pro)",
+     "ref": "gromsko_western_pro"
+    }
+   ]
+  },
+  {
+   "label": "Luna (MWII)",
+   "op": "luna_western",
+   "skins": [
+    {
+     "label": "Luna (base)",
+     "ref": "luna_western_a"
+    },
+    {
+     "label": "Luna (b)",
+     "ref": "luna_western_b"
+    },
+    {
+     "label": "Luna (s3)",
+     "ref": "luna_western_s3"
+    }
+   ]
+  },
+  {
+   "label": "Roze (MWII)",
+   "op": "roze_eastern",
+   "skins": [
+    {
+     "label": "Roze (base)",
+     "ref": "roze_eastern_a"
+    },
+    {
+     "label": "Roze (dmz_1)",
+     "ref": "roze_eastern_dmz_1"
+    },
+    {
+     "label": "Roze (bp)",
+     "ref": "roze_eastern_bp"
+    },
+    {
+     "label": "Roze (dmz_2)",
+     "ref": "roze_eastern_dmz_2"
+    },
+    {
+     "label": "Roze (por)",
+     "ref": "roze_eastern_por"
+    },
+    {
+     "label": "Roze (sl)",
+     "ref": "roze_eastern_sl"
+    },
+    {
+     "label": "Roze (s3)",
+     "ref": "roze_eastern_s3"
+    },
+    {
+     "label": "Roze (4_1)",
+     "ref": "roze_eastern_4_1"
+    },
+    {
+     "label": "Roze (code)",
+     "ref": "roze_eastern_code"
+    },
+    {
+     "label": "Roze (7)",
+     "ref": "roze_eastern_7"
+    },
+    {
+     "label": "Roze (7_alt)",
+     "ref": "roze_eastern_7_alt"
+    },
+    {
+     "label": "Roze (1_5)",
+     "ref": "roze_eastern_1_5"
+    }
+   ]
+  },
+  {
+   "label": "Zero (MWII)",
+   "op": "zero_eastern",
+   "skins": [
+    {
+     "label": "Zero (base)",
+     "ref": "zero_eastern_a"
+    },
+    {
+     "label": "Zero (yj)",
+     "ref": "zero_eastern_yj"
+    },
+    {
+     "label": "Zero (dw)",
+     "ref": "zero_eastern_dw"
+    },
+    {
+     "label": "Zero (et)",
+     "ref": "zero_eastern_et"
+    },
+    {
+     "label": "Zero (s2)",
+     "ref": "zero_eastern_s2"
+    },
+    {
+     "label": "Zero (hollywood)",
+     "ref": "zero_eastern_hollywood"
+    },
+    {
+     "label": "Zero (s2_alt)",
+     "ref": "zero_eastern_s2_alt"
+    },
+    {
+     "label": "Zero (6)",
+     "ref": "zero_eastern_6"
+    },
+    {
+     "label": "Zero (evildeath)",
+     "ref": "zero_eastern_evildeath"
+    },
+    {
+     "label": "Zero (7)",
+     "ref": "zero_eastern_7"
+    }
+   ]
+  },
+  {
+   "label": "Pogba (MWII)",
+   "op": "pogba_western",
+   "skins": [
+    {
+     "label": "Pogba (base)",
+     "ref": "pogba_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Neymar (MWII)",
+   "op": "neymar_eastern",
+   "skins": [
+    {
+     "label": "Neymar (base)",
+     "ref": "neymar_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Zeus (MWII)",
+   "op": "zeus_eastern",
+   "skins": [
+    {
+     "label": "Zeus (base)",
+     "ref": "zeus_eastern_a"
+    },
+    {
+     "label": "Zeus (b)",
+     "ref": "zeus_eastern_b"
+    },
+    {
+     "label": "Zeus (bl)",
+     "ref": "zeus_eastern_bl"
+    },
+    {
+     "label": "Zeus (fashion)",
+     "ref": "zeus_eastern_fashion"
+    }
+   ]
+  },
+  {
+   "label": "Messi (MWII)",
+   "op": "messi_western",
+   "skins": [
+    {
+     "label": "Messi (base)",
+     "ref": "messi_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Klaus (MWII)",
+   "op": "klaus_western",
+   "skins": [
+    {
+     "label": "Klaus (base)",
+     "ref": "klaus_western_a"
+    },
+    {
+     "label": "Klaus (easter)",
+     "ref": "klaus_western_easter"
+    },
+    {
+     "label": "Klaus (easter_alt)",
+     "ref": "klaus_western_easter_alt"
+    }
+   ]
+  },
+  {
+   "label": "Gaz (MWII)",
+   "op": "gaz_western",
+   "skins": [
+    {
+     "label": "Gaz (base)",
+     "ref": "gaz_western_a"
+    },
+    {
+     "label": "Gaz (intercept)",
+     "ref": "gaz_western_intercept"
+    },
+    {
+     "label": "Gaz (convoy)",
+     "ref": "gaz_western_convoy"
+    },
+    {
+     "label": "Gaz (highrise)",
+     "ref": "gaz_western_highrise"
+    },
+    {
+     "label": "Gaz (highrise_bc)",
+     "ref": "gaz_western_highrise_bc"
+    }
+   ]
+  },
+  {
+   "label": "Shredder (MWII)",
+   "op": "shredder_eastern",
+   "skins": [
+    {
+     "label": "Shredder (base)",
+     "ref": "shredder_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Alejandro (MWII)",
+   "op": "alejandro_western",
+   "skins": [
+    {
+     "label": "Alejandro (base)",
+     "ref": "alejandro_western_a"
+    },
+    {
+     "label": "Alejandro (2_2)",
+     "ref": "alejandro_western_2_2"
+    },
+    {
+     "label": "Alejandro (2_1)",
+     "ref": "alejandro_western_2_1"
+    },
+    {
+     "label": "Alejandro (bc)",
+     "ref": "alejandro_western_bc"
+    },
+    {
+     "label": "Alejandro (space)",
+     "ref": "alejandro_western_space"
+    },
+    {
+     "label": "Alejandro (space_alt)",
+     "ref": "alejandro_western_space_alt"
+    }
+   ]
+  },
+  {
+   "label": "NICKMERCS (MWII)",
+   "op": "nickmercs_eastern",
+   "skins": [
+    {
+     "label": "NICKMERCS (base)",
+     "ref": "nickmercs_eastern_a"
+    },
+    {
+     "label": "NICKMERCS (b)",
+     "ref": "nickmercs_eastern_b"
+    }
+   ]
+  },
+  {
+   "label": "Alex (MWII)",
+   "op": "alex_western",
+   "skins": [
+    {
+     "label": "Alex (base)",
+     "ref": "alex_western_a"
+    },
+    {
+     "label": "Alex (c)",
+     "ref": "alex_western_c"
+    },
+    {
+     "label": "Alex (b)",
+     "ref": "alex_western_b"
+    },
+    {
+     "label": "Alex (5)",
+     "ref": "alex_western_5"
+    },
+    {
+     "label": "Alex (5_alt)",
+     "ref": "alex_western_5_alt"
+    },
+    {
+     "label": "Alex (4)",
+     "ref": "alex_western_4"
+    }
+   ]
+  },
+  {
+   "label": "TimTheTatman (MWII)",
+   "op": "tim_western",
+   "skins": [
+    {
+     "label": "TimTheTatman (base)",
+     "ref": "tim_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Nikto (MWII)",
+   "op": "nikto_eastern",
+   "skins": [
+    {
+     "label": "Nikto (base)",
+     "ref": "nikto_eastern_a"
+    },
+    {
+     "label": "Nikto (t100)",
+     "ref": "nikto_eastern_t100"
+    },
+    {
+     "label": "Nikto (t100_alt)",
+     "ref": "nikto_eastern_t100_alt"
+    },
+    {
+     "label": "Nikto (t0_alt)",
+     "ref": "nikto_eastern_t0_alt"
+    },
+    {
+     "label": "Nikto (3)",
+     "ref": "nikto_eastern_3"
+    },
+    {
+     "label": "Nikto (3_alt)",
+     "ref": "nikto_eastern_3_alt"
+    }
+   ]
+  },
+  {
+   "label": "Heather (MWII)",
+   "op": "heather_eastern",
+   "skins": [
+    {
+     "label": "Heather (base)",
+     "ref": "heather_eastern_a"
+    },
+    {
+     "label": "Heather (masked)",
+     "ref": "heather_eastern_masked"
+    }
+   ]
+  },
+  {
+   "label": "Black Noir (MWII)",
+   "op": "blacknoir_eastern",
+   "skins": [
+    {
+     "label": "Black Noir (base)",
+     "ref": "blacknoir_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Starlight (MWII)",
+   "op": "starlight_western",
+   "skins": [
+    {
+     "label": "Starlight (base)",
+     "ref": "starlight_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Zoltan (MWII)",
+   "op": "zoltan_eastern",
+   "skins": [
+    {
+     "label": "Zoltan (base)",
+     "ref": "zoltan_eastern_a"
+    },
+    {
+     "label": "Zoltan (bc)",
+     "ref": "zoltan_eastern_bc"
+    },
+    {
+     "label": "Zoltan (t100)",
+     "ref": "zoltan_eastern_t100"
+    },
+    {
+     "label": "Zoltan (t100bc)",
+     "ref": "zoltan_eastern_t100bc"
+    }
+   ]
+  },
+  {
+   "label": "Tetiana (MWII)",
+   "op": "tetiana_eastern",
+   "skins": [
+    {
+     "label": "Tetiana (base)",
+     "ref": "tetiana_eastern_a"
+    },
+    {
+     "label": "Tetiana (3)",
+     "ref": "tetiana_eastern_3"
+    },
+    {
+     "label": "Tetiana (3_alt)",
+     "ref": "tetiana_eastern_3_alt"
+    }
+   ]
+  },
+  {
+   "label": "Arthur (MWII)",
+   "op": "arthur_western",
+   "skins": [
+    {
+     "label": "Arthur (base)",
+     "ref": "arthur_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Velikan (MWII)",
+   "op": "velikan_eastern",
+   "skins": [
+    {
+     "label": "Velikan (base)",
+     "ref": "velikan_eastern_a"
+    },
+    {
+     "label": "Velikan (alt)",
+     "ref": "velikan_eastern_alt"
+    },
+    {
+     "label": "Velikan (2)",
+     "ref": "velikan_eastern_2"
+    }
+   ]
+  },
+  {
+   "label": "Graves (MWII)",
+   "op": "graves_eastern",
+   "skins": [
+    {
+     "label": "Graves (base)",
+     "ref": "graves_eastern_a"
+    },
+    {
+     "label": "Graves (sc)",
+     "ref": "graves_eastern_sc"
+    },
+    {
+     "label": "Graves (sc_bc)",
+     "ref": "graves_eastern_sc_bc"
+    },
+    {
+     "label": "Graves (a_alt)",
+     "ref": "graves_eastern_a_alt"
+    }
+   ]
+  },
+  {
+   "label": "21 Savage (MWII)",
+   "op": "savage_eastern",
+   "skins": [
+    {
+     "label": "21 Savage (base)",
+     "ref": "savage_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Lara Croft (MWII)",
+   "op": "lara_western",
+   "skins": [
+    {
+     "label": "Lara Croft (base)",
+     "ref": "lara_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Mace (MWII)",
+   "op": "mace_eastern",
+   "skins": [
+    {
+     "label": "Mace (base)",
+     "ref": "mace_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Skeletor (MWII)",
+   "op": "skeletor_eastern",
+   "skins": [
+    {
+     "label": "Skeletor (base)",
+     "ref": "skeletor_eastern_a"
+    },
+    {
+     "label": "Skeletor (b)",
+     "ref": "skeletor_eastern_b"
+    },
+    {
+     "label": "Skeletor (c)",
+     "ref": "skeletor_eastern_c"
+    }
+   ]
+  },
+  {
+   "label": "Inarius (MWII)",
+   "op": "inarius_western",
+   "skins": [
+    {
+     "label": "Inarius (base)",
+     "ref": "inarius_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Lilith (MWII)",
+   "op": "lilith_eastern",
+   "skins": [
+    {
+     "label": "Lilith (base)",
+     "ref": "lilith_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Spawn (MWII)",
+   "op": "spawn_western",
+   "skins": [
+    {
+     "label": "Spawn (base)",
+     "ref": "spawn_western_a"
+    },
+    {
+     "label": "Spawn (tactical)",
+     "ref": "spawn_western_tactical"
+    },
+    {
+     "label": "Spawn (tactical_alt)",
+     "ref": "spawn_western_tactical_alt"
+    },
+    {
+     "label": "Spawn (2)",
+     "ref": "spawn_western_2"
+    },
+    {
+     "label": "Spawn (2_alt)",
+     "ref": "spawn_western_2_alt"
+    },
+    {
+     "label": "Spawn (burned)",
+     "ref": "spawn_western_burned"
+    },
+    {
+     "label": "Spawn (burned_alt)",
+     "ref": "spawn_western_burned_alt"
+    },
+    {
+     "label": "Spawn (a_alt)",
+     "ref": "spawn_western_a_alt"
+    }
+   ]
+  },
+  {
+   "label": "Ash Williams (MWII)",
+   "op": "ash_western",
+   "skins": [
+    {
+     "label": "Ash Williams (base)",
+     "ref": "ash_western_a"
+    }
+   ]
+  },
+  {
+   "label": "CDL male east (MWII)",
+   "op": "cdl_male_east",
+   "skins": [
+    {
+     "label": "CDL male east (ranked_away)",
+     "ref": "cdl_male_east_ranked_away"
+    }
+   ]
+  },
+  {
+   "label": "CDL male west (MWII)",
+   "op": "cdl_male_west",
+   "skins": [
+    {
+     "label": "CDL male west (king)",
+     "ref": "cdl_male_west_king"
+    },
+    {
+     "label": "CDL male west (ranked)",
+     "ref": "cdl_male_west_ranked"
+    }
+   ]
+  },
+  {
+   "label": "CDL female east (MWII)",
+   "op": "cdl_female_east",
+   "skins": [
+    {
+     "label": "CDL female east (ranked_away)",
+     "ref": "cdl_female_east_ranked_away"
+    }
+   ]
+  },
+  {
+   "label": "CDL female west (MWII)",
+   "op": "cdl_female_west",
+   "skins": [
+    {
+     "label": "CDL female west (ranked)",
+     "ref": "cdl_female_west_ranked"
+    }
+   ]
+  },
+  {
+   "label": "Blackcell (MWII)",
+   "op": "blackcell_eastern",
+   "skins": [
+    {
+     "label": "Blackcell (base)",
+     "ref": "blackcell_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Neo Tokyo (MWII)",
+   "op": "neotokyo_eastern",
+   "skins": [
+    {
+     "label": "Neo Tokyo (base)",
+     "ref": "neotokyo_eastern_a"
+    }
+   ]
+  },
+  {
+   "label": "Freedom (MWII)",
+   "op": "freedom_western",
+   "skins": [
+    {
+     "label": "Freedom (masked)",
+     "ref": "freedom_western_masked"
+    }
+   ]
+  },
+  {
+   "label": "Io (MWII)",
+   "op": "io_western",
+   "skins": [
+    {
+     "label": "Io (base)",
+     "ref": "io_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Hellsing (MWII)",
+   "op": "hellsing_western",
+   "skins": [
+    {
+     "label": "Hellsing (base)",
+     "ref": "hellsing_western_a"
+    }
+   ]
+  },
+  {
+   "label": "Kevin Durant (MWII)",
+   "op": "kd_western",
+   "skins": [
+    {
+     "label": "Kevin Durant (base)",
+     "ref": "kd_western_a"
+    }
+   ]
+  }
+ ],
+ "unlockFix": true
+}

@@ -1,7 +1,7 @@
 {
     "name": "Carry Forward Unleashed",
     "author": "MasterRDF",
-    "version": "1.5.2.1",
+    "version": "1.6",
     "type": "mode",
-    "description": "Modern Warfare II and III guns in Black Ops 7 menus, loadouts and Zombies: the Mystery Box Loadout menu (choose which games the box gives, and which game every weapon wall buy sells), weapon lists grouped by game, persistent Favorites with a key-1 toggle and star indicators, real firearm names, Pack-a-Punch, BO7-style Zombies ammo and loadout guns in Zombies. Needs hid.dll (loader 3) in the cod25 folder, which loads this folder's mw2_guns.dll. Switching the mod on or off takes full effect after restarting the game. Logs: kronos\\Logs\\mw2_guns*.log."
+    "description": "Modern Warfare II and III guns and operators in Black Ops 7: Mystery Box Loadout and wall-buy game selection, weapon lists grouped by game, persistent Favorites with a key-1 toggle and star indicators, real firearm names, Pack-a-Punch, BO7-style Zombies ammo and loadout guns in Zombies. Includes Maverick's 128 MWII/MWIII operators and 661 skins; menu-preview animation issues remain. Needs the included hid.dll (loader 4), stock Kronos v1.41, the supported BO7 executable and BO6 Operators enabled in Kronos settings. Restart the game after switching this mod on or off. Logs: kronos\\Logs\\mw2_guns*.log and mwcf_operators.log."
 }

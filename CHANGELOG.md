@@ -1,3 +1,9 @@
+# Version 1.6
+
+Changelog 1.6
+
+Finally introducing the operators from Modern Warfare II and Modern Warfare III! PLEASE keep in mind that this integration is still kind of messy and is going to be worked on but I know a lot of you just want it and the operators are playable (at least in Zombies) so here you go! Stay tuned for more updates!
+
 # Version 1.5.2.1
 
 Changelog

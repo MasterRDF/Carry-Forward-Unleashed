@@ -1,0 +1,35 @@
+MW Operators integration for Carry Forward Unleashed 1.6
+
+Original MW Operators mod, operator/skin list, menu fixes and native patch design: Maverick.
+CFU integration: a startup companion and loader 4, preserving the tested weapon DLLs.
+
+Adds 128 MWII/MWIII operators and 661 skins under CFU's Library entry.
+The integration has been confirmed working in Zombies. Menu A-poses and reused
+BO7 preview animations remain known issues and will be addressed in future work.
+
+Install with BO7 and Kronos closed. Replace the included hid.dll in cod25, copy
+the kronos folder, enable Carry Forward Unleashed in the Library, and enable
+BO6 Operators in Kronos settings. Restart the game after changing the Library switch.
+
+Migrating from standalone MW Operators: remove kronos/mods/mw_operators and
+restore the original Kronos XINPUT9_1_0.dll from your backup or the Kronos updater.
+Do not run the standalone and integrated copies together. This release does not
+include or replace the Kronos DLL, settings, or your operator selections.
+
+Requires stock Kronos v1.41 and the supported BO7 CL29269900 executable.
+The companion checks the exact game/Kronos hashes, pinned roster and native
+patch sites before applying the table expansion, targeted stale-string guard
+and skin-rebuild changes in memory. Unknown versions or late initialization
+are refused. The original Kronos DLL stays unchanged on disk.
+
+hid.dll loader 4 initializes the operator companion before the existing weapon
+DLLs. Switching CFU off before starting the game disables the integrated operator
+companion, CFU weapon DLLs, Lua and scripts together.
+
+Logs: kronos/Logs/mwcf_operators.log and mw2_guns_loader.log.
+Expected operator message: enabled 128 added operators / 661 added skins.
+The tested companion retains its original "integration trial 01" log prefix.
+If it refuses initialization, inspect that log; visible menu rows alone do not
+establish that the native operator patch is active.
+
+The existing Pack-a-Punch and Max Ammo fixes are retained unchanged.
