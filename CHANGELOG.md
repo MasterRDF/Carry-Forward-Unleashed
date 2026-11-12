@@ -1,3 +1,9 @@
+# Version 1.6.1
+
+Changelog 1.6.1
+-Fixed some weapons having mismatched names after the rename update
+-Unfortunately, "P" is now forced to use his full government name "Staccato P" :(
+
 # Version 1.6
 
 Changelog 1.6
