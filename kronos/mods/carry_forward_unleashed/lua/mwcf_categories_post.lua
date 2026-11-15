@@ -44,66 +44,22 @@ do
 
     local function regroup(list)
       if type(list) ~= "table" then return false end
-      -- Favorites supplies native rows with weapon-type headers; keep those headers under this same publisher owner.
-      if rawget(list, "__mwcfFavoritesList") then
-        for i = #list, 1, -1 do
-          local bd = field(list[i], "bundleData")
-          if bd then
-            local ref = field(bd, REF[1]) or field(bd, REF[2])
-            ref = ref and tostring(ref)
-            if ref == "sat_dm_tasman" then table.remove(list, i)
-            elseif ref and S.swapIcon then pcall(S.swapIcon, bd, ref) end
-          end
-        end
-        return false
-      end
-      if #list < 2 then return false end
-      local header, labelKey
-      local buckets = {}
-      for i = 1, #GAMES + 1 do buckets[i] = {} end
-      for i = 1, #list do
+      local favorites = rawget(list, "__mwcfFavoritesList") == true
+      local changed = false
+      for i = #list, 1, -1 do
         local row = list[i]
-        if type(row) ~= "table" then return false end
-        if rawget(row, MARK) then return false end  -- already grouped
         local bd = field(row, "bundleData")
-        if bd == nil then
-          local key
-          for _, k in ipairs(LABEL) do
-            if field(row, k) ~= nil then key = k; break end
-          end
-          if not key then return false end  -- a row that is neither a weapon nor a section header
-          if not header then header, labelKey = row, key end
-        else
-          local ref = field(bd, REF[1])
-          if ref == nil then ref = field(bd, REF[2]) end
-          if ref == nil then return false end
-          ref = tostring(ref)
-          -- The Miserable Bastille is a duplicate BO7 carry-forward gun, omitted like the BO7 PPSh/MP40/Olympia entries.
-          if ref ~= "sat_dm_tasman" then
-            if S.swapIcon then pcall(S.swapIcon, bd, ref) end
-            local b = buckets[gameOf(ref)]
-            b[#b + 1] = row
-          elseif not S.tasmanHidden then
-            S.tasmanHidden = true
-            log("The Miserable Bastille (sat_dm_tasman) removed from weapon selection")
-          end
+        if bd then
+          local ref = field(bd, REF[1]) or field(bd, REF[2])
+          ref = ref and tostring(ref)
+          if ref == "sat_dm_tasman" then table.remove(list, i); changed = true
+          elseif ref and S.swapIcon then pcall(S.swapIcon, bd, ref) end
+        elseif not favorites then
+          local label = field(row, LABEL[1]) or field(row, LABEL[2])
+          if label ~= nil then table.remove(list, i); changed = true end
         end
       end
-      if not header then return false end
-      for i = #list, 1, -1 do list[i] = nil end
-      for i = 1, #GAMES + 1 do
-        local rows = buckets[i]
-        if #rows > 0 then
-          local h = {}
-          for k, v in pairs(header) do h[k] = v end
-          setmetatable(h, getmetatable(header))
-          h[labelKey] = GAMES[i] and GAMES[i].label or OTHER
-          h[MARK] = true
-          list[#list + 1] = h
-          for _, row in ipairs(rows) do list[#list + 1] = row end
-        end
-      end
-      return true
+      return changed
     end
     S.regroup = regroup
 
@@ -383,30 +339,6 @@ do
 
     function S.install()
       pcall(S.installImages)
-      local LO = rawget(_G, "LOADOUT")
-      if type(LO) ~= "table" then return end
-      for _, hex in ipairs(LIST_FN) do
-        local key = H(hex)
-        local f = field(LO, key)
-        if type(f) == "function" then
-          if f == S.wrapped then return end
-          local orig = f
-          S.wrapped = function(a, list, ...)
-            local ok, e = pcall(regroup, list)
-            if not ok and not S.errLogged then
-              S.errLogged = true
-              log("left a list as it was: " .. tostring(e))
-            elseif ok and e and not S.okLogged then
-              S.okLogged = true
-              log("weapon list grouped by game")
-            end
-            return orig(a, list, ...)
-          end
-          LO[key] = S.wrapped
-          log("weapon select lists will be grouped by game")
-          return
-        end
-      end
     end
 
     local unpack = unpack or table.unpack

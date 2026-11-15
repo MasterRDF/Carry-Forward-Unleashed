@@ -1,3 +1,10 @@
+# Version 1.6.2
+
+Changelog 1.6.2:
+-Added new warzone-style buttons to the weapon select screen to differentiate each game's weapon pool.
+-Fixed some more rename inconsistencies
+-Added a toggle for the irl weapon names (let the guns load before pressing it and dont spam it, its a bit janky atm)
+
 # Version 1.6.1
 
 Changelog 1.6.1

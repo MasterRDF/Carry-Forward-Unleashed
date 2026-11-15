@@ -12,6 +12,12 @@ Use stock Kronos v1.41 with the supported BO7 CL29269900 executable. The operato
 
 6. In weapon selection, open **Favorites** to view your favorite guns. Press **1** or click **Toggle Favorite** to add or remove the selected weapon. A gold star appears beside its saved-build counter. Favorites are saved across matches and restarts.
 
+## Game buttons and weapon names
+
+Version 1.6.2 adds BO7 / BO6 / MWIII / MWII logo buttons to Zombies weapon selection, Favorites and Operators. Favorites retains weapon-type headings within each game.
+
+Click the **Weapon Renames** radio beside **Toggle Favorite** to switch between the custom real firearm names and the original game names. Let the guns finish loading before using it, and avoid pressing it repeatedly while it applies. The choice is saved across restarts. Rename corrections include **Beretta 92FS** and **HAMR**.
+
 ## MWII and MWIII operators
 
 Version 1.6 integrates Maverick's MW Operators work: 128 added operators and 661 skins under the same Carry Forward Unleashed Library entry. Choose an operator in the Operators menu; the integration has been confirmed working in Zombies.
