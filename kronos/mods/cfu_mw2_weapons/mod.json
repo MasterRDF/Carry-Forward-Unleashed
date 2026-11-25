@@ -1,0 +1,10 @@
+{
+  "name": "CFU - MWII Weapons",
+  "author": "MasterRDF",
+  "version": "1.7",
+  "type": "mode",
+  "requires": [
+    "cfu_core"
+  ],
+  "description": "Modern Warfare II guns (iw9_) for Carry Forward Unleashed, with their weapon icons. Requires CFU Core. Restart the game after switching it on or off."
+}

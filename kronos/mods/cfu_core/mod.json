@@ -1,0 +1,7 @@
+{
+  "name": "CFU Core",
+  "author": "MasterRDF",
+  "version": "1.7",
+  "type": "mode",
+  "description": "Carry Forward Unleashed Core: Mystery Box Loadout and wall-buy game selection, the five game buttons (BO7, BO6, MWIII, MWII, Vanguard) on Zombies weapons, Favorites and Operators, Favorites, Weapon Renames, Pack-a-Punch and loadout support, plus BO6 sorting. Games whose module is not on show a locked button. Add-on modules: CFU - MWII Weapons, CFU - MWIII Weapons, CFU - MWII Operators, CFU - MWIII Operators, CFU - Vanguard Weapons. Needs cod25\\hid.dll (loader 4), stock Kronos v1.41, the supported BO7 executable and BO6 Operators on in Kronos settings for MW operators. Restart the game after switching any CFU entry. Logs: kronos\\Logs\\mw2_guns*.log and mwcf_operators.log."
+}

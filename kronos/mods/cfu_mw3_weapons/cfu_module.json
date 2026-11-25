@@ -1,0 +1,10 @@
+{
+  "api": 1,
+  "id": "cfu_mw3_weapons",
+  "game": "mwiii",
+  "content": "weapons",
+  "prefixes": [
+    "jup_"
+  ],
+  "native": "warzone-share"
+}

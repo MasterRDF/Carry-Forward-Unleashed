@@ -1,0 +1,10 @@
+{
+  "name": "CFU - MWIII Operators",
+  "author": "MasterRDF",
+  "version": "1.7",
+  "type": "mode",
+  "requires": [
+    "cfu_core"
+  ],
+  "description": "Modern Warfare III operators and skins (Maverick's MW Operators) for Carry Forward Unleashed. Requires CFU Core. Restart the game after switching it on or off. MW operators also need BO6 Operators on in Kronos settings."
+}

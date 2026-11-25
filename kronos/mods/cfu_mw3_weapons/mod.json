@@ -1,0 +1,10 @@
+{
+  "name": "CFU - MWIII Weapons",
+  "author": "MasterRDF",
+  "version": "1.7",
+  "type": "mode",
+  "requires": [
+    "cfu_core"
+  ],
+  "description": "Modern Warfare III guns (jup_) for Carry Forward Unleashed. Requires CFU Core. Restart the game after switching it on or off."
+}

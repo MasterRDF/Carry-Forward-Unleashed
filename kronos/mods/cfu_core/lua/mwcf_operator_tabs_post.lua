@@ -260,14 +260,14 @@ local retryDelays = { 250, 750, 1750, 3750 }
 local function trace(event, detail)
   if traces[event] then return end
   traces[event] = true
-  pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 4] event=" .. event .. " " .. detail)
+  pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 5] event=" .. event .. " " .. detail)
 end
 
 local function reportError(stage, err, restoreErr)
   if reported then return end
   reported = true
   local detail = restoreErr and " restore_error=" .. tostring(restoreErr) or ""
-  pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 4] stage=" .. stage ..
+  pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 5] stage=" .. stage ..
     " error=" .. tostring(err) .. detail)
 end
 
@@ -370,7 +370,8 @@ local function split(rows)
   end
   if #stock == 0 then return nil end
   pcall(repairBO7Order, stock)
-  return { stock, sorted, mw3, mw2 }
+  -- Index order matches the Core registry: BO7, BO6, MWIII, MWII, Vanguard (no Vanguard operators exist yet).
+  return { stock, sorted, mw3, mw2, {} }
 end
 
 local function rebuildBO6Roster(screen)
@@ -435,13 +436,19 @@ local function contains(rows, ref)
   return false
 end
 
-local function highlightProjectTab(tabs, index)
+local function core()
+  return assert(rawget(_G, "CFU_CORE"), "CFU Core registry missing")
+end
+
+local function highlightProjectTab(tabs, index, locked)
   local elements = tabs._tabElements
   if not elements then return end
   local selected = elements[index]
   for i, other in ipairs(elements) do if i ~= index then other:Deselect() end end
-  if not selected then return end
-  selected:Select()
+  if selected then selected:Select() end
+  if locked then
+    for i, element in ipairs(elements) do core().applyLock(element, locked[i]) end
+  end
 end
 
 local function attachMenu(builder, menu)
@@ -547,6 +554,20 @@ local function attachMenu(builder, menu)
 
   local function selectTab(index)
     local screen = owner[1]
+    if state.locked and state.locked[index] and not state.redirecting and state.tabs then
+      local target = core().redirect(state.locked, state.selected, index, (state.navigating or 0) > 0)
+      local function land()
+        if state.closed or state.disabled then return end
+        state.redirecting = true
+        pcall(state.tabs.FocusTab, state.tabs, screen and screen._controllerIndex or 0, target - 1)
+        state.redirecting = false
+        if target ~= state.selected then selectTab(target) end
+        pcall(highlightProjectTab, state.tabs, state.selected, state.locked)
+      end
+      if not pcall(nextFrame.Queue, nextFrame, function() pcall(land) end) then pcall(land) end
+      return
+    end
+    if state.redirecting then return end
     if not screen or not state.ready or screen._operators ~= state.view or state.closed or
         state.disabled or state.busy or index == state.selected or not state.groups[index] or
         not eligible() or not screen:IsVisible() then return end
@@ -561,7 +582,7 @@ local function attachMenu(builder, menu)
       apply(screen, target, index)
     end)
     if ok then
-      pcall(highlightProjectTab, state.tabs, state.selected)
+      pcall(highlightProjectTab, state.tabs, state.selected, state.locked)
     else
       fail(screen, target, err)
     end
@@ -570,13 +591,16 @@ local function attachMenu(builder, menu)
 
   local function syncTabs(screen)
     local count = #state.groups
-    if state.tabCount == count then return end
-    local logos = assert(rawget(_G, "MWCF_GAME_LOGOS_V1"), "CFU logo module missing")
-    local names = { "BO7", "BO6", "MWIII", "MWII" }
+    local registry = core()
+    state.locked = registry.lockStates("operators", #state.groups[2] > 0)
+    if state.locked[state.selected] then state.selected = 1 end
+    local signature = registry.lockSignature(state.locked)
+    if state.tabCount == count and state.lockSignature == signature then return end
+    local logos = registry
     local entries = {}
     for index = 1, count do
-      local icon = logos.icon(index)
-      local name = names and names[index]
+      local icon = logos.icon(index, state.locked[index])
+      local name = registry.games[index] and registry.games[index].label
       assert(icon and name, "operator project tabs unavailable")
       entries[index] = { tabIndex = index - 1, project = name, icon = icon, _isVisible = true,
         focusFunction = function() selectTab(index) end }
@@ -593,7 +617,8 @@ local function attachMenu(builder, menu)
         end,
       })
       state.tabs = tabs
-      tabs.id = "CFUFourGameOperatorTabs"
+      registry.trackNavigation(tabs, state)
+      tabs.id = "CFUGameOperatorTabs"
       tabs:SetAnchorsAndPosition(0, 1, 0, 1, 83, 393, 613, 663)
       tabs:SetAlignment(LUI.Alignment.Left)
       tabs:SetSendEventOnTabChange(false)
@@ -601,6 +626,7 @@ local function attachMenu(builder, menu)
     end
     tabs:SetTabs(entries, { defaultTab = state.selected - 1 })
     state.tabCount = count
+    state.lockSignature = signature
   end
 
   local function projectRoster(screen)
@@ -635,7 +661,7 @@ local function attachMenu(builder, menu)
         "bo7=" .. #groups[1] .. " bo6=" .. (groups[2] and #groups[2] or 0))
     end)
     if ok then
-      pcall(highlightProjectTab, state.tabs, state.selected)
+      pcall(highlightProjectTab, state.tabs, state.selected, state.locked)
     else
       fail(screen, target, err)
     end
@@ -676,7 +702,7 @@ local function attachMenu(builder, menu)
       if not groups or #groups[2] == 0 then return true end
       local bo6 = groups[2]
       state.stage = "prepare_bo6_animations"
-      for _, row in ipairs((function() local all = {} for i=2,4 do for _,row in ipairs(groups[i]) do all[#all+1]=row end end return all end)()) do
+      for _, row in ipairs((function() local all = {} for i=2,#groups do for _,row in ipairs(groups[i]) do all[#all+1]=row end end return all end)()) do
         local mask = row.bundle and row.bundle[animationMaskKey] or 0
         row[rowAnimationsKey] = OPERATOR[readRowAnimationsKey](row.ref, mask)
       end
@@ -688,10 +714,10 @@ local function attachMenu(builder, menu)
       screen._operatorAnimations, screen._operatorWeapons = animations, weapons
       apply(screen, screen[gridKey], state.selected)
       bo6Listeners[screen] = nil
-      pcall(highlightProjectTab, state.tabs, state.selected)
+      pcall(highlightProjectTab, state.tabs, state.selected, state.locked)
       if not recoveryReported then
         recoveryReported = true
-        pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 4] BO6 tab added after roster refresh rows=" .. #bo6)
+        pcall(rawget(_G, "DebugPrint"), "k1 [CFU operator tabs 5] BO6 tab added after roster refresh rows=" .. #bo6)
       end
     end)
     if not ok then
@@ -700,7 +726,7 @@ local function attachMenu(builder, menu)
         state.groups[2], state.tabCount = {}, nil
         local restored, reason = pcall(syncTabs, screen)
         if restored then
-          pcall(highlightProjectTab, state.tabs, state.selected)
+          pcall(highlightProjectTab, state.tabs, state.selected, state.locked)
         else
           fail(screen, screen[gridKey], reason)
         end
@@ -787,6 +813,6 @@ local builder = rawget(_G, "MenuBuilder")
 local lui = rawget(_G, "LUI")
 hookBuilder(builder)
 if type(lui) == "table" and lui.MenuBuilder ~= builder then hookBuilder(lui.MenuBuilder) end
-trace("loaded", "stable v1.41 four-game operator tabs")
+trace("loaded", "CFU Core 2 five-game operator tabs")
 
 rawset(_G, "MWCF_OPERATOR_TABS_API", { split=split, states=seen, mwGame=mwGame })

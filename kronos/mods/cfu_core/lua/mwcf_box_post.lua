@@ -58,6 +58,34 @@ do
     }
     local function valid(v) return type(v) == "number" and v == math.floor(v) and v >= 1 and v <= ALL end
     local function has(v, b) return math.floor(v / b) % 2 == 1 end
+    -- CFU Core 2 phase 4: MWIII / MWII are only offered while their CFU weapons module is on (CFU_CORE registry). The saved
+    -- choice is kept as it is, so a game comes back when its module is switched on again; menus and launches use the open part.
+    local MODULE_GAME = { [4] = "mwiii", [8] = "mwii" }
+    local WALL_MODULE = { [3] = "mwiii", [4] = "mwii" }
+    local function moduleOn(id)
+      local core = rawget(_G, "CFU_CORE")
+      if type(core) ~= "table" or type(core.hasModule) ~= "function" then return true end
+      local ok, on = pcall(core.hasModule, id, "weapons")
+      return not ok or on == true
+    end
+    -- BO6 guns only exist while Kronos' Carry Forward setting is on (rolling a missing gun can crash).
+    local function bo6On()
+      local core = rawget(_G, "CFU_CORE")
+      if type(core) ~= "table" or type(core.kronosCarryForward) ~= "function" then return true end
+      local ok, on = pcall(core.kronosCarryForward)
+      return not ok or on ~= false
+    end
+    local function bitOpen(b)
+      if b == 2 then return bo6On() end
+      return not MODULE_GAME[b] or moduleOn(MODULE_GAME[b])
+    end
+    local function openPart(v)
+      local m = 0
+      for _, b in ipairs({ 1, 2, 4, 8 }) do
+        if has(v, b) and bitOpen(b) then m = m + b end
+      end
+      return m
+    end
     local function read(hex)
       local ok, v = pcall(K.dvar, hex)
       return ok and tonumber(v) or nil
@@ -76,20 +104,36 @@ do
       log("box pools now " .. v)
       return true
     end
+    -- What menus show and launches carry: the saved pools minus locked games; BO7 if nothing open is left.
+    local function effectivePools()
+      local v = openPart(pools())
+      return v > 0 and v or 1
+    end
     S.pools_value = pools
+    S.effective_pools = effectivePools
+    S.bit_open = bitOpen
     S.set_pools = setPools
     -- 1.6.0 wall buys (test menu): one game for every weapon wall, dvar mwcf_wall_game = 1 BO7, 2 BO6, 3 MW3, 4 MW2. The compiled
     -- script reads @"hash_908ab6945a7d6b37"; the launch settings carry that key and the one without the top bit.
     local WALL_DV = "908ab6945a7d6b37"
     local WALL_GAMES = { "BLACK OPS 7", "BLACK OPS 6", "MODERN WARFARE III", "MODERN WARFARE II" }
     local function validWall(v) return type(v) == "number" and v == math.floor(v) and v >= 1 and v <= 4 end
-    local function wallGame()
+    local function wallOpen(v)
+      if v == 2 then return bo6On() end
+      return not WALL_MODULE[v] or moduleOn(WALL_MODULE[v])
+    end
+    local function savedWall()
       if validWall(S.wall) then return S.wall end
       local v = read(WALL_DV)
       if validWall(v) then return v end
       v = read(alt(WALL_DV))
       if validWall(v) then return v end
       return 1
+    end
+    -- The wall game in use: the saved one, or BO7 while its module is off.
+    local function wallGame()
+      local v = savedWall()
+      return wallOpen(v) and v or 1
     end
     local function setWall(v)
       if not validWall(v) then return false end
@@ -100,7 +144,11 @@ do
       return true
     end
     local function cycleWall()
-      local v = wallGame() % 4 + 1
+      local v = wallGame()
+      for _ = 1, 4 do
+        v = v % 4 + 1
+        if wallOpen(v) then break end
+      end
       setWall(v)
       return v
     end
@@ -112,8 +160,9 @@ do
     -- A checkbox press: flips one game; the last checked game stays on. Returns the pools after it.
     local function toggle(bit)
       local v = pools()
+      if not bitOpen(bit) then log("box pool " .. bit .. " is locked: its CFU module is off"); return v end
       local nv = has(v, bit) and (v - bit) or (v + bit)
-      if nv == 0 then log("the last checked game stays on"); return v end
+      if openPart(nv) == 0 then log("the last checked game stays on"); return v end
       setPools(nv)
       return nv
     end
@@ -128,7 +177,7 @@ do
       local start = rawget(_G, "LUMEN_ZM_LOCAL_START")
       local req = type(start) == "table" and start.request
       if type(req) ~= "table" or type(req.record) ~= "table" then return end
-      local v, stock, wall = pools(), stockMode(), wallGame()
+      local v, stock, wall = effectivePools(), stockMode(), wallGame()
       if req.mwcfBoxPools == v and req.mwcfStockBoxMode == stock and req.mwcfWallGame == wall then return end
       local record, config = {}, {}
       for k, x in pairs(req.record) do record[k] = x end
@@ -358,7 +407,9 @@ do
             end
             if not okP then cb = nil end
           end
-          local function text() return cb and g.label or checkLabel(g, pools()) end
+          local open = bitOpen(g.bit)
+          local shown = { bit = g.bit, label = open and g.label or (g.label .. (g.bit == 2 and "  (CARRY FORWARD OFF)" or "  (MODULE OFF)")) }
+          local function text() return cb and shown.label or checkLabel(shown, effectivePools()) end
           local labels = {}
           for _, k in ipairs({ "39f7fcec8fcb623d", "69f6cc5b1a5cbb83" }) do
             local el = get(btn, H(k))
@@ -372,13 +423,13 @@ do
           local syncing = false
           local function refresh()
             for _, l in ipairs(labels) do pcall(l.set, l.el, text()) end
-            if cb then syncing = true; pcall(cb.SetValue, cb, has(pools(), g.bit)); syncing = false end
+            if cb then syncing = true; pcall(cb.SetValue, cb, has(effectivePools(), g.bit)); syncing = false end
           end
           if cb then
             -- A click that lands on the checkbox itself: apply it the same way, then show the result.
             pcall(cb.SetCallback, cb, function(_, v)
               if syncing then return end
-              if (v and true or false) ~= has(pools(), g.bit) then toggle(g.bit) end
+              if (v and true or false) ~= has(effectivePools(), g.bit) then toggle(g.bit) end
               refresh()
             end)
             refresh()
@@ -398,6 +449,7 @@ do
             if hasMethod(btn, how) then pcall(btn[how], btn, H("e7eefe998522ec88"), function() fire() end) end
           end
           menu:addElement(btn)
+          if not open then pcall(btn.SetAlpha, btn, 0.4) end
           if prev and link and dirs then
             pcall(link, prev, btn, dirs[H("dc04126761bb7455")])
             pcall(link, btn, prev, dirs[H("08c43a07b566d980")])
@@ -448,7 +500,7 @@ do
       end)
       log("pools menu: wall buys button " .. (okw and ("added, " .. wallLabel()) or ("failed: " .. tostring(ew))))
       if first then pcall(function() menu:SetDefaultFocusToElement(first) end) end
-      log("pools menu: " .. built .. " games, " .. checkboxes .. " game checkboxes, pools " .. pools())
+      log("pools menu: " .. built .. " games, " .. checkboxes .. " game checkboxes, pools " .. pools() .. " (open " .. effectivePools() .. ")")
       return built > 0
     end
 

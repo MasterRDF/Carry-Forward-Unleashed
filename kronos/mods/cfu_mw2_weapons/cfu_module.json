@@ -1,0 +1,10 @@
+{
+  "api": 1,
+  "id": "cfu_mw2_weapons",
+  "game": "mwii",
+  "content": "weapons",
+  "prefixes": [
+    "iw9_"
+  ],
+  "native": "warzone-share"
+}

@@ -1,0 +1,45 @@
+CFU CORE 1.7 - INSTALL
+======================
+
+CFU Core is the base of Carry Forward Unleashed. Every CFU module needs it.
+
+Core gives you:
+- Mystery Box Loadout and wall-buy game selection (Zombies > Weapons > MYSTERY BOX)
+- Game buttons on the Zombies weapon screen, Favorites and Operators: BO7, BO6, MWIII, MWII, Vanguard
+- Favorites, Weapon Renames, BO6 sorting, Pack-a-Punch and loadout support
+
+A game whose module is not installed (or is switched off) shows a gray, locked button with a padlock.
+
+This download already contains CFU Core and these modules (each needs Core):
+- CFU - MWII Weapons
+- CFU - MWIII Weapons
+- CFU - MWII Operators
+- CFU - MWIII Operators
+CFU - Vanguard Weapons is a separate download.
+
+BEFORE YOU START
+- Stock Kronos v1.41 and the supported Black Ops 7 executable.
+- In the Kronos launcher settings, turn Carry Forward ON.
+- For the MW operator modules, also turn BO6 Operators ON.
+
+UPDATING FROM CFU 1.6.x
+- Close the game and the Kronos launcher.
+- Delete the folder cod25\kronos\mods\carry_forward_unleashed
+
+INSTALL
+1. Close the game and the Kronos launcher.
+2. Open this zip and drag everything inside it into your cod25 folder
+   (the folder that has cod25-cod.exe in it). Say yes to replacing hid.dll.
+3. Don't want a module? Delete its cfu_... folder from kronos\mods, or switch it off later.
+4. Open the Kronos launcher, go to the Library, and make sure CFU Core and your
+   modules are switched on.
+5. Start the game.
+
+Restart the game after switching any CFU entry on or off.
+
+REMOVING
+Switch CFU Core off in the Library, or delete cod25\kronos\mods\cfu_core.
+hid.dll does nothing while CFU Core is off or missing.
+
+LOGS (for bug reports)
+cod25\kronos\Logs\mw2_guns_loader.log, mw2_guns.log, mw2_guns_fixes.log, mwcf_operators.log

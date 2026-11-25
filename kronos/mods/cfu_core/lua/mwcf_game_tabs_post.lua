@@ -1,4 +1,5 @@
--- CFU four-game picker, trial 03. Shared non-tiling logos; Favorites retains type headings.
+-- CFU Core 2 game picker: five games from the Core registry (mwcf_game_logos_post.lua); locked games stay visible, dimmed
+-- and unselectable until a module for them registers.
 if rawget(_G, "MWCF_GAME_TABS_V1") then return end
 
 local clua = rawget(_G, "CLUA")
@@ -45,7 +46,7 @@ end
 local function report(err)
   if reported then return end
   reported = true
-  pcall(rawget(_G, "DebugPrint"), "k1 [CFU game tabs 4] error=" .. tostring(err))
+  pcall(rawget(_G, "DebugPrint"), "k1 [CFU game tabs 5] error=" .. tostring(err))
 end
 
 local function eligible()
@@ -55,32 +56,30 @@ local function eligible()
   return ok and value == true
 end
 
-local GAMES = {
-  { prefix = "sat_", label = "BO7" },
-  { prefix = "t10_", label = "BO6" },
-  { prefix = "jup_", label = "MWIII" },
-  { prefix = "iw9_", label = "MWII" },
-}
+local function core()
+  return assert(rawget(_G, "CFU_CORE"), "CFU Core registry missing")
+end
+local function games()
+  return core().games
+end
 local alternateRefKey = H("0x09e9c01960f4c582")
 local function gameOf(row)
   local bundle = row and row.bundleData
   if not bundle then return nil end
   local ref = bundle[weaponRefKey] or bundle[alternateRefKey]
   if ref ~= nil then ref = tostring(ref) end
-  if type(ref) == "string" then
-    for index, game in ipairs(GAMES) do
-      if ref:sub(1, #game.prefix) == game.prefix then return index end
-    end
-  end
   -- Other installed mods retain their existing BO7 placement.
-  return 1
+  return core().gameOfRef(ref) or 1
 end
+-- Kronos gives BO6 guns only with its Carry Forward setting on. Favorites lists can lack them, so remember a sighting.
+local bo6Seen = false
 
 local function groupRows(rows)
   local categories = rawget(_G, "__mwcfCategoriesV1")
   if type(categories) == "table" and type(categories.regroup) == "function" then categories.regroup(rows) end
   local favorites = rawget(rows, "__mwcfFavoritesList") == true
-  local groups = { {}, {}, {}, {} }
+  local groups = {}
+  for index = 1, #games() do groups[index] = {} end
   local pending, written = nil, {}
   for _, row in ipairs(rows) do
     local index = gameOf(row)
@@ -121,10 +120,30 @@ local function highlight(state)
     end
     selected:Select()
   end
+  if elements and state.locked then
+    for index, element in ipairs(elements) do core().applyLock(element, state.locked[index]) end
+  end
 end
 
 local function selectProject(menu, state, index)
-  if state.syncing or states[menu] ~= state or state.selected == index or
+  if state.locked and state.locked[index] and not state.syncing and states[menu] == state then
+    local target = core().redirect(state.locked, state.selected, index, (state.navigating or 0) > 0)
+    local function land()
+      if states[menu] ~= state then return end
+      if target ~= state.selected then
+        state.tabs:FocusTab(state.controller, target - 1, FocusType.Gamepad)
+      else
+        state.redirecting = true
+        pcall(state.tabs.FocusTab, state.tabs, state.controller, state.selected - 1, FocusType.Gamepad)
+        state.redirecting = false
+        highlight(state)
+      end
+    end
+    local nextFrame = rawget(_G, "Frame") and Frame.Next
+    if not (nextFrame and pcall(nextFrame.Queue, nextFrame, function() pcall(land) end)) then pcall(land) end
+    return
+  end
+  if state.redirecting or state.syncing or states[menu] ~= state or state.selected == index or
       index > state.tabCount or not eligible() or not menu:IsVisible() then return end
   local scopeOK, data = pcall(LUI.FlowManager.GetScopedData, menu)
   if not scopeOK then
@@ -148,7 +167,7 @@ end
 
 local function switchWithDpad(menu, event, index)
   local state = states[menu]
-  if not state or state.tabCount ~= 4 or state.syncing or state.selected == index or
+  if not state or state.tabCount ~= #games() or state.syncing or state.selected == index or
       event.controller ~= state.controller or not eligible() or not menu:IsVisible() then return end
   state.tabs:FocusTab(state.controller, index - 1, FocusType.Gamepad)
   return states[menu] == state and state.selected == index
@@ -171,7 +190,8 @@ local function tryDpad(event, index, menu, root)
       if layer and layer ~= top then return end
     end
     local state = states[top]
-    local destination = ((state.selected - 1 + index) % 4) + 1
+    local destination = core().step(state.locked or {}, state.selected, index)
+    if destination == state.selected then return true end
     return switchWithDpad(top, event, destination)
   end)
   if not ok then report(switched) end
@@ -204,12 +224,12 @@ local function bindDpad(menu, tabs)
 end
 
 local function syncTabs(menu, state)
-  if state.tabCount ~= 4 then
+  local signature = core().lockSignature(state.locked)
+  if state.tabCount ~= #games() or state.lockSignature ~= signature then
     local entries = {}
-    for index, game in ipairs(GAMES) do
+    for index, game in ipairs(games()) do
       local chosen = index
-      local logos = assert(rawget(_G, "MWCF_GAME_LOGOS_V1"), "CFU logo module missing")
-      local icon = logos.icon(index)
+      local icon = core().icon(index, state.locked[index])
       entries[index] = {
         tabIndex = index - 1, icon = assert(icon, "missing project icon"),
         _isVisible = true, tabNavigationDelayLength = 0,
@@ -218,12 +238,25 @@ local function syncTabs(menu, state)
     end
     state.tabs:SetTabs(entries, { defaultTab = state.selected - 1 })
     state.tabs:ShowShoulderButtonPrompts()
-    state.tabCount = 4
+    state.tabCount = #games()
+    state.lockSignature = signature
   end
   highlight(state)
 end
 
 local function projectRows(menu, state, data, rows)
+  local bo6Here = false
+  for _, row in ipairs(rows) do
+    if gameOf(row) == 2 and row.bundleData then bo6Here = true break end
+  end
+  if bo6Here then bo6Seen = true end
+  -- BO6 guns come from Kronos' Carry Forward setting; its dvar decides. Some BO6 rows can appear even with it off, and
+  -- selecting them crashed the game (2026-11-25), so rows only decide when the dvar can't be read.
+  local carryForward = core().kronosCarryForward()
+  local bo6 = bo6Seen
+  if carryForward ~= nil then bo6 = carryForward end
+  state.locked = core().lockStates("weapons", bo6)
+  if state.locked[state.selected] then state.selected = 1 end
   state.syncing = true
   local ok, err = pcall(syncTabs, menu, state)
   state.syncing = false
@@ -318,7 +351,8 @@ local function attach(builder, menu)
       end,
     })
     state.tabs = tabs
-    tabs.id = "CFUFourGameTabs"
+    core().trackNavigation(tabs, state)
+    tabs.id = "CFUGameTabs"
     tabs:SetAnchorsAndPosition(0, 1, 0, 1, 90, 400, 77.5, 127.5)
     tabs:SetAlignment(LUI.Alignment.Center)
     tabs:SetSendEventOnTabChange(false)

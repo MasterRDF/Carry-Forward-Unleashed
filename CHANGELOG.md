@@ -1,3 +1,13 @@
+# Version 1.7
+
+Changelog 1.7:
+-CFU is now split into CFU Core plus modules: MWII Weapons, MWIII Weapons, MWII Operators and MWIII Operators (Vanguard Weapons comes as its own download). Install only the ones you want.
+-Five game buttons (BO7, BO6, MWIII, MWII, Vanguard) on the weapon screen, Favorites and Operators. Games without their module show a gray locked button with a padlock and can't be selected.
+-Switching an MW weapons module off really removes that game's guns, from the weapon lists and from the Mystery Box and wall buys.
+-Mystery Box menu: games whose module is off show "(MODULE OFF)" and can't be ticked. Wall buys skip them. Your old choices come back when the module is on again.
+-Kronos' in-game BO6 Operator picker marks MW operators whose module is off with [MODULE OFF].
+-MW guns now show in the menus right after starting the game, before playing a match.
+
 # Version 1.6.2
 
 Changelog 1.6.2:

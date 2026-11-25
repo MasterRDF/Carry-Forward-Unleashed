@@ -169,6 +169,28 @@ do
     end
   end
 
+  -- 1b. CFU Core 2 phase 5: rows of an MW game whose CFU operators module is off are marked in Kronos' in-match picker.
+  --     They are never removed or moved: the picker sends the row number, which the match maps to the same slot order.
+  G.baseLabel = G.baseLabel or setmetatable({}, { __mode = "k" })
+  local function labelRows()
+    local list, core = rawget(_G, "__kronosBo6Ops"), rawget(_G, "CFU_CORE")
+    local tabs = rawget(_G, "MWCF_OPERATOR_TABS_API")
+    local games = type(tabs) == "table" and tabs.mwGame
+    if type(list) ~= "table" or type(core) ~= "table" or type(core.hasModule) ~= "function" or type(games) ~= "table" then return end
+    for index = 67, #list do
+      local row = list[index]
+      if type(row) == "table" and type(row[3]) == "string" then
+        local base = G.baseLabel[row]
+        if base == nil then base = row[1]; G.baseLabel[row] = base end
+        local game = games[row[3]]
+        local id = game == 3 and "mwiii" or game == 4 and "mwii" or nil
+        local off = id ~= nil and not core.hasModule(id, "operators")
+        local label = off and (tostring(base) .. "  [MODULE OFF]") or base
+        if row[1] ~= label then row[1] = label end
+      end
+    end
+  end
+
   -- 2. lobby select-scene fix
   local SCENE_OPS = { "2144b231ee61b7bc", "57ce19d8501b12bb", "7c6754028bc31103", "64160da0791cbf36", "1fad9559d907446e", "4ddb12f471a98764", "29daf10efcddd21", "57c1cb281374c5f9", "5b76a143c2511e46", "2bb41893adbd2966", "7eba0705b56228d6", "46e22ee73e7dc50", "20bd95b7fd5b0516", "17c855dc6c70bd02", "129e23b338521ff0", "20b2417c10010917", "5996c23723c9764d", "443f7f49d4390a26", "3820265cb045762", "61845612411c257e", "35255fe8c7af1aed", "488e8ad6ac097fd7", "4e11a9d78f102246", "788e21c702bce512", "3a98aacb2933ea58", "67298a9ef9c94d86", "4a28bad9e7d4aec3", "6b57f4888b07f764", "7e6a0176a2674fc5", "558e185cd316c8df", "6893fdb22671c6b1", "18b72732700e64aa", "3c26cbdd18b22058", "2ce1a212a8d46a7c", "2d8212c34493d105", "55eec25f6e94471a", "5313be5ea15fc280", "c425395f74780ce", "230fbd95a034836c", "81931cc82bf2aa9", "9b4a17bdbdf2291", "461c14000296c24", "6f536635c026c149", "2d243210f3334135", "101eae661b3bd9ee", "2e26fc477b45ca8c", "4f01a7478d5f3064", "6091f54797637160", "460cf7e240e95a4c", "7f7c5a08dc8cfa1", "69b14d54bf98ea37", "583960d199299e4f", "6c3f7e7c98321fc5", "5a77edf921176a4d", "5d161d72b5fd807d", "7c14ee2f50e66eec", "33468880f3a8f49e", "1a81dfbf44e19bfa", "46810eb555dd0632", "6dc3ade09c6775a6", "148785e56d61e4d", "517227ca53e51fcc", "6b0512b0ba9ef554", "68f9a7285029f21", "5537717cd3f13e51", "7828a3c28529a94d", "720d61a31a459702", "28d3f84f53acaff9", "3dfd72bb1eac299d", "26e9baa656a104c5", "1201c8a39949848e", "72c148f5392bf42d", "7cc5851d831398be", "e22beaf5b4af639", "322ab09849868ebb", "6264a1fe3983357", "392495cf8fa933c7", "e10c440839b0b70", "7e67e344d0323afb", "7f7a0c7371216966", "3a3287df14310640", "10be543335b72ac3", "7cc6a025a1de45f5", "13cb05535a90ce53", "3bf9fc07837fd84", "68a66039bfdb40b5", "312de57c40184877", "7ccc73e20851ff9d", "1420c4f94246208f", "465a8af5abaa28f", "7f427b545033f8fc", "12f493d3163d0f4d", "a3b08c441281768", "5492db9b14aa08e0", "5ea38c76ab0e975d", "5640f98513cf3bd5", "61ca70b13e9d3cc", "6fa5801ab5e382b7", "50aee65463daddce", "b07e68003acce03", "3306b3b2de6acc19", "4cfe76ba7307be86", "1620cc538f9baecc", "114bebf3da4c7d8a", "599a5c5f0ba3511f", "45cb789ebf14f6bd", "2da374201b08c4b7", "33241a7584d96657", "4c29f231f9b1558d", "663d7c45b6a9117", "61789f98ca6393bc", "5eb2487291905ad", "bb22ccd889e927f", "5caee9a847b43c6e", "6c3a322ae8af7690", "d33467afa658c7d", "8d549c954575e2c", "680846934fa9a173", "4b41df0bd80c517b", "3d6e6382efad77d9", "58b13415e9fd4d20", "6684b79ed25c345a", "a4d960b98fb53a6", "33e63c0dd1d1e1a1", "4db4a87d517b1469", "3732faeaf282dceb", "1d3b6176cd6fbe7b", "1a5e168b2d01e350" }
   local function isAdded(s)
@@ -268,6 +290,7 @@ do
       local ok, e = pcall(hook, ...)
       pcall(installFix)
       pcall(guardPreview)
+      pcall(labelRows)
       if not ok then error(e, 0) end
     end
     G.hooks[wrapped] = true
@@ -277,4 +300,5 @@ do
   end
   pcall(installFix)
   pcall(guardPreview)
+  pcall(labelRows)
 end
